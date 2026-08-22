@@ -848,6 +848,10 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
       <span class="chip" id="chipSub"></span>
       <span class="chip" id="chipLvl"></span>
       <span class="grow"></span>
+      <!-- 2026-08-22 (sur demande) : le NIVEAU de la matière (le « Niveau N » de
+           la carte du hero) pendant les questions. À DROITE, près du compteur —
+           pour ne pas être confondu avec la puce de DIFFICULTÉ (gauche). -->
+      <span class="chip" id="chipNiv"></span>
       <span class="mono muted" id="qCount" style="font-size:13px"></span>
     </div>
     <div id="qbox"></div>
@@ -3749,6 +3753,7 @@ function renderQ(){
   const q=state.q;
   $("#chipSub").textContent=r.sub.name;
   $("#chipLvl").textContent=state.mode==="sprint"?"sprint 60 s":lvlLabel(state.curLvl||state.level);
+  paintChipNiv();   /* le niveau de la matière, dans les trois modes */
   /* 2026-08-22 : en révision, le compteur = questions ÉCHUES (reviewDue()) —
      c'est tout ce que la session sert (pickQ prend reviewDue()[0]). L'ancienne
      valeur (stats.review.length, max 50) affichait aussi les replanifiées. */
@@ -3853,7 +3858,13 @@ function levelOf(xp){return Math.max(1,Math.floor((-1+Math.sqrt(1+4*(xp+50)/25))
 function lvlInfo(x){const n=levelOf(x),lo=xpCum(n),hi=xpCum(n+1);return{n,pct:(x-lo)/(hi-lo)};}
 function xpKey(){return state.matiere==="maths"?"qz_xp":"qz_xp_"+state.matiere;}
 function getXP(){const v=store.get(xpKey(),0);return typeof v==="number"&&isFinite(v)&&v>=0?v:0;}
-function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+pts);renderLvlCard();if(levelOf(x+pts)>before)confetti();}
+function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+pts);renderLvlCard();paintChipNiv();if(levelOf(x+pts)>before)confetti();}
+/* Puce « Niv. N » de la barre d'écran de question (2026-08-22, sur demande) :
+   le niveau de la MATIÈRE (le « Niveau N » de la carte du hero) reste visible
+   pendant la partie — les trois modes, et la puce suit les paliers franchis en
+   cours de séance (gainXp). Garde-fou `if(el)` : l'écran de question n'est pas
+   toujours dans le DOM rendu. */
+function paintChipNiv(){const el=$("#chipNiv");if(el)el.textContent="Niv. "+lvlInfo(getXP()).n;}
 /* Points par bonne réponse selon la DIFFICULTÉ de la question : facile 5 ·
    moyen 10 · difficile 15. On lit le niveau de la QUESTION (state.curLvl), pas
    le réglage global — en sprint les niveaux sont mélangés. + bonus de série de

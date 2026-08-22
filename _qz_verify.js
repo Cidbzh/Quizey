@@ -1127,6 +1127,51 @@ console.log("\n[29] Liste à réviser — doublons hérités déduplicés au cha
   }
 }
 
+/* ========================================================= */
+console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barre (3 modes)");
+{
+  /* 2026-08-22 (sur demande) : « Afficher le niveau pendant les questions ».
+     Le niveau de la MATIÈRE (le « Niveau N » de la carte du hero, déduit de
+     l'XP) est visible dans la barre de l'écran de question, dans les trois
+     modes, et suit les paliers franchis en cours de séance. (La DIFFICULTÉ de
+     la question est déjà sur sa propre puce — « facile/moyen/difficile » ou
+     « A2/A2+/B1 » — et reste inchangée.) */
+  const chip=ctx=>vm.runInContext("document.querySelector('#chipNiv')?document.querySelector('#chipNiv').textContent:null",ctx);
+  /* --- Trois modes : la puce est présente et justes --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("store.set('qz_xp',120)",ctx); /* 100 ≤ 120 < 250 → Niv. 2 */
+    vm.runInContext("startFree()",ctx);
+    ok("libre : la barre affiche « Niv. 2 »",chip(ctx)==="Niv. 2");
+    vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:0,due:0}]",ctx);
+    vm.runInContext("startReview()",ctx);
+    ok("révision : la barre affiche « Niv. 2 »",chip(ctx)==="Niv. 2");
+    vm.runInContext("startFree();state.mode='sprint';renderQ()",ctx);
+    ok("sprint : la barre affiche « Niv. 2 » (la difficulté y reste « sprint 60 s »)",chip(ctx)==="Niv. 2");
+  }
+  /* --- PALIER franchi en cours de séance : la puce suit l'XP gagnée --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("store.set('qz_xp',245)",ctx); /* Niv. 2 ; +10 (bonne « moyen ») → 255 ≥ 250 → Niv. 3 */
+    vm.runInContext("startFree()",ctx);
+    ok("avant réponse : « Niv. 2 »",chip(ctx)==="Niv. 2");
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx);
+    ok("bonne réponse franchit le palier → la puce passe à « Niv. 3 »",chip(ctx)==="Niv. 3");
+  }
+  /* --- INDÉPENDANCE : la puce suit la matière active --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("store.set('qz_xp',120);store.set('qz_xp_de',260)",ctx); /* maths Niv. 2, DE Niv. 3 */
+    vm.runInContext("startFree()",ctx);
+    ok("maths : « Niv. 2 »",chip(ctx)==="Niv. 2");
+    vm.runInContext("setMatiere('de');startFree()",ctx);
+    ok("bascule DE : « Niv. 3 » (la XP DE, pas la XP maths)",chip(ctx)==="Niv. 3");
+  }
+}
+
 console.log("=====================================");
 console.log(fail===0?("TOUS LES TESTS PASSENT ✔  ("+pass+")"):(fail+" ÉCHEC(S) — "+pass+" OK"));
 process.exit(fail===0?0:1);
