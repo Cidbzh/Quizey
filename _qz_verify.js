@@ -1061,6 +1061,25 @@ console.log("\n[27] Année — état, clés, indépendance maths/PC, THEME_BY_ID
     vm.runInContext("setMatiere('en')",ctx);
     ok("EN → state.annee === null",vm.runInContext("state.annee",ctx)===null);
   }
+  /* --- sélecteur d'année : registres complets → visible maths/PC, masqué DE/EN --- */
+  lsData.clear();
+  {
+    const env=buildEnv(),ctx=runApp(env);
+    const hidden=()=>env.document.querySelector("#yearRow").hidden;
+    ok("maths : #yearRow visible",hidden()===false);
+    vm.runInContext("setAnnee('seconde')",ctx);
+    ok("maths/seconde : eyebrow « Seconde · maths »",env.document.querySelector("#heroEyebrow").textContent==="Seconde · maths");
+    vm.runInContext("setAnnee('terminale')",ctx);
+    ok("maths/terminale : eyebrow « Terminale · spécialité maths »",env.document.querySelector("#heroEyebrow").textContent==="Terminale · spécialité maths");
+    vm.runInContext("setAnnee('premiere')",ctx);
+    ok("maths/premiere : eyebrow « Première · spécialité maths »",env.document.querySelector("#heroEyebrow").textContent==="Première · spécialité maths");
+    vm.runInContext("setMatiere('pc')",ctx);
+    ok("pc : #yearRow visible",hidden()===false);
+    vm.runInContext("setMatiere('de')",ctx);
+    ok("DE : #yearRow masqué",hidden()===true);
+    vm.runInContext("setMatiere('en')",ctx);
+    ok("EN : #yearRow masqué",hidden()===true);
+  }
 }
 
 /* ========================================================= */
