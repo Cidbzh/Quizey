@@ -1006,6 +1006,7 @@ console.log("\n[24] Registres par année — structure, ids, stabilité Premièr
   ok("Seconde maths : 6 thèmes (contenu livré)",probe.SUBJECTS_MATH.seconde.length===6);
   ok("Seconde PC : 6 thèmes (contenu livré)",probe.SUBJECTS_PC.seconde.length===6);
   ok("Terminale maths : 8 thèmes (contenu livré)",probe.SUBJECTS_MATH.terminale.length===8);
+  ok("Terminale PC : 6 thèmes (contenu livré)",probe.SUBJECTS_PC.terminale.length===6);
   let purgeOk=true;
   {
     const env2=buildEnv();

@@ -2496,6 +2496,163 @@ const G_S2_CIRC=[
      explain:`E = P·t = ${P} × ${t} = <b>${E} J</b>.`};
  }}
 ];
+
+/* ---------- Terminale PC : Ondes & optique ---------- */
+const G_T_ONDES=[
+ {lvl:"facile",make(){
+   const e=pick([
+     {f:1e14,fs:"1 × 10¹⁴",l:3e-6,ls:"3 × 10⁻⁶"},
+     {f:2e14,fs:"2 × 10¹⁴",l:1.5e-6,ls:"1,5 × 10⁻⁶"},
+     {f:5e14,fs:"5 × 10¹⁴",l:6e-7,ls:"6 × 10⁻⁷"},
+     {f:1e15,fs:"1 × 10¹⁵",l:3e-7,ls:"3 × 10⁻⁷"}
+   ]);
+   return{prompt:`Une onde lumineuse a une fréquence f = ${e.fs} Hz. c = λ·f (c = 3 × 10⁸ m/s). λ = c/f = ? (en m)`,
+     type:"number",answer:e.l,tol:0.05,
+     explain:`λ = c/f = (3 × 10⁸)/(${e.fs}) = <b>${e.ls} m</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const e=pick([
+     {l:5e-7,ls:"5 × 10⁻⁷",f:6e14,fs:"6 × 10¹⁴"},
+     {l:6e-7,ls:"6 × 10⁻⁷",f:5e14,fs:"5 × 10¹⁴"},
+     {l:2e-6,ls:"2 × 10⁻⁶",f:1.5e14,fs:"1,5 × 10¹⁴"}
+   ]);
+   return{prompt:`Une onde de longueur d'onde λ = ${e.ls} m se propage à c = 3 × 10⁸ m/s. f = c/λ = ? (en Hz)`,
+     type:"number",answer:e.f,tol:0.05,
+     explain:`f = c/λ = (3 × 10⁸)/(${e.ls}) = <b>${e.fs} Hz</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="la fente est du même ordre de grandeur que la longueur d'onde";
+   const ds=["la fente est bien plus large que la longueur d'onde","la lumière est blanche"];
+   return qcm(`La diffraction d'une onde lumineuse est maximale lorsque…`,bonne,ds,
+     `Plus la fente est étroite — du même ordre de grandeur que la longueur d'onde — plus la diffraction est marquée. Fente bien plus large : propagation quasi rectiligne ; « lumière blanche » ne change rien à la condition de diffraction.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale PC : Transformations nucléaires ---------- */
+const G_T_NUCLEAIRE=[
+ {lvl:"facile",make(){
+   const N0=100*Ri(1,9),lam=pick([0.1,0.2]),t=pick([5,10]),N=N0*Math.exp(-lam*t),lt=lam*t;
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   const ls=String(lam).replace(".",","),lts=String(lt).replace(".",",");
+   return{prompt:`Un échantillon contient N₀ = ${N0} noyaux, λ = ${ls} s⁻¹. Au bout de t = ${t} s : N = N₀·e^(−λt) = ? (en noyaux)`,
+     type:"number",answer:N,tol:0.05,
+     explain:`N = N₀·e^(−λt) = ${N0} × e^(−${lts}) ≈ <b>${d2(N)}</b> noyaux.`};
+ }},
+ {lvl:"moyen",make(){
+   const lam=pick([0.05,0.1,0.2,0.5,0.693]),v=Math.log(2)/lam;
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   const ls=String(lam).replace(".",",");
+   return{prompt:`Un radionucléide a une constante de désintégration λ = ${ls} s⁻¹. Sa demi-vie t½ = ln 2/λ ≈ ? (en s)`,
+     type:"number",answer:v,tol:0.05,
+     explain:`Demi-vie : au bout de t½, la moitié des noyaux a désintégré.<br>t½ = ln 2/λ ≈ 0,693/${ls} ≈ <b>${d2(v)} s</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const n=Ri(2,4),t2=pick([5730,1590,1600,1400]),ans=n*t2;
+   return{prompt:`Datation au carbone 14 (t½ = ${t2} ans) : un fossile a subi n = ${n} demi-vies de décroissance (N/N₀ = (1/2)ⁿ). Le temps écoulé = n × t½ = ? (en ans)`,
+     type:"number",answer:ans,
+     explain:`Après n demi-vies : N/N₀ = (1/2)ⁿ.<br>Temps écoulé = n × t½ = ${n} × ${t2} = <b>${ans} ans</b>.`};
+ }}
+];
+
+/* ---------- Terminale PC : Cinétique ---------- */
+const G_T_CINET=[
+ {lvl:"facile",make(){
+   const dc=pick([0.05,0.1,0.2,0.4]),dt=pick([50,100,125,200]),v=dc/dt;
+   const dcs=String(dc).replace(".",","),vs=String(v).replace(".",",");
+   return{prompt:`Pendant Δt = ${dt} s, la concentration d'un réactif diminue de Δc = ${dcs} mol/L. Vitesse v = Δc/Δt = ? (en mol·L⁻¹·s⁻¹)`,
+     type:"number",answer:v,tol:0.05,
+     explain:`v = Δc/Δt = ${dcs}/${dt} = <b>${vs} mol·L⁻¹·s⁻¹</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const c0=pick([0.2,0.4,0.8]),c1=c0/2;
+   const c0s=String(c0).replace(".",","),c1s=String(c1).replace(".",",");
+   return{prompt:`Par définition, au temps t₁/₂ la concentration du réactif vaut c₀/2. Si c₀ = ${c0s} mol/L, [réactif] à t₁/₂ = ? (en mol/L)`,
+     type:"number",answer:c1,
+     explain:`À la demi-vie : [réactif] = c₀/2 = ${c0s}/2 = <b>${c1s} mol/L</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="augmente (plus de collisions effectives)";
+   const ds=["diminue","reste inchangée"];
+   return qcm(`En augmentant la température d'une réaction chimique, la vitesse initiale…`,bonne,ds,
+     `Plus la température est élevée, plus les particules sont vite : les collisions sont plus fréquentes et plus nombreuses d'entre elles dépassent l'énergie d'activation → la vitesse initiale augmente.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale PC : Énergie (bilan) ---------- */
+const G_T_ENERGIE=[
+ {lvl:"facile",make(){
+   const a=Ri(10,90),b=a+Ri(10,90);
+   return{prompt:`Énergie d'un système : E_ini = ${a} J puis E_fin = ${b} J. ΔE = E_fin − E_ini = ? (en J)`,
+     type:"number",answer:b-a,
+     explain:`ΔE = E_fin − E_ini = ${b} − ${a} = <b>${b-a} J</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   return{prompt:`m = 1 g = 10⁻³ kg. Avec E = m·c² et c = 3 × 10⁸ m/s, l'équivalence en énergie E = ? (en J)`,
+     type:"number",answer:9e13,tol:0.05,
+     explain:`E = m·c² = 10⁻³ × (3 × 10⁸)² = 10⁻³ × 9 × 10¹⁶ = <b>9 × 10¹³ J</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const u=pick([40,45,60,75]),v=u/100;
+   const vs=String(v).replace(".",",");
+   return{prompt:`Une machine reçoit E_totale = 100 J et restitue E_utile = ${u} J. Le rendement η = E_utile/E_totale = ?`,
+     type:"number",answer:v,tol:0.01,
+     explain:`η = E_utile/E_totale = ${u}/100 = <b>${vs}</b> (soit ${u} %).`};
+ }}
+];
+
+/* ---------- Terminale PC : Circuit RC ---------- */
+const G_T_RC=[
+ {lvl:"facile",make(){
+   /* Mantisse × 10^exposant : le produit flottant 1e5×1e-6 donne
+      0.09999999999999999 — on calcule en entiers et on n'affiche que la forme exacte. */
+   const R=pick([{m:1,e:5,s:"1 × 10⁵"},{m:2,e:5,s:"2 × 10⁵"},{m:5,e:5,s:"5 × 10⁵"},{m:1,e:6,s:"1 × 10⁶"}]);
+   const C=pick([{m:1,e:-6,s:"1 × 10⁻⁶"},{m:2,e:-6,s:"2 × 10⁻⁶"},{m:5,e:-6,s:"5 × 10⁻⁶"},{m:1,e:-5,s:"1 × 10⁻⁵"}]);
+   let mm=R.m*C.m,ee=R.e+C.e;
+   if(mm>=10){mm/=10;ee++;}
+   const tau=mm*Math.pow(10,ee),ts=String(tau).replace(".",",");
+   return{prompt:`Circuit RC : R = ${R.s} Ω et C = ${C.s} F. La constante de temps τ = R·C = ? (en s)`,
+     type:"number",answer:tau,tol:0.01,
+     explain:`τ = R·C = ${R.s} × ${C.s} = <b>${ts} s</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const E=pick([5,10,12]),u=E*(1-Math.exp(-1));
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`Un condensateur se charge sous une tension E = ${E} V. À l'instant t = τ : u_C = E·(1 − e⁻¹) ≈ ? (en V)`,
+     type:"number",answer:u,tol:0.05,
+     explain:`À t = τ : u_C = E(1 − e⁻¹) = ${E} × 0,632 ≈ <b>${d2(u)} V</b> — le condensateur est chargé à ≈ 63 %.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="chargé à ≈ 95 % (1 − e⁻³)";
+   const ds=["chargé à 50 %","déchargé à 95 %"];
+   return qcm(`À t = 3τ, un condensateur en charge est…`,bonne,ds,
+     `u_C(t) = E(1 − e^(−t/τ)). À t = 3τ : 1 − e⁻³ = 1 − 0,05 ≈ 0,95 → ≈ 95 % chargé.<br>« 50 % » serait atteint à t ≈ 0,7τ, et « déchargé à 95 % » décrit la décharge, pas la charge.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale PC : Thermodynamique ---------- */
+const G_T_THERMO=[
+ {lvl:"facile",make(){
+   const bonne="> 0";
+   const ds=["< 0","= 0"];
+   return qcm(`Une évolution est spontanée si ΔS_univers est…`,bonne,ds,
+     `Deuxième principe de la thermodynamique : une évolution spontanée augmente l'entropie totale de l'univers, ΔS_univers = ΔS_système + ΔS_environs > 0 (= 0 : équilibre, < 0 : non spontanée).<br>→ <b>${bonne}</b>.`);
+ }},
+ {lvl:"moyen",make(){
+   let ds=pick([80,100,150]),de=pick([-40,-60,-80]);
+   if(ds+de<=0)ds+=20;
+   const ans=ds+de;
+   return{prompt:`À une réaction on mesure ΔS_système = ${ds} J/K et ΔS_environs = ${de} J/K. ΔS_univers = ΔS_système + ΔS_environs = ? (en J/K)`,
+     type:"number",answer:ans,
+     explain:`ΔS_univers = ΔS_système + ΔS_environs = ${ds} + (${de}) = <b>${ans} J/K</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const H=pick([3000,4500,6000]),T=pick([300,350]),v=H/T;
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`Réaction exothermique : ΔH = −${H} J, à T = ${T} K. L'entropie gagnée par l'entourage ΔS_env = −ΔH/T ≈ ? (en J/K)`,
+     type:"number",answer:v,tol:0.05,
+     explain:`ΔS_env = −ΔH/T = ${H}/${T} ≈ <b>${d2(v)} J/K</b>.`};
+ }}
+];
 /* ================= ALLEMAND A2 (contenu seul — branchement plus tard) =================
    Toutes les questions sont des QCM via qcm(prompt, bonne, distracteurs, explain) →
    {prompt, type:"choice", options, correct, explain} — options mélangées, correct = index
@@ -3273,6 +3430,12 @@ const SUBJECTS_PC={
  {id:"elec",name:"Électricité",sym:"P",gens:G_ELECTRICITE}
  ],
   terminale:[
+  {id:"t_ondes",name:"Ondes & optique",sym:"c = λf",gens:G_T_ONDES},
+  {id:"t_nucleaire",name:"Transformations nucléaires",sym:"N = N₀e^(−λt)",gens:G_T_NUCLEAIRE},
+  {id:"t_cinet",name:"Cinétique",sym:"v = Δc/Δt",gens:G_T_CINET},
+  {id:"t_energie",name:"Énergie (bilan)",sym:"ΔE",gens:G_T_ENERGIE},
+  {id:"t_rc",name:"Circuit RC",sym:"τ = RC",gens:G_T_RC},
+  {id:"t_thermo",name:"Thermodynamique",sym:"ΔS_univ",gens:G_T_THERMO}
   ]
 };
 /* ---------- REGISTRE DE (allemand A2) — branché via setMatiere/activeSubjects ---------- */
