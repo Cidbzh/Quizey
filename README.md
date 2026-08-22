@@ -14,8 +14,6 @@ Vos progrès, vos points faibles et vos records restent stockés sur votre machi
 
 **Entraînement libre** — en mathématiques et en physique-chimie, choisissez d'abord votre **année** (Seconde, Première ou Terminale), puis un thème et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), et progressez à votre rythme. Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
 
-**Sprint 60 s** — les questions s'enchaînent sans interruption, les séries de bonnes réponses s'accumulent et le record est mis à jour. (Maths et physique-chimie : les langues sont 100 % QCM et n'ont pas de sprint.)
-
 **À réviser** — Quizey met en œuvre la méthode d'apprentissage par **répétition espacée** : chaque question ratée est replanifiée selon un intervalle croissant, une bonne réponse la repousse progressivement (demain, puis 3 jours, 7 jours, 2 semaines) tandis qu'une erreur la ramène rapidement. Après cinq réponses correctes consécutives, une question est considérée comme **acquise** et retirée de la liste de révision. La carte d'accueil indique le nombre de révisions **échéues pour la journée**.
 
 Le bouton « Passer » n'est pas pénalisant : la question concernée est simplement remise en file d'attente.

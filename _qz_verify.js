@@ -68,7 +68,7 @@ function buildEnv(){
   const sandbox={
     document,localStorage,
     setTimeout:(fn,ms)=>0,clearTimeout:()=>{},
-    setInterval:()=>0,clearInterval:()=>{}, /* sessions : startFree/startSprint utilisent clearInterval */
+    setInterval:()=>0,clearInterval:()=>{}, /* stubs inoffensifs — l'app ne possède plus de timer (mode sprint retiré) */
     requestAnimationFrame:fn=>0,
     matchMedia:()=>({matches:false,media:""}),
     /* Détection d'interface (detectUI) : desktop par défaut ; les sections
@@ -418,7 +418,7 @@ console.log("\n[12] Bascule DE — les stats maths ET PC doivent rester intactes
   const api=vm.runInContext("({setMatiere,startFree,statsNow:()=>stats,choiceOk:()=>answerChoice(state.q.correct,null)})",ctx);
   api.setMatiere("de");
   ok("qz_subject persisté = de",lsData.get("qz_subject")==='"de"');
-  ok("#secSprint masqué dès la bascule (matière 100 % QCM)",env.byId.secSprint.hidden===true);
+  ok("le mode « Sprint » n'existe plus (plus de #secSprint dans le DOM)",!env.byId.secSprint);
   api.startFree();
   ok("la question DE est bien un QCM (type choice)",vm.runInContext("state.q.type",ctx)==="choice");
   api.choiceOk(); /* répond par le chemin moteur : l'option q.correct doit être acceptée */
@@ -478,24 +478,25 @@ console.log("\n[13] Basculeur 4 matières — câblage (4 boutons, <html> jamais
 }
 
 /* ========================================================= */
-console.log("\n[14] Sprint masqué en allemand — entrée invisible, visible en maths/PC");
+console.log("\n[14] Mode « Sprint » retiré — absent du DOM et du code");
 {
-  /* La mécanique moteur (startSprint/pickQ) reste telle quelle, seule l'ENTRÉE
-     #secSprint est cachée en allemand ET en anglais — c'est exactement ce
-     qu'asserte ici renderHome :
-     $("#secSprint").hidden = matiere==="de"||matiere==="en". */
+  /* 2026-08-22 (sur demande) : la fonctionnalité « Sprint 60 s » est retirée de
+     l'application (HTML, JS, tests, docs). Le DOM factice auto-crée tout #id
+     référencé : l'assertion porte donc sur env.byId — si le code de l'app
+     référençait encore #secSprint/#btnSprint, l'entrée apparaîtrait ici. */
   lsData.clear();
-  lsData.set("qz_subject","\"de\"");
   const env=buildEnv();
   const ctx=runApp(env);
-  const sprintEl=env.byId.secSprint; /* même objet que $("#secSprint") côté app */
-  ok("allemand : #secSprint masqué (prop hidden = true)",sprintEl&&sprintEl.hidden===true);
-  vm.runInContext("setMatiere('en')",ctx);
-  ok("anglais : #secSprint masqué (prop hidden = true)",sprintEl.hidden===true);
-  vm.runInContext("setMatiere('maths')",ctx);
-  ok("maths : #secSprint visible (prop hidden = false)",sprintEl.hidden===false);
-  vm.runInContext("setMatiere('pc')",ctx);
-  ok("PC : #secSprint visible (prop hidden = false)",sprintEl.hidden===false);
+  ok("plus de #secSprint dans le DOM (le code ne le référence plus)",!env.byId.secSprint);
+  ok("plus de #btnSprint dans le DOM",!env.byId.btnSprint);
+  ok("plus de #tTimer dans le DOM (le chrono n'existe plus)",!env.byId.tTimer);
+  ok("startSprint n'existe plus dans le code de l'app",vm.runInContext("typeof startSprint",ctx)==="undefined");
+  ok("endSprint n'existe plus dans le code de l'app",vm.runInContext("typeof endSprint",ctx)==="undefined");
+  ok("state.timer n'existe plus dans l'état de session",vm.runInContext("'timer' in state",ctx)===false);
+  for(const m of["de","en","maths","pc"]){
+    vm.runInContext("setMatiere('"+m+"')",ctx);
+    ok(m+" : aucune référence sprint créée par renderHome",!env.byId.secSprint&&!env.byId.btnSprint);
+  }
 }
 
 console.log("\n[15] Migration des clés cz_* → qz_* (héritage « CalculZéro »)");
@@ -842,7 +843,7 @@ console.log("\n[23] Bascule EN — stats intactes, qz_stats_en, libellés A2 / A
   api.setMatiere("en");
   ok("qz_subject persisté = en",lsData.get("qz_subject")==='"en"');
   ok("data-mat=\"en\" posé sur <html> (accent rouge)",doc.getAttribute("data-mat")==="en");
-  ok("#secSprint masqué dès la bascule (matière 100 % QCM)",env.byId.secSprint.hidden===true);
+  ok("le mode « Sprint » n'existe plus (plus de #secSprint dans le DOM)",!env.byId.secSprint);
   api.startFree();
   ok("la question EN est bien un QCM (type choice)",vm.runInContext("state.q.type",ctx)==="choice");
   api.choiceOk(); /* répond par le chemin moteur : l'option q.correct doit être acceptée */
@@ -882,7 +883,7 @@ console.log("\n[25] Courbe de niveau — xpCum / levelOf / lvlInfo");
 }
 
 /* ========================================================= */
-console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de / _en), 3 modes, palier → confetti");
+console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de / _en), 2 modes, palier → confetti");
 {
   const exp=(ctx)=>vm.runInContext("(PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10)+((state.streak+1)>=3?5:0)",ctx);
   /* --- MODE LIBRE (maths) : ok → +pts exact ; ko → inchangé ; « Passer » → inchangé --- */
@@ -900,15 +901,6 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     const b3=vm.runInContext("getXP()",ctx);
     vm.runInContext("passQ()",ctx);
     ok("libre : « Passer » → qz_xp inchangé (une passe ne compte jamais)",vm.runInContext("getXP()",ctx)===b3);
-  }
-  /* --- MODE SPRINT --- */
-  lsData.clear();
-  {
-    const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("startFree();state.mode='sprint'",ctx);
-    const b=vm.runInContext("getXP()",ctx),e=exp(ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx);
-    ok("sprint : bonne réponse → qz_xp +pts exact",vm.runInContext("getXP()",ctx)===b+e);
   }
   /* --- MODE RÉVISION --- */
   lsData.clear();
@@ -1068,11 +1060,14 @@ console.log("\n[27] Année — état, clés, indépendance maths/PC, THEME_BY_ID
     const hidden=()=>env.document.querySelector("#yearRow").hidden;
     ok("maths : #yearRow visible",hidden()===false);
     vm.runInContext("setAnnee('seconde')",ctx);
-    ok("maths/seconde : eyebrow « Seconde · maths »",env.document.querySelector("#heroEyebrow").textContent==="Seconde · maths");
+    ok("maths/seconde : pas de ligne « classe » (plus de #heroEyebrow) et phrase de base",
+       env.byId.heroEyebrow===undefined&&env.document.querySelector("#heroLede").innerHTML==="Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante.");
     vm.runInContext("setAnnee('terminale')",ctx);
-    ok("maths/terminale : eyebrow « Terminale · spécialité maths »",env.document.querySelector("#heroEyebrow").textContent==="Terminale · spécialité maths");
+    ok("maths/terminale : même phrase de base, quelle que soit l'année",
+       env.byId.heroEyebrow===undefined&&env.document.querySelector("#heroLede").innerHTML==="Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante.");
     vm.runInContext("setAnnee('premiere')",ctx);
-    ok("maths/premiere : eyebrow « Première · spécialité maths »",env.document.querySelector("#heroEyebrow").textContent==="Première · spécialité maths");
+    ok("maths/premiere : même phrase de base, quelle que soit l'année",
+       env.byId.heroEyebrow===undefined&&env.document.querySelector("#heroLede").innerHTML==="Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante.");
     vm.runInContext("setMatiere('pc')",ctx);
     ok("pc : #yearRow visible",hidden()===false);
     vm.runInContext("setMatiere('de')",ctx);
@@ -1083,29 +1078,31 @@ console.log("\n[27] Année — état, clés, indépendance maths/PC, THEME_BY_ID
 }
 
 /* ========================================================= */
-console.log("\n[28] Libellés — eyebrow/lede par matière × année, DE/EN sans « Première »");
+console.log("\n[28] Hero — pas de ligne classe/matière, phrase de base unique par matière");
 {
+  /* 2026-08-22 (sur demande) : la ligne d'indication classe/matière (eyebrow)
+     est retirée de toutes les matières, et la phrase de base est unique par
+     matière, IDENTIQUE quelle que soit l'année. MAT_DATA est donc plat
+     (plus de sous-objets par année). */
   lsData.clear();
   const env=buildEnv();const ctx=runApp(env);
   const cases=[
-    ["maths","seconde","Seconde · maths"],
-    ["maths","premiere","Première · spécialité maths"],
-    ["maths","terminale","Terminale · spécialité maths"],
-    ["pc","seconde","Seconde · physique-chimie"],
-    ["pc","premiere","Première · spécialité physique-chimie"],
-    ["pc","terminale","Terminale · spécialité physique-chimie"]
+    ["maths","Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."],
+    ["pc","Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."],
+    ["de","Pour réussir en allemand, il faut s'entourer de la langue : la régularité fera la différence."],
+    ["en","Pour réussir en anglais, il faut entendre la langue, la lire et la réutiliser régulièrement."]
   ];
-  for(const [m,y,e] of cases){
-    vm.runInContext("setMatiere('"+m+"');setAnnee('"+y+"')",ctx);
-    ok(m+" / "+y+" : « "+e+" »",
-       vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)===e);
+  for(const [m,phrase] of cases){
+    vm.runInContext("setMatiere('"+m+"')",ctx);
+    ok(m+" : pas de ligne classe/matière (le code ne référence plus #heroEyebrow)",env.byId.heroEyebrow===undefined);
+    ok(m+" : phrase de base « "+phrase+" »",env.document.querySelector("#heroLede").innerHTML===phrase);
   }
-  vm.runInContext("setMatiere('de')",ctx);
-  ok("DE : « allemand A2 » (sans « Première »)",
-     vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)==="allemand A2");
-  vm.runInContext("setMatiere('en')",ctx);
-  ok("EN : « anglais A2–B1 » (sans « Première »)",
-     vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)==="anglais A2–B1");
+  vm.runInContext("setMatiere('maths');setAnnee('seconde')",ctx);
+  ok("maths/seconde : la phrase ne change PAS avec l'année",
+     env.byId.heroEyebrow===undefined&&env.document.querySelector("#heroLede").innerHTML==="Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante.");
+  vm.runInContext("setMatiere('pc');setAnnee('terminale')",ctx);
+  ok("pc/terminale : la phrase ne change PAS avec l'année",
+     env.byId.heroEyebrow===undefined&&env.document.querySelector("#heroLede").innerHTML==="Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer.");
 }
 
 /* ========================================================= */
@@ -1151,16 +1148,16 @@ console.log("\n[29] Liste à réviser — doublons hérités déduplicés au cha
 }
 
 /* ========================================================= */
-console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barre (3 modes)");
+console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barre (2 modes)");
 {
   /* 2026-08-22 (sur demande) : « Afficher le niveau pendant les questions ».
      Le niveau de la MATIÈRE (le « Niveau N » de la carte du hero, déduit de
-     l'XP) est visible dans la barre de l'écran de question, dans les trois
-     modes, et suit les paliers franchis en cours de séance. (La DIFFICULTÉ de
+     l'XP) est visible dans la barre de l'écran de question, en libre comme en
+     révision, et suit les paliers franchis en cours de séance. (La DIFFICULTÉ de
      la question est déjà sur sa propre puce — « facile/moyen/difficile » ou
      « A2/A2+/B1 » — et reste inchangée.) */
   const chip=ctx=>vm.runInContext("document.querySelector('#chipNiv')?document.querySelector('#chipNiv').textContent:null",ctx);
-  /* --- Trois modes : la puce est présente et justes --- */
+  /* --- Deux modes : la puce est présente et juste --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
@@ -1170,8 +1167,6 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
     vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:0,due:0}]",ctx);
     vm.runInContext("startReview()",ctx);
     ok("révision : la barre affiche « Niv. 2 »",chip(ctx)==="Niv. 2");
-    vm.runInContext("startFree();state.mode='sprint';renderQ()",ctx);
-    ok("sprint : la barre affiche « Niv. 2 » (la difficulté y reste « sprint 60 s »)",chip(ctx)==="Niv. 2");
   }
   /* --- PALIER franchi en cours de séance : la puce suit l'XP gagnée --- */
   lsData.clear();

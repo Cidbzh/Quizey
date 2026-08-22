@@ -215,18 +215,13 @@ body{
   border-radius:999px;padding:4px 10px;white-space:nowrap;
 }
 .chip b{color:var(--ink);font-weight:600}
-.eyebrow{
-  margin:36px 0 0;font:600 12px var(--f-body);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--accent);
-}
-.eyebrow::before{
-  content:"";display:inline-block;width:20px;height:2px;border-radius:2px;
-  background:var(--pen);opacity:.6;margin-right:10px;vertical-align:3px;
-}
 /* Titre + slogan : deux registres — le titre domine, le slogan est sa
-   sous-ligne en italique (le « · » n'a plus lieu d'être : l'espace fait le travail) */
+   sous-ligne en italique (le « · » n'a plus lieu d'être : l'espace fait le travail).
+   Pas de ligne d'indication classe/matière au-dessus (retirée 2026-08-22) :
+   le hero commence directement par « Quizey » — la marge haute (36 px) qui
+   faisait l'ancienne .eyebrow revient ici. */
 h1{
-  margin:10px 0 2px;font:700 clamp(42px,6.5vw,60px)/1.05 var(--f-display);
+  margin:36px 0 2px;font:700 clamp(42px,6.5vw,60px)/1.05 var(--f-display);
   letter-spacing:-.01em;
 }
 h1 em{font-style:italic;color:var(--accent)}
@@ -282,7 +277,6 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
   padding:24px;margin-bottom:16px;
 }
 .panel.lead{padding:28px}
-.panel.second{padding:20px}
 .panel h2{margin:0 0 16px;font:600 20px var(--f-display)}
 /* Trait de stylo du prof sous le titre de section */
 .panel h2::after{
@@ -396,14 +390,14 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    l'identique des cellules « ≈ N min » et « chapitres » (unifié 2026-08-22
    sur demande — plus de compteur en gras 30 px). */
 .revnum{font:500 14px/1.3 var(--f-body);color:var(--muted);white-space:nowrap;flex:none}
-/* Bouton = .btn .btn-primary STANDARD, comme « Commencer l'entraînement » et
-   « Lancer le sprint » (pas de surcharge de taille pour ce bloc). */
+/* Bouton = .btn .btn-primary STANDARD, comme « Commencer l'entraînement »
+   (pas de surcharge de taille pour ce bloc). */
 /* ---------- « cahier avec marge » : accueil en 2 colonnes (spec §3.2) ---------- */
 /* La rangée du hero traverse les DEUX colonnes : le bloc texte (titre +
    slogan + description) est en tête, et la carte « À réviser » passe SOUS
    le texte, sur sa propre ligne, avec la MÊME LARGEUR que la colonne
    principale : ses DEUX bords sont calés sur les blocs en dessous (stats /
-   entraînement / sprint) — ne les dépasse jamais. Largeur = 100% de la
+   entraînement) — ne les dépasse jamais. Largeur = 100% de la
    rangée moins 336px (320 marge + 16 gap), le même décalage que les
    sélecteurs de la topbar. Écart description↔carte = 24 px : le rythme
    standard entre blocs (16 px) « légèrement augmenté » — demande 2026-08-21. */
@@ -502,7 +496,7 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    discret, 2026-08-22) — REMONTÉ au niveau de la carte « Niveau » (2026-08-22,
    voir la règle .margewrap ci-dessus). La carte Niveau et « À réviser »
    (#revSlot) sont dans la rangée du hero ; « Par thème » (#bySubSlot) reste
-   en colonne principale sous le sprint. */
+   en colonne principale sous l'entraînement. */
 @media (max-width:1024px){
   #home{display:block}
   /* Plus de colonne principale à ne pas dépasser (blocs empilés pleine
@@ -578,7 +572,6 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .result{text-align:center;padding:10px 6px}
 .result .big{font:700 56px/1 var(--f-display);color:var(--accent);letter-spacing:-.02em}
 .result h3{margin:10px 0 4px;font:600 20px var(--f-display)}
-.result .rec{display:inline-block;margin:12px 0;padding:7px 14px;border-radius:999px;background:var(--good-soft);color:var(--good);font:600 14px var(--f-body);animation:pop .4s ease .5s backwards}
 .shake{animation:shake .3s ease}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 /* ===== Révélation d'arrivée — cascade douce de haut en bas, d'une traite =====
@@ -595,10 +588,6 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
 /* Transition douce entre l'accueil et l'écran d'exercice */
 #home.screen-in,#play.screen-in{animation:screenIn .4s var(--ease) both}
 @keyframes screenIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-/* Chrono sprint : alerte quand il reste moins de 10 s */
-.chip.urgent{background:var(--bad-soft);color:var(--bad);animation:urgPulse 1.1s ease-in-out infinite}
-.chip.urgent b{color:var(--bad)}
-@keyframes urgPulse{50%{opacity:.55}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -616,13 +605,13 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
   }
   /* Le logo (SVG) : ses couleurs sont des strokes, pas du color/background. */
   html.theming .brandmark *{transition:stroke .45s var(--ease)}
-  /* Les éléments dont la COULEUR (pas le fond) lit var(--accent) : eyebrow,
+  /* Les éléments dont la COULEUR (pas le fond) lit var(--accent) :
      mot en italique du titre, noms de chapitre — ajoutés pour la bascule
      de matière (violet PC) et les changements de thème. */
-  html.theming :is(.eyebrow,h1 em,.slogan .sai,.subcard .nm,.substatrow b,.weaknm){transition:color .45s var(--ease)}
+  html.theming :is(h1 em,.slogan .sai,.subcard .nm,.substatrow b,.weaknm){transition:color .45s var(--ease)}
   html.theming .slogan .sai .pen path{transition:stroke .45s var(--ease)}
 }
-/* Confettis : pluie de papier colorée (révision finie / record sprint).
+/* Confettis : pluie de papier colorée (révision finie / palier de niveau).
    Chaque pièce porte --drift (écart horizontal) et --rot (rotation totale). */
 .confetti-host{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 .confetti-host i{position:absolute;top:-24px;border-radius:2px;will-change:transform,opacity}
@@ -692,11 +681,10 @@ html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
 html[data-ui="m"] .margewrap{position:static;display:grid;grid-template-columns:1fr;gap:16px;align-items:start;margin-top:0}
 /* Hero un peu plus resserré pour une main de poche. */
-html[data-ui="m"] .eyebrow{margin-top:24px}
-html[data-ui="m"] h1{font-size:clamp(34px,9vw,44px)}
+html[data-ui="m"] h1{font-size:clamp(34px,9vw,44px);margin-top:24px}
 html[data-ui="m"] .slogan{font-size:clamp(18px,4.6vw,21px)}
 html[data-ui="m"] .lede{font-size:16px}
-/* Stats en grille 2×3 (6 stats) plutôt qu'en auto-fit. */
+/* Stats en grille 2×3 (5 stats) plutôt qu'en auto-fit. */
 html[data-ui="m"] .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 /* Tuiles de thèmes : 2 colonnes larges, plus hautes à toucher. */
 html[data-ui="m"] .subgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -736,8 +724,8 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
       <div class="seg" role="group" aria-label="Matière">
         <button type="button" class="seg-btn on" data-mat="maths">Maths</button>
         <button type="button" class="seg-btn" data-mat="pc">Physique-Chimie</button>
-        <button type="button" class="seg-btn" data-mat="de">Allemand</button>
         <button type="button" class="seg-btn" data-mat="en">Anglais</button>
+        <button type="button" class="seg-btn" data-mat="de">Allemand</button>
       </div>
       <span class="divider" aria-hidden="true"></span>
       <div class="theme-seg" role="group" aria-label="Thème">
@@ -754,7 +742,6 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
         <span class="chip">score <b id="tScore">0</b></span>
         <span class="chip">série <b id="tStreak">0</b></span>
         <span class="chip" id="tPassChip" hidden>↷ <b id="tPass">0</b> passées</span>
-        <span class="chip" id="tTimerChip" hidden>⏱ <b id="tTimer">60</b> s</span>
       </div>
     </div>
   </div>
@@ -774,7 +761,6 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
   <section id="home">
     <div class="hero">
     <div class="herotxt">
-    <p class="eyebrow" data-rv style="--d:.24s" id="heroEyebrow">Première · spécialité maths</p>
     <h1>
       <span class="wr"><span style="--d:.34s">Quizey</span></span>
     </h1>
@@ -819,15 +805,6 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
         <button class="btn btn-primary" id="btnFree">Commencer l'entraînement</button>
       </div>
       <p class="note">Astuce : <b>Passer</b> (ou la touche Échap) met la question de côté — elle revient juste après la question suivante. Si tu la passes 2 fois, on t'aide avec la méthode.</p>
-    </section>
-
-    <section id="secSprint" class="panel second" aria-labelledby="hSprint" data-rv style="--d:1.12s">
-      <h2 id="hSprint">Sprint 60 s</h2>
-      <p class="muted" style="margin:0 0 14px">Tous les thèmes mélangés, réponses rapides, sans temps mort. Le chrono ne s'arrête pas entre deux questions.</p>
-      <div class="row space-between wrap-row">
-        <button class="btn btn-primary" id="btnSprint">Lancer le sprint</button>
-        <span class="chip" id="bestSprint">Record : —</span>
-      </div>
     </section>
 
     <div id="bySubSlot"></div>
@@ -3991,7 +3968,7 @@ const store={
 ["theme","subject","stats","stats_pc","stats_de","stats_en"].forEach(k=>{try{const old=localStorage.getItem("cz_"+k);if(old!==null&&localStorage.getItem("qz_"+k)===null)localStorage.setItem("qz_"+k,old);}catch(e){}});
 /* ---- Matière : "maths" (défaut), "pc" ou "de" — persistée sous qz_subject ---- */
 const SUBJECT_KEY="qz_subject";
-const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",subject:"mix",q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,timer:null,timeLeft:60,answered:false,skipQueue:[],skips:0,qT0:0,annee:null};
+const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",subject:"mix",q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,answered:false,skipQueue:[],skips:0,qT0:0,annee:null};
 /* Niveau : défaut "auto" (2026-08-22, sur demande) — l'app adapte la difficulté
    à la performance du thème (autoLevel) ; session uniquement, jamais persisté. */
 /* ---- Stats : quatre emplacements (qz_stats maths / qz_stats_pc / qz_stats_de / qz_stats_en), même forme,
@@ -4132,31 +4109,28 @@ function setMatiere(m){
 /* ---------- Accueil ---------- */
 /* Textes héro par matière : des DONNÉES lues par renderHome —
    aucune duplication de HTML (marque et titre restés invariables). */
+/* Hero : UNE phrase « conseil pour réussir » par matière, IDENTIQUE quelle
+   que soit l'année (2026-08-22, sur demande — les phrases par année et la
+   ligne d'indication classe/matière sont retirées, la phrase de base Première
+   reste pour maths/PC). Le contenu de l'année est toujours visible dans le
+   sélecteur d'année et les thèmes proposés. */
 const MAT_DATA={
  maths:{
    noteTop:"e<sup>iπ</sup> + 1 = 0",
-   seconde:{eyebrow:"Seconde · maths",
-     lede:"Deux minutes de calculs ciblés — nombres, équations, 2e degré, fonctions, vecteurs, statistiques — pour garder le réflexe du bac."},
-   premiere:{eyebrow:"Première · spécialité maths",
-     lede:"Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."},
-   terminale:{eyebrow:"Terminale · spécialité maths",
-     lede:"Deux minutes de calculs ciblés — exponentielle, logarithme, suites, probas conditionnelles, intégrales, complexes — pour garder le réflexe du bac."}
+   lede:"Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."
  },
  pc:{
    noteTop:"F = m·a — 2ᵉ loi de Newton",
-   seconde:{eyebrow:"Seconde · physique-chimie",
-     lede:"Deux minutes de physique-chimie — moles, dilution, énergie, forces, signaux, électricité — pour garder le bon réflexe."},
-   premiere:{eyebrow:"Première · spécialité physique-chimie",
-     lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."},
-   terminale:{eyebrow:"Terminale · spécialité physique-chimie",
-     lede:"Deux minutes de physique-chimie — ondes, nucléaire, cinétique, énergie, circuit RC, thermodynamique — pour garder le bon réflexe."}
+   lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."
  },
- de:{eyebrow:"allemand A2",
+ de:{
    lede:"Pour réussir en allemand, il faut s'entourer de la langue : la régularité fera la différence.",
-   noteTop:"der · die · das — trois articles, pas un de plus"},
- en:{eyebrow:"anglais A2–B1",
+   noteTop:"der · die · das — trois articles, pas un de plus"
+ },
+ en:{
    lede:"Pour réussir en anglais, il faut entendre la langue, la lire et la réutiliser régulièrement.",
-   noteTop:"a · an · the — trois articles, pas un de plus"}
+   noteTop:"a · an · the — trois articles, pas un de plus"
+ }
 };
 /* Niveaux des langues (allemand/anglais) : libellés CECRL — A2 / A2+ / B1.
    Les CLÉS internes restent facile/moyen/difficile (PTS_LVL, autoLevel, history,
@@ -4193,9 +4167,7 @@ function renderHome(){
   clearTimeout(rearmBoot._t);
   document.documentElement.classList.remove("boot");
   const M=MAT_DATA[state.matiere];
-  const H=(state.annee&&M[state.annee])?M[state.annee]:M; /* DE/EN : M direct ; maths/PC : l'année */
-  $("#heroEyebrow").textContent=H.eyebrow;
-  $("#heroLede").innerHTML=H.lede;
+  $("#heroLede").innerHTML=M.lede;   /* phrase de base, identique quelle que soit l'année */
   $("#noteTop").innerHTML=M.noteTop;
   /* Sélecteur d'année : visible seulement si la matière a une année ET que
      ses 3 registres sont livrés (yearReady) — DE/EN : jamais. */
@@ -4204,19 +4176,13 @@ function renderHome(){
   renderLvlCard();
   document.querySelectorAll(".seg-btn[data-mat]").forEach(x=>x.classList.toggle("on",x.dataset.mat===state.matiere));
   paintLvlButtons(); /* libellés des niveaux : A2/A2+/B1 en langues, Facile/Moyen/Difficile en maths/PC */
-  $("#bestSprint").textContent="Record : "+(stats.bestSprint>0?stats.bestSprint+" pts":"—");
-  /* Sprint : entrée masquée en allemand et en anglais (matières 100 % QCM) —
-     la mécanique moteur (startSprint/pickQ) reste telle quelle, seule l'entrée
-     est cachée. */
-  $("#secSprint").hidden=state.matiere==="de"||state.matiere==="en";
   const acc=stats.ans?Math.round(100*stats.good/stats.ans):0;
   $("#statGrid").innerHTML=
     `<div class="stat"><div class="v">${stats.ans}</div><div class="k">questions répondues</div></div>`+
     `<div class="stat"><div class="v">${stats.good}</div><div class="k">réponses correctes</div></div>`+
     `<div class="stat"><div class="v">${acc}%</div><div class="k">précision globale</div></div>`+
     `<div class="stat"><div class="v">${stats.bestStreak}</div><div class="k">meilleure série</div></div>`+
-    `<div class="stat"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`+
-    `<div class="stat"><div class="v">${stats.bestSprint>0?stats.bestSprint:"—"}</div><div class="k">record sprint</div></div>`;
+    `<div class="stat"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`;
   const grid=$("#subGrid");
   grid.innerHTML=activeSubjects().map((s,i)=>{
     const st=stats.bySub[s.id]||{ans:0,good:0};
@@ -4283,7 +4249,7 @@ function renderHome(){
     if(br)br.addEventListener("click",startReview);
   }
   /* « Par thème » : tableau des résultats par thème, en colonne principale
-     sous le sprint, juste au-dessus des points faibles. Slot simple <div> :
+     sous l'entraînement, en bas de colonne. Slot simple <div> :
      vide = 0 hauteur, pas de vide parasite tant qu'aucune question n'a été
      répondue. */
   const bySlot=$("#bySubSlot");
@@ -4361,9 +4327,7 @@ function showPlay(on){
   t.classList.remove("screen-in");void t.offsetWidth;t.classList.add("screen-in");
 }
 function goHome(){
-  clearInterval(state.timer);
   state.mode=null;
-  $("#tTimerChip").hidden=true;$("#tTimerChip").classList.remove("urgent");
   showPlay(false);
   renderHome();
 }
@@ -4403,8 +4367,7 @@ function pickQ(){
   }
   if(!gens.length)gens=sub.gens;
   let g=pick(gens);let q=g.make();
-  if(state.mode==="sprint"){let i=0;while(q.type==="choice"&&i++<100){g=pick(gens);q=g.make();}}
-  return{q,sub,lvl:g.lvl};   /* vrai niveau de la QUESTION (g.lvl) — en sprint les niveaux sont mélangés */
+  return{q,sub,lvl:g.lvl};   /* vrai niveau de la QUESTION (g.lvl) */
 }
 function renderQ(){
   state.answered=false;
@@ -4418,13 +4381,13 @@ function renderQ(){
   state.q=r.q;state.sub=r.sub;state.curLvl=r.lvl||state.level;
   const q=state.q;
   $("#chipSub").textContent=r.sub.name;
-  $("#chipLvl").textContent=state.mode==="sprint"?"sprint 60 s":lvlLabel(state.curLvl||state.level);
-  paintChipNiv();   /* le niveau de la matière, dans les trois modes */
+  $("#chipLvl").textContent=lvlLabel(state.curLvl||state.level);
+  paintChipNiv();   /* le niveau de la matière, en libre comme en révision */
   /* 2026-08-22 : en révision, le compteur = questions ÉCHUES (reviewDue()) —
      c'est tout ce que la session sert (pickQ prend reviewDue()[0]). L'ancienne
      valeur (stats.review.length, max 50) affichait aussi les replanifiées. */
   $("#qCount").textContent=state.mode==="review"?reviewDue().length+" restant(s)":"question "+(state.n+1);
-  const eyebrow=state.mode==="sprint"?"Sprint 60 s — sans temps mort":state.mode==="review"?"Révision — tes questions à reprendre":r.sub.name+" · niveau "+lvlLabel(state.curLvl||state.level)+(state.level==="auto"?" (auto)":"");
+  const eyebrow=state.mode==="review"?"Révision — tes questions à reprendre":r.sub.name+" · niveau "+lvlLabel(state.curLvl||state.level)+(state.level==="auto"?" (auto)":"");
   /* Visuel de question : image NEUTRE (courbe/axes sans nombres, pas de
      tangente, pas de racines) — elle aide à visualiser sans donner la réponse.
      Certaines questions n'en ont pas (var, QCM colinéarité…) : c'est voulu. */
@@ -4533,8 +4496,7 @@ function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+p
 function paintChipNiv(){const el=$("#chipNiv");if(el)el.textContent="Niv. "+lvlInfo(getXP()).n;}
 /* Points par bonne réponse selon la DIFFICULTÉ de la question : facile 5 ·
    moyen 10 · difficile 15. On lit le niveau de la QUESTION (state.curLvl), pas
-   le réglage global — en sprint les niveaux sont mélangés. + bonus de série de
-   5 dès la 3ᵉ bonne d'affilée (inchangé). */
+   le réglage global. + bonus de série de 5 dès la 3ᵉ bonne d'affilée. */
 const PTS_LVL={facile:5,moyen:10,difficile:15};
 function afterAnswer(ok,q,extra){
   let pts=0;
@@ -4564,8 +4526,7 @@ function afterAnswer(ok,q,extra){
   $("#fb").innerHTML=`<p class="fb ${ok?"ok":"ko"}">${ok?"✓ Bien joué, +"+pts+" pts !":"✗ Raté. "+extra}</p>`+
     `<div class="explain ${ok?"good":"bad"}"><h4>Méthode</h4>${vizAns(q)}${q.explain}</div>`;
   hidePass();
-  if(state.mode==="free"||state.mode==="review")offerNext();
-  else if(state.mode==="sprint")setTimeout(()=>{if(state.mode==="sprint"&&state.timeLeft>0)renderQ();},ok?1100:1700);
+  offerNext();
 }
 
 /* ---------- Passer une question ---------- */
@@ -4591,11 +4552,11 @@ function countSkip(){
 function passQ(){
   if(state.answered)return;
   if(state.mode==="review"){reviewSkip();return;}
-  if(state.mode!=="free"&&state.mode!=="sprint")return;
+  if(state.mode!=="free")return;
   countSkip();
   if(state.q._passed||state.skipQueue.length>=5){revealAfterSkip();return;}
   const skipped={q:state.q,sub:state.sub};
-  if(state.mode==="free"||state.timeLeft>0)renderQ();
+  renderQ();
   state.skipQueue.push(skipped);
 }
 function revealAfterSkip(){
@@ -4604,8 +4565,7 @@ function revealAfterSkip(){
   $("#fb").innerHTML=`<p class="fb" style="color:var(--muted)">Pas de souci, on t'aide — voici la méthode pour cette question :</p>`+
     `<div class="explain"><h4>Méthode</h4>${vizAns(q)}${q.explain}</div>`;
   hidePass();
-  if(state.mode==="free")offerNext();
-  else if(state.mode==="sprint")setTimeout(()=>{if(state.mode==="sprint"&&state.timeLeft>0)renderQ();},3000);
+  offerNext();
 }
 /* Révision : « Passer » = on t'aide (méthode) + la question reste dans la liste (file en fin). */
 function reviewSkip(){
@@ -4620,76 +4580,24 @@ function reviewSkip(){
 
 /* ---------- Sessions ---------- */
 function startFree(){
-  clearInterval(state.timer);
   state.mode="free";state.score=0;state.streak=0;state.maxStreak=0;
   state.good=0;state.bad=0;state.n=0;state.skipQueue=[];state.skips=0;
-  $("#tTimerChip").hidden=true;$("#tTimerChip").classList.remove("urgent");$("#tPassChip").hidden=false;$("#tPass").textContent="0";
+  $("#tPassChip").hidden=false;$("#tPass").textContent="0";
   showPlay(true);
   $("#tScore").textContent="0";$("#tStreak").textContent="0";
   renderQ();
-}
-function startSprint(){
-  clearInterval(state.timer);
-  state.mode="sprint";state.score=0;state.streak=0;state.maxStreak=0;
-  state.good=0;state.bad=0;state.n=0;state.timeLeft=60;state.skipQueue=[];state.skips=0;
-  $("#tTimerChip").hidden=false;$("#tTimerChip").classList.remove("urgent");
-  $("#tPassChip").hidden=false;$("#tTimer").textContent="60";$("#tPass").textContent="0";
-  $("#tScore").textContent="0";$("#tStreak").textContent="0";
-  showPlay(true);
-  renderQ();
-  state.timer=setInterval(()=>{
-    if(state.mode!=="sprint"){clearInterval(state.timer);return;}
-    state.timeLeft=Math.max(0,state.timeLeft-0.1);
-    $("#tTimer").textContent=Math.ceil(state.timeLeft);
-    $("#tTimerChip").classList.toggle("urgent",state.timeLeft<=10&&state.timeLeft>0);
-    if(state.timeLeft<=0)endSprint();
-  },100);
 }
 function startReview(){
-  clearInterval(state.timer);
   state.mode="review";state.score=0;state.streak=0;state.maxStreak=0;
   state.good=0;state.bad=0;state.n=0;state.curLvl=null;state.skipQueue=[];state.skips=0;
-  $("#tTimerChip").hidden=true;$("#tTimerChip").classList.remove("urgent");$("#tPassChip").hidden=false;$("#tPass").textContent="0";
+  $("#tPassChip").hidden=false;$("#tPass").textContent="0";
   $("#tScore").textContent="0";$("#tStreak").textContent="0";
   showPlay(true);
   renderQ();
 }
-function countUp(el,to,ms){
-  if(typeof requestAnimationFrame!=="function"||(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){el.textContent=to;return;}
-  const t0=performance.now();
-  requestAnimationFrame(function step(t){
-    const k=Math.min(1,(t-t0)/ms);
-    el.textContent=Math.round(to*(1-Math.pow(1-k,3)));
-    if(k<1)requestAnimationFrame(step);
-  });
-}
-function endSprint(){
-  clearInterval(state.timer);
-  state.mode="done";
-  const acc=state.n?Math.round(100*state.good/state.n):0;
-  let rec=false;
-  if(state.score>stats.bestSprint){stats.bestSprint=state.score;rec=true;save();}
-  $("#tTimerChip").hidden=true;$("#tTimerChip").classList.remove("urgent");
-  qbox.innerHTML=`<div class="qcard result">
-    <p class="qeyebrow">Sprint terminé</p>
-    <div class="big" id="bigScore">0</div>
-    <h3>points</h3>
-    <p class="muted">${state.good} / ${state.n||0} bonnes réponses · ${acc}% de précision · meilleure série ${state.maxStreak}${state.skips?` · ${state.skips} passées`:""}</p>
-    ${rec?'<span class="rec">🏆 Nouveau record !</span>':""}
-    <div class="nextrow" style="justify-content:center;margin-top:22px;gap:10px">
-      <button type="button" class="btn btn-primary" id="again">Rejouer</button>
-      <button type="button" class="btn btn-ghost" id="home2">Accueil</button>
-    </div></div>`;
-  countUp($("#bigScore"),state.score,750);
-  if(rec)confetti();
-  $("#again").addEventListener("click",startSprint);
-  $("#home2").addEventListener("click",goHome);
-}
 function endReview(){
-  clearInterval(state.timer);
   state.mode="done";
   const acc=state.n?Math.round(100*state.good/state.n):0;
-  $("#tTimerChip").hidden=true;$("#tTimerChip").classList.remove("urgent");
   qbox.innerHTML=`<div class="qcard result">
     <p class="qeyebrow">Révision terminée</p>
     <div class="big" style="font-size:64px">🎯</div>
@@ -4764,12 +4672,11 @@ document.querySelectorAll(".seg-btn[data-year]").forEach(b=>b.addEventListener("
    d'événement (bulles de clic). */
 document.querySelectorAll(".seg-btn[data-mat]").forEach(b=>b.addEventListener("click",()=>setMatiere(b.dataset.mat)));
 $("#btnFree").addEventListener("click",startFree);
-$("#btnSprint").addEventListener("click",startSprint);
 $("#btnBack").addEventListener("click",goHome);
 window.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
   if(playEl.hidden||state.answered)return;
-  if(state.mode!=="free"&&state.mode!=="sprint"&&state.mode!=="review")return;
+  if(state.mode!=="free"&&state.mode!=="review")return;
   e.preventDefault();passQ();
 });
 /* ---------- Thème : Auto / Clair / Sombre ----------
