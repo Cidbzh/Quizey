@@ -430,7 +430,11 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 #revSlot{min-width:0;width:calc(100% - 336px)}
 #revSlot:empty{display:none}
 .hero .revcta{display:flex;align-items:center;flex-wrap:nowrap;gap:8px 10px;padding:17px 22px;margin-bottom:0;justify-content:space-between}
-.hero .revcta h2{margin:0;font-size:22px;flex:none}
+/* 2026-08-22 (sur demande) : titre aligné sur les titres de panneaux
+   (`.panel h2`, « Entraînement libre ») — même taille 20 px / même design ;
+   margin:0 conservé car la carte est en ligne (flex), le 16 px de .panel h2
+   n'y a pas de sens. */
+.hero .revcta h2{margin:0;font-size:20px;flex:none}
 /* Cellules « plume » (2026-08-22) + contenu AGRANDI (demande 2026-08-21) :
    le bloc ne change PAS de dimensions — la taille gagnée (titre, compteur,
    chip, chapitres, bouton) est compensée par le gap et le padding vertical
@@ -3322,6 +3326,16 @@ const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUB
    à la performance du thème (autoLevel) ; session uniquement, jamais persisté. */
 /* ---- Stats : quatre emplacements (qz_stats maths / qz_stats_pc / qz_stats_de / qz_stats_en), même forme,
        Migration v2 commune + migration de nom cz_* → qz_* ci-dessus — les anciens utilisateurs ne perdent rien ---- */
+/* Clé de dédup de la liste à réviser — définie AVANT loadStats, dont la migration
+   de dédoublonnage ci-dessous a besoin (un const n'existe qu'après sa déclaration).
+   Les QCM sont mélangés à CHAQUE tirage : comparer le JSON complet ferait de la
+   même question pédagogique plusieurs entrées — et une bonne réponse ne la
+   retirerait presque jamais (l'ordre des options a changé depuis l'ajout). Donc,
+   pour les QCM, on compare le CONTENU : prompt + options TRIÉES + texte de la
+   bonne réponse (jamais l'ordre ni l'index). Autres types : le JSON complet
+   suffit (les nombres définissent la question). — 2026-08-22, évaluation
+   qualitative ; remontée ici le même jour (migration des doublons hérités). */
+const qKey=q=>(q&&q.type==="choice"&&q.options)?JSON.stringify({t:q.type,p:q.prompt,o:q.options.slice().sort(),c:q.options[q.correct]}):JSON.stringify(q);
 function loadStats(key){
   const st=store.get(key,{ans:0,good:0,bestStreak:0,bestSprint:0,bySub:{}});
   if(st.bySub===undefined)st.bySub={};           /* id -> {ans,good} — créé à la volée par subStat, mais indispensable au rendu */
@@ -3339,6 +3353,17 @@ function loadStats(key){
      cassait « S'entraîner » (point faible inexistant). Purgées au chargement — idempotent.
      bySub/streakBySub orphelins : inoffensifs (jamais rendus), conservés. */
   st.review=st.review.filter(it=>THEME_BY_ID[it.s]);
+  /* Doublons hérités (2026-08-22, bug signalé) : AVANT la clé qKey stable, la même
+     question pouvait entrer la liste PLUSIEURS FOIS (les options des QCM sont
+     mélangées à chaque tirage). En révision, une bonne réponse ne faisait
+     progresser qu'UNE entrée → la question revenait « plusieurs fois d'affilée ».
+     On dédup au chargement, en gardant l'entrée la plus avancée (reps max =
+     progression espacée préservée). Idempotent. */
+  {
+    const keep={};
+    for(const it of st.review){const k=qKey(it.q);if(!keep[k]||it.reps>keep[k].reps)keep[k]=it;}
+    st.review=Object.values(keep);
+  }
   st.history=st.history.filter(it=>THEME_BY_ID[it.s]);
   return st;
 }
@@ -3349,14 +3374,6 @@ const homeEl=$("#home"),playEl=$("#play"),qbox=$("#qbox");
 const save=()=>store.set(activeStatsKey(),stats);
 const subStat=id=>stats.bySub[id]||(stats.bySub[id]={ans:0,good:0});
 /* ---- v2 : historique glissant + liste de révision ---- */
-/* Clé de dédup de la liste à réviser. Les QCM sont mélangés à CHAQUE tirage :
-   comparer le JSON complet ferait de la même question pédagogique plusieurs
-   entrées — et une bonne réponse ne la retirerait presque jamais (l'ordre des
-   options a changé depuis l'ajout). Donc, pour les QCM, on compare le CONTENU :
-   prompt + options TRIÉES + texte de la bonne réponse (jamais l'ordre ni
-   l'index). Autres types : le JSON complet suffit (les nombres définissent la
-   question). — 2026-08-22, évaluation qualitative. */
-const qKey=q=>(q&&q.type==="choice"&&q.options)?JSON.stringify({t:q.type,p:q.prompt,o:q.options.slice().sort(),c:q.options[q.correct]}):JSON.stringify(q);
 function pushHistory(s,l,o){stats.history.push({s,l,o});if(stats.history.length>100)stats.history=stats.history.slice(-100);}
 /* Répétition espacée : échéance « due » (timestamp ms) qui s'éloigne à chaque
    réussite d'affilée, revient à une courte échéance en cas d'erreur.

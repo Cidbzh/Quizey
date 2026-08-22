@@ -1085,6 +1085,48 @@ console.log("\n[28] Libellés — eyebrow/lede par matière × année, DE/EN san
      vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)==="anglais A2–B1");
 }
 
+/* ========================================================= */
+console.log("\n[29] Liste à réviser — doublons hérités déduplicés au chargement");
+{
+  /* 2026-08-22 (bug signalé par Cid) : AVANT la clé qKey stable (test [21]), la même
+     question pouvait entrer la liste PLUSIEURS FOIS (les options des QCM sont mélangées
+     à chaque tirage). Ces doublons vivent dans le localStorage des utilisateurs
+     existants : en révision, une bonne réponse ne faisait progresser qu'UNE entrée →
+     la question revenait « plusieurs fois d'affilée ». loadStats doit donc déduper,
+     en gardant l'entrée la plus avancée (reps max = progression espacée préservée). */
+  lsData.clear();
+  {
+    const dup={prompt:"2+2 ?",type:"choice",options:["3","5","4"],correct:2,explain:"compter"};
+    const dup2={prompt:"2+2 ?",type:"choice",options:["4","3","5"],correct:0,explain:"compter"}; /* même question, autre ordre — forme des doublons hérités */
+    lsData.set("qz_stats",JSON.stringify({ans:10,good:5,history:[],review:[
+      {s:"deriv",l:"moyen",q:dup,reps:0,due:0},
+      {s:"deriv",l:"moyen",q:dup2,reps:2,due:0}
+    ]}));
+    const env=buildEnv();const ctx=runApp(env);
+    const R=vm.runInContext("stats.review",ctx);
+    ok("2 doublons hérités → UNE seule entrée après chargement",R.length===1);
+    ok("l'entrée conservée = la plus avancée (reps=2, progression espacée intacte)",R[0].reps===2);
+    ok("le contenu pédagogique est intact (retrouvable via qKey)",
+       vm.runInContext("qKey(stats.review[0].q)",ctx)===vm.runInContext("qKey("+JSON.stringify(dup)+")",ctx));
+  }
+  /* Reproduction du SYMPTÔME d'origine, bout-en-bout : liste doublée → révision →
+     bonne réponse → la question ne doit PAS ressurgir dans la séance. */
+  lsData.clear();
+  {
+    const dup={prompt:"3×4 ?",type:"choice",options:["7","12","9"],correct:1,explain:"tables"};
+    const dup2={prompt:"3×4 ?",type:"choice",options:["12","9","7"],correct:0,explain:"tables"};
+    lsData.set("qz_stats",JSON.stringify({ans:10,good:5,history:[],review:[
+      {s:"deriv",l:"moyen",q:dup,reps:0,due:0},
+      {s:"deriv",l:"moyen",q:dup2,reps:1,due:0}
+    ]}));
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("startReview()",ctx);
+    vm.runInContext("afterAnswer(true,state.q,state.curLvl)",ctx);
+    ok("bonne réponse → l'item est avancé : plus aucune question écheue dans la séance",
+       vm.runInContext("reviewDueCount()",ctx)===0);
+  }
+}
+
 console.log("=====================================");
 console.log(fail===0?("TOUS LES TESTS PASSENT ✔  ("+pass+")"):(fail+" ÉCHEC(S) — "+pass+" OK"));
 process.exit(fail===0?0:1);
