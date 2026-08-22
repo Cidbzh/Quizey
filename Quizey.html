@@ -1549,6 +1549,180 @@ const G_S2_STAT=[
  }}
 ];
 
+/* ---------- Terminale : Exponentielle ---------- */
+const G_T_EXP=[
+ {lvl:"facile",make(){
+   const a=Ri(2,9);
+   return{prompt:`f(x) = ${a}·eˣ. f′(0) = ?`,type:"number",answer:a,
+     explain:`(eˣ)′ = eˣ, donc (a·eˣ)′ = a·eˣ.<br>f′(0) = ${a} × 1 = <b>${a}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(2,6),b=Ri(2,4),N=Math.pow(a,b),v=Math.log(N);
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`Résous eˣ = ${N}. x = ln ${N} ≈ ?`,type:"number",answer:v,tol:0.01,
+     explain:`eˣ = ${N} ⇔ x = ln ${N} = ${b} × ln ${a} ≈ <b>${d2(v)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const k=Ri(2,9),v=k*(1-Math.log(k));
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`Tangente à la courbe de f(x) = eˣ au point d'abscisse ln ${k} : ordonnée à l'origine ?`,
+     type:"number",answer:v,tol:0.01,
+     explain:`Tangente en x₀ : y = f′(x₀)·(x − x₀) + f(x₀) = e^{x₀}·x + e^{x₀}·(1 − x₀).<br>Avec x₀ = ln ${k} : e^{x₀} = ${k}, ordonnée à l'origine = ${k} × (1 − ln ${k}) ≈ <b>${d2(v)}</b>.`};
+ }}
+];
+
+/* ---------- Terminale : Logarithme népérien ---------- */
+const G_T_LN=[
+ {lvl:"facile",make(){
+   const a=Ri(2,6);
+   return{prompt:`ln(e^{${a}}) = ?`,type:"number",answer:a,
+     explain:`ln est la réciproque de l'exponentielle : ln(e^a) = a.<br>ln(e^{${a}}) = <b>${a}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(1,4),v=Math.exp(a);
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`Résous ln x = ${a}. x = e^{${a}} ≈ ?`,type:"number",answer:v,tol:0.01,
+     explain:`ln x = ${a} ⇔ x = e^{${a}} ≈ <b>${d2(v)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   return{prompt:`f(x) = x·ln x. f′(1) = ?`,type:"number",answer:1,
+     explain:`Produit : (x·ln x)′ = 1 × ln x + x × (1/x) = ln x + 1.<br>f′(1) = ln 1 + 1 = 0 + 1 = <b>1</b>.`};
+ }}
+];
+
+/* ---------- Terminale : Suites & convergence ---------- */
+const G_T_SUIT=[
+ {lvl:"facile",make(){
+   const u0=Ri(1,20),r=Ri(2,6),n=Ri(2,8);
+   return{prompt:`Soit (uₙ) arithmétique de raison ${r} avec u₀ = ${u0}. Calcule u${n}.`,
+     type:"number",answer:u0+n*r,
+     explain:`uₙ = u₀ + n·r : u${n} = ${u0} + ${n} × ${r} = <b>${u0+n*r}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const u0=Ri(1,5),r=Ri(2,4),n=Ri(2,5);
+   return{prompt:`Soit (uₙ) géométrique de raison ${r} avec u₀ = ${u0}. Calcule u${n}.`,
+     type:"number",answer:u0*Math.pow(r,n),
+     explain:`uₙ = u₀ × rⁿ : u${n} = ${u0} × ${r}^${n} = <b>${u0*Math.pow(r,n)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="convergente";
+   const ds=["divergente vers +∞","nécessairement de signe constant"];
+   return qcm(`Une suite réelle croissante et majorée est…`,bonne,ds,
+     `Théorème de la convergence monotone : une suite réelle croissante et majorée converge.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale : Probas conditionnelles ---------- */
+const G_T_PROBA=[
+ {lvl:"facile",make(){
+   const x=Ri(1,5),y=Ri(1,10-x),ans=(x+y)/10;
+   return{prompt:`A et B sont incompatibles : P(A) = ${x}/10 et P(B) = ${y}/10. P(A ∪ B) = ?`,
+     type:"number",answer:ans,tol:0.01,
+     explain:`Incompatibles : P(A ∪ B) = P(A) + P(B) = ${x}/10 + ${y}/10 = ${F(x+y,10)} = <b>${ans.toString().replace(".",",")}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(2,9),b=Ri(2,9),ans=a*b/100;
+   return{prompt:`A et B sont indépendants : P(A) = ${a}/10 et P(B) = ${b}/10. P(A ∩ B) = ?`,
+     type:"number",answer:ans,tol:0.01,
+     explain:`Indépendants : P(A ∩ B) = P(A) × P(B) = ${a}/10 × ${b}/10 = ${F(a*b,100)} = <b>${ans.toString().replace(".",",")}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="P(A∩B) = P(A) × P(B)";
+   const ds=["P(A∩B) = 0","P(A|B) = P(A|B̄)"];
+   return qcm(`P(A) > 0, P(B) > 0. A et B indépendants ⇔`,bonne,ds,
+     `Définition de l'indépendance : P(A ∩ B) = P(A) × P(B).<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale : Dérivées (exp/ln) ---------- */
+const G_T_DER=[
+ {lvl:"facile",make(){
+   const a=Ri(2,9);
+   return{prompt:`f(x) = ${a}·ln x. f′(1) = ?`,type:"number",answer:a,
+     explain:`(ln x)′ = 1/x, donc f′(x) = ${a}/x.<br>f′(1) = ${a}/1 = <b>${a}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const v=2*Math.E;
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`f(x) = x·eˣ. f′(1) = ?`,type:"number",answer:v,tol:0.01,
+     explain:`Produit : f′(x) = 1 × eˣ + x × eˣ = eˣ(1 + x).<br>f′(1) = e(1 + 1) = 2e ≈ <b>${d2(v)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="x = 0 et x = −2";
+   const ds=["x = 0 et x = 2","x = −1 et x = 1"];
+   return qcm(`Pour f(x) = x²·eˣ, les solutions de f′(x) = 0 sont…`,bonne,ds,
+     `f′(x) = 2x·eˣ + x²·eˣ = eˣ(x² + 2x) = eˣ·x·(x + 2).<br>eˣ ≠ 0, donc x = 0 ou x + 2 = 0.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale : Intégrale ---------- */
+const G_T_INT=[
+ {lvl:"facile",make(){
+   return{prompt:`∫₀¹ 2x dx = ?`,type:"number",answer:1,
+     explain:`Une primitive de 2x est x².<br>∫₀¹ 2x dx = [x²]₀¹ = 1² − 0² = <b>1</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const v=Math.E-1;
+   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
+   return{prompt:`∫₀¹ eˣ dx ≈ ?`,type:"number",answer:v,tol:0.01,
+     explain:`eˣ est sa propre primitive.<br>∫₀¹ eˣ dx = [eˣ]₀¹ = e − 1 ≈ <b>${d2(v)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   return{prompt:`Valeur moyenne de x² sur [0 ; 1] = ?`,type:"frac",answer:fa(1,3),
+     explain:`Valeur moyenne = (1/(1 − 0)) × ∫₀¹ x² dx = [x³/3]₀¹ = 1/3.<br>→ <b>${F(1,3)}</b>.`};
+ }}
+];
+
+/* ---------- Terminale : Complexes ---------- */
+const G_T_CPLX=[
+ {lvl:"facile",make(){
+   const T=[[3,4,5],[5,12,13],[8,15,17]],v=pick(T);
+   return{prompt:`z = ${v[0]} + ${v[1]}i. |z| = ?`,type:"number",answer:v[2],
+     explain:`|z| = √(a² + b²) = √(${v[0]}² + ${v[1]}²) = √${v[2]*v[2]} = <b>${v[2]}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const r=Ri(2,9);
+   return{prompt:`z = ${r} × (cos π/3 + i·sin π/3). |z| = ?`,type:"number",answer:r,
+     explain:`Forme trigonométrique : z = r·(cos θ + i·sin θ), et |z| = r quel que soit θ.<br>|z| = <b>${r}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bonne="π/4";
+   const ds=["−π/4","3π/4","π/2"];
+   return qcm(`L'argument principal de z = 1 + i est…`,bonne,ds,
+     `z = 1 + i : cos θ = 1/√2, sin θ = 1/√2, θ ∈ (0, π) → θ = π/4.<br>→ <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Terminale : Espace & vecteurs 3D ---------- */
+const G_T_ESP=[
+ {lvl:"facile",make(){
+   const bad=(x,y,z)=>(x===0&&y===0&&z===0)||(z*(y-x)===0&&x*x===y*y)||(y*(x-z)===0&&z*z===x*x);
+   let ax,ay,az,bx,by,bz,t=0;
+   do{
+     ax=Ri(-5,5);ay=Ri(-5,5);az=Ri(-5,5);
+     bx=Ri(-5,5);by=Ri(-5,5);bz=Ri(-5,5);
+   }while(bad(bx-ax,by-ay,bz-az)&&++t<50);
+   if(bad(bx-ax,by-ay,bz-az)){ax=0;ay=0;az=0;bx=1;by=2;bz=3;}
+   const dx=bx-ax,dy=by-ay,dz=bz-az;
+   const bonne=`(${dx} ; ${dy} ; ${dz})`;
+   const ds=[`(${dy} ; ${dx} ; ${dz})`,`(${dz} ; ${dy} ; ${dx})`];
+   return qcm(`A(${ax} ; ${ay} ; ${az}) et B(${bx} ; ${by} ; ${bz}). Un vecteur directeur de la droite (AB) est…`,bonne,ds,
+     `AB = B − A = (${bx} − ${ax} ; ${by} − ${ay} ; ${bz} − ${az}) = ${bonne}.<br>Un vecteur directeur de (AB) a les coordonnées de B − A, dans le même ordre : une permutation change le vecteur.<br>→ <b>${bonne}</b>.`);
+ }},
+ {lvl:"moyen",make(){
+   const T=[[1,2,2,3],[2,3,6,7],[1,4,8,9],[2,6,9,11]],v=pick(T);
+   return{prompt:`AB = (${v[0]} ; ${v[1]} ; ${v[2]}). ‖AB‖ = ?`,type:"number",answer:v[3],
+     explain:`‖AB‖ = √(dx² + dy² + dz²) = √(${v[0]}² + ${v[1]}² + ${v[2]}²) = √${v[3]*v[3]} = <b>${v[3]}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const px=Ri(1,5),py=Ri(1,5),pz=Ri(1,5),S=2*px+2*py+pz;
+   const d=[0,1,2].find(v=>(S+v)%3===0),N=S+d;
+   return{prompt:`Le plan π : 2x + 2y + z + ${d} = 0, et le point P(${px} ; ${py} ; ${pz}). Distance de P au plan ?`,
+     type:"number",answer:N/3,
+     explain:`Distance = |ax₀ + by₀ + cz₀ + d| / √(a² + b² + c²).<br>Ici : |${2*px} + ${2*py} + ${pz} + ${d}| / √(4 + 4 + 1) = ${N} / 3 = <b>${N/3}</b>.`};
+ }}
+];
+
 /* ---------- REGISTRE DES THÈMES (deux matières, un seul moteur) ---------- */
 const SUBJECTS_MATH={
   seconde:[
@@ -1572,6 +1746,14 @@ const SUBJECTS_MATH={
  {id:"var",name:"Variations",sym:"↗",gens:G_VAR}
  ],
   terminale:[
+  {id:"t_exp",name:"Exponentielle",sym:"eˣ",gens:G_T_EXP},
+  {id:"t_ln",name:"Logarithme népérien",sym:"ln",gens:G_T_LN},
+  {id:"t_suites",name:"Suites & convergence",sym:"uₙ",gens:G_T_SUIT},
+  {id:"t_proba",name:"Probas conditionnelles",sym:"P(B|A)",gens:G_T_PROBA},
+  {id:"t_derivee",name:"Dérivées (exp/ln)",sym:"f′",gens:G_T_DER},
+  {id:"t_integrale",name:"Intégrale",sym:"∫",gens:G_T_INT},
+  {id:"t_complexes",name:"Complexes",sym:"z = a + bi",gens:G_T_CPLX},
+  {id:"t_espace",name:"Espace & vecteurs 3D",sym:"AB ∧ AC",gens:G_T_ESP}
   ]
 };
 /* ---------- PC (newton) : mécanique & Newton ---------- */
