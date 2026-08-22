@@ -1003,6 +1003,7 @@ console.log("\n[24] Registres par année — structure, ids, stabilité Premièr
   ok("THEME_BY_ID couvre les 18 ids anciens maths/PC + DE + EN",
      [...oldM,...oldP,"vocab","conj","art","date","phrasen","trad",
       "en_vocab","en_verbes","en_art","en_q","en_phrases","en_trad"].every(id=>T.includes(id)));
+  ok("Seconde maths : 6 thèmes (contenu livré)",probe.SUBJECTS_MATH.seconde.length===6);
   let purgeOk=true;
   {
     const env2=buildEnv();

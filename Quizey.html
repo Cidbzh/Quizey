@@ -1372,9 +1372,192 @@ const G_VAR=[
  }}
 ];
 
+/* ---------- Seconde : Nombres & calcul ---------- */
+let _s2flip=0; /* alternance PGCD / PPCM entre tirages consécutifs */
+const G_S2_NUM=[
+ {lvl:"facile",make(){
+   const a=Ri(2,9),p=Ri(2,5),S="⁰¹²³⁴⁵⁶⁷⁸⁹",n=a*Math.pow(10,p);
+   return{prompt:`Calcule : ${a} × 10${S[p]} = ?`,type:"number",answer:n,
+     explain:`a × 10ᵖ : on décale la virgule de ${p} rangs vers la droite.<br>${a} × 10${S[p]} = <b>${n}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const d=Ri(2,15);
+   let x=Ri(2,9),y=Ri(2,9),t=0;
+   while(gcd(x,y)!==1&&++t<50){x=Ri(2,9);y=Ri(2,9);}
+   const g=gcd(x,y),A=d*x,B=d*y,pgcd=(++_s2flip)%2===0;
+   const ans=pgcd?d*g:d*x*y/g;
+   return{prompt:pgcd?`PGCD de ${A} et ${B} ?`:`PPCM de ${A} et ${B} ?`,type:"number",answer:ans,
+     explain:`Factorisation : ${A} = ${d} × ${x}, ${B} = ${d} × ${y} — les facteurs communs forment le PGCD, tous les facteurs (chacun une fois) le PPCM.<br>${pgcd?`PGCD = ${d}${g>1?" × "+g:""} = <b>${d*g}</b>`:`PPCM = ${d} × ${x} × ${y}${g>1?" ÷ "+g:""} = <b>${d*x*y/g}</b>`}.`};
+ }},
+ {lvl:"difficile",make(){
+   const a=Ri(1,3),b=Ri(1,3),c=pick([0,1]),S="⁰¹²³⁴⁵⁶⁷⁸⁹",ans=(a+1)*(b+1)*(c+1);
+   const N=`2${S[a]} × 3${S[b]}${c?" × 5":""}`;
+   return{prompt:`Soit N = ${N}. Combien de diviseurs entiers N a-t-il ?`,type:"number",answer:ans,
+     explain:`N = ${N} = ∏ pᵢ^eᵢ : le nombre de diviseurs est ∏ (eᵢ+1).<br>${a+1} × ${b+1} × ${c+1} = <b>${ans}</b>.`};
+ }}
+];
+
+/* ---------- Seconde : Équations & inéquations ---------- */
+const G_S2_EQ=[
+ {lvl:"facile",make(){
+   let x=Ri(-8,12),t=0;
+   while(x===0&&++t<50)x=Ri(-8,12);
+   if(x===0)x=1;
+   const a=Ri(2,9),b=-a*x;
+   return{prompt:`Résous : ${a}x ${b<0?"− "+(-b):"+ "+b} = 0`,type:"number",answer:x,
+     explain:`ax + b = 0 ⇔ x = −b/a.<br>x = ${b<0?"":"− "}${Math.abs(b)}/${a} = <b>${x}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   let x=Ri(-8,12),t=0;
+   while(x===0&&++t<50)x=Ri(-8,12);
+   if(x===0)x=1;
+   const a=Ri(2,5);
+   let b=Ri(-5,5),u=0;
+   while(b===0&&++u<50)b=Ri(-5,5);
+   if(b===0)b=1;
+   const c=a*(x+b);
+   return{prompt:`Résous : ${a}(x ${b<0?"− "+(-b):"+ "+b}) = ${c}`,type:"number",answer:x,
+     explain:`D'abord diviser par a, ou développer : x ${b<0?"− "+(-b):"+ "+b} = ${c}/${a} = ${x+b}.<br>x = ${x+b} ${b>0?"−":"+"} ${Math.abs(b)} = <b>${x}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const a=Ri(1,5),b=Ri(-10,10),c=Ri(-15,15);
+   const p=c-b,q=Math.floor(p/a),r=p-q*a,ans=r===0?q:q+1;
+   return{prompt:`Plus petite valeur entière de x telle que ${a>1?a+" ":""}x ${b<0?"− "+(-b):"+ "+b} ≥ ${c} ?`,
+     type:"number",answer:ans,
+     explain:`ax + b ≥ c ⇔ x ≥ (c − b)/a (a = ${a} > 0).<br>(c − b)/a = ${F(c-b,a)} : la plus petite valeur entière est ⌈${F(c-b,a)}⌉ = <b>${ans}</b>.`};
+ }}
+];
+
+/* ---------- Seconde : 2e degré ---------- */
+const G_S2_EQ2=[
+ {lvl:"facile",make(){
+   let b=Ri(-8,8),c=Ri(-8,8),t=0;
+   while(b*b-4*c<0&&++t<50){b=Ri(-8,8);c=Ri(-8,8);}
+   if(b*b-4*c<0){b=3;c=1;}
+   const D=b*b-4*c;
+   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
+   return{prompt:`Δ de ${P} = 0 ?`,type:"number",answer:D,
+     explain:`Δ = b² − 4ac, avec a = 1 : Δ = (${b})² − 4 × (${c}) = <b>${D}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   let b=Ri(-8,8),c=Ri(-8,8),t=0;
+   while(b*b-4*c<=0&&++t<50){b=Ri(-8,8);c=Ri(-8,8);}
+   if(b*b-4*c<=0){b=3;c=1;}
+   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
+   return{prompt:`Somme des deux racines réelles de ${P} = 0 ?`,type:"number",answer:-b,
+     explain:`Règle de Viète : x₁ + x₂ = −b/a, avec a = 1.<br>x₁ + x₂ = −(${b}) = <b>${-b}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const a=Ri(2,5);
+   let b=Ri(-9,9),c=Ri(-9,9),t=0;
+   while(b*b-4*a*c<0&&++t<50){b=Ri(-9,9);c=Ri(-9,9);}
+   if(b*b-4*a*c<0)c=0;
+   const f=fa(c,a);
+   const P=`${a}x²`+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
+   return{prompt:`Produit des deux racines de ${P} = 0 ?`,type:"frac",answer:f,
+     explain:`Règle de Viète : x₁·x₂ = c/a.<br>x₁·x₂ = ${c}/${a} = <b>${F(f.n,f.d)}</b>.`};
+ }}
+];
+
+/* ---------- Seconde : Fonctions & variations ---------- */
+const G_S2_FONC=[
+ {lvl:"facile",make(){
+   let a=Ri(-9,9),t=0;
+   while(a===0&&++t<50)a=Ri(-9,9);
+   if(a===0)a=1;
+   let b=Ri(-9,9),u=0;
+   while(b===0&&++u<50)b=Ri(-9,9);
+   if(b===0)b=1;
+   const x0=Ri(-5,5),ans=a*x0+b;
+   return{prompt:`f(x) = ${a<0?"− ":""}${Math.abs(a)>1?Math.abs(a)+" ":""}x ${b<0?"− "+(-b):"+ "+b}. f(${x0}) = ?`,
+     type:"number",answer:ans,
+     explain:`On remplace x par ${x0} : f(${x0}) = (${a}) × (${x0}) ${b<0?"− "+(-b):"+ "+b} = <b>${ans}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const b=Ri(-6,6),c=Ri(-6,6),x0=Ri(-4,4),ans=x0*x0+b*x0+c;
+   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
+   return{prompt:`f(x) = ${P}. f(${x0}) = ?`,type:"number",answer:ans,
+     explain:`f(${x0}) = (${x0})² + (${b}) × (${x0}) + (${c}) = <b>${ans}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const cas=pick([1,2,3]);
+   let a,b,bonne,desc;
+   if(cas===1){const B=Ri(1,5),K=Ri(1,4);a=-(B+K);b=-B;bonne="strictement décroissante";desc="entièrement à gauche de 0 (dans ℤ⁻)";}
+   else if(cas===2){const A=Ri(1,5),K=Ri(1,4);a=A;b=A+K;bonne="strictement croissante";desc="entièrement à droite de 0 (dans ℤ₊)";}
+   else{a=-Ri(1,5);b=Ri(1,5);bonne="ni l'une ni l'autre";desc="traversé par 0 (a < 0 < b)";}
+   const ds=["strictement croissante","strictement décroissante","ni l'une ni l'autre"].filter(o=>o!==bonne);
+   return qcm(`Sur l'intervalle [${a} ; ${b}], la fonction x ↦ x² est…`,bonne,ds,
+     `x ↦ x² a son sommet en 0 : strictement décroissante sur (−∞ ; 0] puis strictement croissante sur [0 ; +∞).<br>L'intervalle [${a} ; ${b}] est ${desc} : f y est <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Seconde : Vecteurs ---------- */
+const G_S2_VECT=[
+ {lvl:"facile",make(){
+   const x1=Ri(-9,9),y1=Ri(-9,9),x2=Ri(-9,9),y2=Ri(-9,9),ans=x2-x1;
+   return{prompt:`A(${x1} ; ${y1}) et B(${x2} ; ${y2}). Coordonnée x du vecteur AB ?`,
+     type:"number",answer:ans,
+     explain:`AB = (xB − xA ; yB − yA) = (${x2} − ${x1} ; ${y2} − ${y1}).<br>Coordonnée x = ${x2} − ${x1} = <b>${ans}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   let a=Ri(-5,5),t=0;
+   while(a===0&&++t<50)a=Ri(-5,5);
+   if(a===0)a=1;
+   const b=Ri(-5,5),k=Ri(2,4);
+   return{prompt:`u = (${a} ; ${b}), v = ${k}·u. Coordonnée x de v ?`,type:"number",answer:k*a,
+     explain:`v = k·u : on multiplie chaque coordonnée de u par k = ${k}.<br>v = (${k} × ${a} ; ${k} × ${b}) = (${k*a} ; ${k*b}) : coordonnée x = <b>${k*a}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const al=Ri(0,1),x1=Ri(-6,6),y1=Ri(-6,6);
+   let dx,dy,k;
+   if(al){dx=pick([-4,-3,-2,-1,1,2,3,4]);dy=Ri(-4,4);k=pick([2,3]);}
+   else{dx=Ri(1,4);dy=Ri(-4,4);k=1;}
+   const x2=x1+dx,y2=y1+dy;
+   const cx=x1+k*dx,cy=y1+(al?k*dy:dy+1);
+   const acx=cx-x1,acy=cy-y1,det=dx*acy-dy*acx;
+   const bonne=al?"Oui — AB et AC sont colinéaires":"Non — AB et AC ne sont pas colinéaires";
+   const leurre=al?"Non — AB et AC ne sont pas colinéaires":"Oui — AB et AC sont colinéaires";
+   return qcm(`A(${x1} ; ${y1}), B(${x2} ; ${y2}) et C(${cx} ; ${cy}) sont-ils alignés ?`,bonne,[leurre],
+     `AB = (${dx} ; ${dy}), AC = (${acx} ; ${acy}).<br>Déterminant = ${dx} × ${acy} − ${dy} × ${acx} = ${det} ${det===0?"= 0 : AB et AC sont colinéaires":"≠ 0 : AB et AC ne sont pas colinéaires"}.<br>Alignés ⇔ det(AB, AC) = 0 : <b>${bonne}</b>.`);
+ }}
+];
+
+/* ---------- Seconde : Stats & proportions ---------- */
+const G_S2_STAT=[
+ {lvl:"facile",make(){
+   const N=Ri(10,100)*10,p=Ri(1,9)*10,ans=N*p/100;
+   return{prompt:`${p} % de ${N} = ?`,type:"number",answer:ans,
+     explain:`N × p / 100 : ${N} × ${p} / 100 = <b>${ans}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(10,90),VS=[-50,-25,-20,-10,10,20,25,50,100];
+   let v=pick(VS),t=0;
+   while(a*(100+v)%100!==0&&++t<50)v=pick(VS);
+   if(a*(100+v)%100!==0)v=100;
+   const f=a*(100+v)/100;
+   return{prompt:`Une quantité passe de ${a} à ${f}. Variation relative en % ?`,
+     type:"number",answer:v,
+     explain:`(final − initial) / initial × 100 = (${f} − ${a})/${a} × 100 = <b>${v}%</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const n1=Ri(6,18),n2=Ri(6,18),n3=Ri(6,18);
+   const w1=Ri(1,4),w2=Ri(1,4),w3=Ri(1,4);
+   const num=n1*w1+n2*w2+n3*w3,den=w1+w2+w3,f=fa(num,den);
+   return{prompt:`Moyenne pondérée : ${n1} (coef ${w1}), ${n2} (coef ${w2}), ${n3} (coef ${w3}) ?`,
+     type:"frac",answer:f,
+     explain:`Σ(note × coef) / Σ(coef) = (${n1}×${w1} + ${n2}×${w2} + ${n3}×${w3}) / (${w1}+${w2}+${w3}) = ${num}/${den} = <b>${F(f.n,f.d)}</b>.`};
+ }}
+];
+
 /* ---------- REGISTRE DES THÈMES (deux matières, un seul moteur) ---------- */
 const SUBJECTS_MATH={
   seconde:[
+  {id:"s2_nombres",name:"Nombres & calcul",sym:"PGCD · 10ⁿ",gens:G_S2_NUM},
+  {id:"s2_equa",name:"Équations & inéquations",sym:"ax + b",gens:G_S2_EQ},
+  {id:"s2_equa2",name:"2e degré",sym:"Δ = b²−4ac",gens:G_S2_EQ2},
+  {id:"s2_fonctions",name:"Fonctions & variations",sym:"f(x)",gens:G_S2_FONC},
+  {id:"s2_vecteurs",name:"Vecteurs",sym:"AB = B − A",gens:G_S2_VECT},
+  {id:"s2_stats",name:"Stats & proportions",sym:"% · moyenne",gens:G_S2_STAT}
   ],
   premiere:[
  {id:"deriv",name:"Dérivées",sym:"∂",gens:G_DERIV},
