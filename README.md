@@ -2,7 +2,7 @@
 
 **Plus tu quiz, plus tu sais.**
 
-Quizey est un fichier `.html` autonome pour la révision en classe de Première : mathématiques (spécialité), physique-chimie, allemand et anglais (niveaux A2 à B1). Aucune installation, aucun compte, aucune connexion internet requise : vous l'ouvrez dans votre navigateur et vous vous entraînez.
+Quizey est un fichier `.html` autonome pour la révision de **tout le lycée** : mathématiques (spécialité) et physique-chimie par **année** (Seconde / Première / Terminale), allemand et anglais par niveau (A2 / A2+ / B1). Aucune installation, aucun compte, aucune connexion internet requise : vous l'ouvrez dans votre navigateur et vous vous entraînez.
 
 Chaque question est générée à l'affichage : vous ne voyez donc jamais deux fois les mêmes nombres. Chaque réponse s'accompagne de la méthode de résolution, et non d'un simple indicatif.
 
@@ -12,7 +12,7 @@ Vos progrès, vos points faibles et vos records restent stockés sur votre machi
 
 ## Comment s'entraîner
 
-**Entraînement libre** — sélectionnez un thème et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), puis progressez à votre rythme. Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
+**Entraînement libre** — en mathématiques et en physique-chimie, choisissez d'abord votre **année** (Seconde, Première ou Terminale), puis un thème et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), et progressez à votre rythme. Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
 
 **Sprint 60 s** — les questions s'enchaînent sans interruption, les séries de bonnes réponses s'accumulent et le record est mis à jour. (Maths et physique-chimie : les langues sont 100 % QCM et n'ont pas de sprint.)
 
@@ -28,12 +28,18 @@ Quizey identifie en outre vos **points faibles** (croisement thème × niveau, s
 
 ## Contenu
 
-- **Mathématiques** (spécialité) — 10 thèmes : dérivées, suites, log & exp, 2ᵉ degré, trigonométrie, probabilités, vecteurs, droites & affines, limites, variations
-- **Physique-chimie** — 8 thèmes : mécanique & Newton, forces & champs, énergie, quantités de matière, stœchiométrie & état final, cinétique, ondes & lumière, électricité
+- **Mathématiques** (spécialité) — par année : **Seconde** (6 thèmes : nombres & calcul, équations & inéquations, 2ᵉ degré, fonctions & variations, vecteurs, stats & proportions) · **Première** (10 : dérivées, suites, log & exp, 2ᵉ degré, trigonométrie, probabilités, vecteurs, droites & affines, limites, variations) · **Terminale** (8 : exponentielle, logarithme népérien, suites & convergence, probas conditionnelles, dérivées (exp/ln), intégrale, complexes, espace & vecteurs 3D)
+- **Physique-chimie** — par année : **Seconde** (6 thèmes : quantité de matière, solutions & dilution, énergie, forces & mouvement, signaux & ondes, électricité) · **Première** (8 : mécanique & Newton, forces & champs, énergie, quantités de matière, stœchiométrie & état final, cinétique, ondes & lumière, électricité) · **Terminale** (6 : ondes & optique, transformations nucléaires, cinétique, énergie (bilan), circuit RC, thermodynamique)
 - **Allemand** — 6 thèmes, 100 % QCM : vocabulaire, conjugaison, articles, nombres · dates · heures, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
 - **Anglais** — 6 thèmes, 100 % QCM : vocabulaire, verbes & temps, articles & quantifieurs, questions, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
 
 ![Le mode allemand A2 — 100 % QCM](img/accueil-allemand.png)
+
+## Niveau Quizey
+
+Chaque matière a **son propre niveau** : chaque bonne réponse rapporte de l'expérience (XP) — 5, 10 ou 15 points selon le niveau de la question, plus 5 dès que votre série atteint 3 bonnes réponses d'affilée. Votre niveau progresse sur une courbe croissante : chaque palier demande plus d'XP que le précédent, et vos progrès en maths n'affectent jamais l'allemand, ni inversement.
+
+C'est une motivation, pas un verrou : le niveau ne débloque aucun contenu, et comme le reste de vos progrès il reste stocké sur votre machine.
 
 ## Installation — deux possibilités
 
