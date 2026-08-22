@@ -310,6 +310,16 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
   .seg-lvl .seg-btn:active{transform:scale(.95)}
   .seg-lvl .seg-btn.lvlpick{animation:lvlPop .32s var(--ease)}
 }
+/* Sélecteur d'ANNÉE (spec §3.3) : même langage que .seg-lvl, réaction
+   press+rebond SCOPIÉE à .seg-year — les boutons de MATIÈRE et de NIVEAU
+   ne doivent PAS « pop ». */
+.yrrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.yrrow .yrlabel{font:500 15px var(--f-body);color:var(--muted)}
+.seg-year .seg-btn{transition:color .25s var(--ease),background .25s var(--ease)}
+@media (prefers-reduced-motion: no-preference){
+  .seg-year .seg-btn:active{transform:scale(.95)}
+  .seg-year .seg-btn.yearpick{animation:lvlPop .32s var(--ease)}
+}
 .theme-seg{display:inline-flex;background:var(--accent-soft);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .theme-btn{
   appearance:none;border:0;background:transparent;cursor:pointer;
@@ -782,6 +792,14 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
 
     <section class="panel lead" aria-labelledby="hFree" data-rv style="--d:1.06s">
       <h2 id="hFree">Entraînement libre</h2>
+      <div class="yrrow" id="yearRow">
+        <span class="yrlabel">Année</span>
+        <div class="seg seg-year">
+          <button type="button" class="seg-btn" data-year="seconde">Seconde</button>
+          <button type="button" class="seg-btn on" data-year="premiere">Première</button>
+          <button type="button" class="seg-btn" data-year="terminale">Terminale</button>
+        </div>
+      </div>
       <div class="row space-between wrap-row" style="margin-bottom:16px">
         <span class="lbl">Niveau</span>
         <div class="seg seg-lvl" role="group" aria-label="Niveau">
@@ -1347,7 +1365,10 @@ const G_VAR=[
 ];
 
 /* ---------- REGISTRE DES THÈMES (deux matières, un seul moteur) ---------- */
-const SUBJECTS_MATH=[
+const SUBJECTS_MATH={
+  seconde:[
+  ],
+  premiere:[
  {id:"deriv",name:"Dérivées",sym:"∂",gens:G_DERIV},
  {id:"suites",name:"Suites",sym:"uₙ",gens:G_SUITES},
  {id:"logexp",name:"Log & exp",sym:"eˣ",gens:G_LOGEXP},
@@ -1357,8 +1378,11 @@ const SUBJECTS_MATH=[
  {id:"vect",name:"Vecteurs",sym:"·",gens:G_VECT},
  {id:"affine",name:"Droites & affines",sym:"y=ax+b",gens:G_AFF},
  {id:"lim",name:"Limites",sym:"→",gens:G_LIM},
- {id:"var",name:"Variations",sym:"↗",gens:G_VAR},
-];
+ {id:"var",name:"Variations",sym:"↗",gens:G_VAR}
+ ],
+  terminale:[
+  ]
+};
 /* ---------- PC (newton) : mécanique & Newton ---------- */
 const G_NEWTON=[
  {lvl:"facile",make(){
@@ -2724,7 +2748,10 @@ const G_EN_TRAD=[
  }}
 ];
 /* ---------- REGISTRE PC + helpers matière ---------- */
-const SUBJECTS_PC=[
+const SUBJECTS_PC={
+  seconde:[
+  ],
+  premiere:[
  {id:"newton",name:"Mécanique & Newton",sym:"F=ma",gens:G_NEWTON},
  {id:"forces",name:"Forces & champs",sym:"G",gens:G_FORCES},
  {id:"energie",name:"Énergie",sym:"E",gens:G_ENERGIE},
@@ -2732,8 +2759,11 @@ const SUBJECTS_PC=[
  {id:"stoich",name:"Stœchiométrie & état final",sym:"τ",gens:G_STOICH},
  {id:"cinet",name:"Cinétique",sym:"v",tag:"Terminale · hors bac 1re",gens:G_CINET},
  {id:"ondes",name:"Ondes & lumière",sym:"λ",gens:G_ONDES},
- {id:"elec",name:"Électricité",sym:"P",gens:G_ELECTRICITE},
-];
+ {id:"elec",name:"Électricité",sym:"P",gens:G_ELECTRICITE}
+ ],
+  terminale:[
+  ]
+};
 /* ---------- REGISTRE DE (allemand A2) — branché via setMatiere/activeSubjects ---------- */
 const SUBJECTS_DE=[
  {id:"vocab",name:"Vocabulaire",sym:"W?",gens:G_VOCAB},
@@ -2754,12 +2784,33 @@ const SUBJECTS_EN=[
  {id:"en_phrases",name:"Phrases utiles",sym:"Hi!",gens:G_EN_PHRASES},
  {id:"en_trad",name:"Mini-traductions",sym:"→EN",gens:G_EN_TRAD},
 ];
-const activeSubjects=()=>state.matiere==="de"?SUBJECTS_DE:state.matiere==="en"?SUBJECTS_EN:state.matiere==="pc"?SUBJECTS_PC:SUBJECTS_MATH;
+/* ================= ANNÉE PAR MATIÈRE (spec D2) =================
+   L'année est indépendante par matière : on choisit d'abord la matière
+   (topbar), puis l'année (sélecteur, maths/PC uniquement). Deux clés,
+   une par matière ; DE/EN n'ont pas d'année (elles tournent par niveau
+   A2/A2+/B1) → state.annee = null. Valeur inconnue → « premiere »
+   (défaut = contenu historique, zéro migration).
+   NB : le bloc précède THEME_BY_ID car celui-ci itère YEARS (const) —
+   le déclarer après déclencherait un ReferenceError au chargement. */
+const YEARS=["seconde","premiere","terminale"];
+const YEAR_KEY={maths:"qz_year_math",pc:"qz_year_pc"};
+function readYear(m){
+  const k=YEAR_KEY[m];if(!k)return null;
+  const v=store.get(k,"premiere");
+  return YEARS.includes(v)?v:"premiere";
+}
+function yearReady(m){
+  if(m!=="maths"&&m!=="pc")return false;
+  const R=(m==="pc")?SUBJECTS_PC:SUBJECTS_MATH;
+  return YEARS.every(y=>Array.isArray(R[y])&&R[y].length>0);
+}
+const activeSubjects=()=>state.matiere==="de"?SUBJECTS_DE:state.matiere==="en"?SUBJECTS_EN:state.matiere==="pc"?SUBJECTS_PC[state.annee]:SUBJECTS_MATH[state.annee];
 const THEME_BY_ID={};
-for(const s of SUBJECTS_MATH)THEME_BY_ID[s.id]=s;
-for(const s of SUBJECTS_PC)THEME_BY_ID[s.id]=s;
-for(const s of SUBJECTS_DE)THEME_BY_ID[s.id]=s;
-for(const s of SUBJECTS_EN)THEME_BY_ID[s.id]=s;
+for(const R of[SUBJECTS_DE,SUBJECTS_EN])R.forEach(s=>THEME_BY_ID[s.id]=s);
+for(const y of YEARS){
+  (SUBJECTS_MATH[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
+  (SUBJECTS_PC[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
+}
 /*GEN2C*/
 /* ================= GRAPH (mini-visuels SVG) =================
    Dessins pédagogiques en SVG inline — aucune dépendance, reste hors-ligne.
@@ -3266,7 +3317,7 @@ const store={
 ["theme","subject","stats","stats_pc","stats_de","stats_en"].forEach(k=>{try{const old=localStorage.getItem("cz_"+k);if(old!==null&&localStorage.getItem("qz_"+k)===null)localStorage.setItem("qz_"+k,old);}catch(e){}});
 /* ---- Matière : "maths" (défaut), "pc" ou "de" — persistée sous qz_subject ---- */
 const SUBJECT_KEY="qz_subject";
-const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",subject:"mix",q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,timer:null,timeLeft:60,answered:false,skipQueue:[],skips:0,qT0:0};
+const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",subject:"mix",q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,timer:null,timeLeft:60,answered:false,skipQueue:[],skips:0,qT0:0,annee:null};
 /* Niveau : défaut "auto" (2026-08-22, sur demande) — l'app adapte la difficulté
    à la performance du thème (autoLevel) ; session uniquement, jamais persisté. */
 /* ---- Stats : quatre emplacements (qz_stats maths / qz_stats_pc / qz_stats_de / qz_stats_en), même forme,
@@ -3293,6 +3344,7 @@ function loadStats(key){
 }
 const activeStatsKey=()=>state.matiere==="de"?"qz_stats_de":state.matiere==="en"?"qz_stats_en":state.matiere==="pc"?"qz_stats_pc":"qz_stats";
 let stats=loadStats(activeStatsKey());
+state.annee=readYear(state.matiere); /* DE/EN → null ; maths/PC → « premiere » par défaut */
 const homeEl=$("#home"),playEl=$("#play"),qbox=$("#qbox");
 const save=()=>store.set(activeStatsKey(),stats);
 const subStat=id=>stats.bySub[id]||(stats.bySub[id]={ans:0,good:0});
@@ -3362,6 +3414,7 @@ function setFavicon(){
 function setMatiere(m){
   if(state.matiere===m)return;
   state.matiere=m;
+  state.annee=readYear(m); /* chaque matière garde son année (DE/EN → null) */
   store.set(SUBJECT_KEY,m);
   stats=loadStats(activeStatsKey()); /* une seule variable échangée — tout passe déjà par stats */
   state.subject="mix";               /* réinitialise la tuile sélectionnée */
@@ -3393,16 +3446,28 @@ function setMatiere(m){
 /* Textes héro par matière : des DONNÉES lues par renderHome —
    aucune duplication de HTML (marque et titre restés invariables). */
 const MAT_DATA={
- maths:{eyebrow:"Première · spécialité maths",
-   lede:"Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante.",
-   noteTop:"e<sup>iπ</sup> + 1 = 0"},
- pc:{eyebrow:"Première · spécialité physique-chimie",
-   lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer.",
-   noteTop:"F = m·a — 2ᵉ loi de Newton"},
- de:{eyebrow:"Première · allemand A2",
+ maths:{
+   noteTop:"e<sup>iπ</sup> + 1 = 0",
+   seconde:{eyebrow:"Seconde · maths",
+     lede:"Deux minutes de calculs ciblés — nombres, équations, 2e degré, fonctions, vecteurs, statistiques — pour garder le réflexe du bac."},
+   premiere:{eyebrow:"Première · spécialité maths",
+     lede:"Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."},
+   terminale:{eyebrow:"Terminale · spécialité maths",
+     lede:"Deux minutes de calculs ciblés — exponentielle, logarithme, suites, probas conditionnelles, intégrales, complexes — pour garder le réflexe du bac."}
+ },
+ pc:{
+   noteTop:"F = m·a — 2ᵉ loi de Newton",
+   seconde:{eyebrow:"Seconde · physique-chimie",
+     lede:"Deux minutes de physique-chimie — moles, dilution, énergie, forces, signaux, électricité — pour garder le bon réflexe."},
+   premiere:{eyebrow:"Première · spécialité physique-chimie",
+     lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."},
+   terminale:{eyebrow:"Terminale · spécialité physique-chimie",
+     lede:"Deux minutes de physique-chimie — ondes, nucléaire, cinétique, énergie, circuit RC, thermodynamique — pour garder le bon réflexe."}
+ },
+ de:{eyebrow:"allemand A2",
    lede:"Pour réussir en allemand, il faut s'entourer de la langue : la régularité fera la différence.",
    noteTop:"der · die · das — trois articles, pas un de plus"},
- en:{eyebrow:"Première · anglais A2–B1",
+ en:{eyebrow:"anglais A2–B1",
    lede:"Pour réussir en anglais, il faut entendre la langue, la lire et la réutiliser régulièrement.",
    noteTop:"a · an · the — trois articles, pas un de plus"}
 };
@@ -3441,9 +3506,14 @@ function renderHome(){
   clearTimeout(rearmBoot._t);
   document.documentElement.classList.remove("boot");
   const M=MAT_DATA[state.matiere];
-  $("#heroEyebrow").textContent=M.eyebrow;
-  $("#heroLede").innerHTML=M.lede;
+  const H=(state.annee&&M[state.annee])?M[state.annee]:M; /* DE/EN : M direct ; maths/PC : l'année */
+  $("#heroEyebrow").textContent=H.eyebrow;
+  $("#heroLede").innerHTML=H.lede;
   $("#noteTop").innerHTML=M.noteTop;
+  /* Sélecteur d'année : visible seulement si la matière a une année ET que
+     ses 3 registres sont livrés (yearReady) — DE/EN : jamais. */
+  $("#yearRow").hidden=!(state.annee&&yearReady(state.matiere));
+  document.querySelectorAll(".seg-btn[data-year]").forEach(x=>x.classList.toggle("on",x.dataset.year===state.annee));
   renderLvlCard();
   document.querySelectorAll(".seg-btn[data-mat]").forEach(x=>x.classList.toggle("on",x.dataset.mat===state.matiere));
   paintLvlButtons(); /* libellés des niveaux : A2/A2+/B1 en langues, Facile/Moyen/Difficile en maths/PC */
@@ -3979,6 +4049,22 @@ function setNiveau(l){
   renderHome();
 }
 document.querySelectorAll(".seg-btn[data-lvl]").forEach(b=>b.addEventListener("click",()=>setNiveau(b.dataset.lvl)));
+/* Année (spec D2) : valide la valeur, persiste la clé de la MATIÈRE ACTIVE,
+   re-rend l'accueil. La réaction .yearpick est scopée à .seg-year (comme
+   .lvlpick à .seg-lvl) — les boutons matière/niveau ne « pop » pas. */
+function setAnnee(a){
+  if(!YEARS.includes(a))return;
+  if(a===state.annee)return;
+  state.annee=a;
+  store.set(YEAR_KEY[state.matiere],a);
+  document.querySelectorAll(".seg-btn[data-year]").forEach(x=>x.classList.toggle("on",x.dataset.year===a));
+  renderHome();
+  document.querySelectorAll(".seg-year .seg-btn").forEach(b=>{
+    if(b.dataset.year===a){b.classList.remove("yearpick");void b.offsetWidth;b.classList.add("yearpick");}
+  });
+  setTimeout(()=>document.querySelectorAll(".seg-year .seg-btn.yearpick").forEach(b=>b.classList.remove("yearpick")),340);
+}
+document.querySelectorAll(".seg-btn[data-year]").forEach(b=>b.addEventListener("click",()=>{if(!b.classList.contains("on"))setAnnee(b.dataset.year);}));
 /* Ciblée sur .seg-btn : [data-mat] seul inclurait <html> (data-mat="pc" en mode
    physique-chimie) et tout clic de la page rebasculerait sur PC par délégation
    d'événement (bulles de clic). */

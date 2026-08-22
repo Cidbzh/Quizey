@@ -177,7 +177,9 @@ console.log("\n[7] Générateurs — forme des questions, visuels SVG, round-tri
   const probe=vm.runInContext("({SUBJECTS_MATH,SUBJECTS_PC,SUBJECTS_DE,SUBJECTS_EN,checkAnswer,VIZdraw})",ctx);
   ok("SUBJECTS_MATH, SUBJECTS_PC, SUBJECTS_DE, SUBJECTS_EN, checkAnswer et VIZdraw accessibles",!!(probe.SUBJECTS_MATH&&probe.SUBJECTS_PC&&probe.SUBJECTS_DE&&probe.SUBJECTS_EN&&probe.checkAnswer&&probe.VIZdraw));
   let bad=0,vzbad=0,rtbad=0,qbad=0,checked=0,vizCount=0,qcmGens=0;
-  const REGISTERS=[].concat(probe.SUBJECTS_MATH||[],probe.SUBJECTS_PC||[],probe.SUBJECTS_DE||[],probe.SUBJECTS_EN||[]);
+  const REGISTERS=[];
+  for(const y of["seconde","premiere","terminale"])REGISTERS.push(...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[]));
+  REGISTERS.push(...(probe.SUBJECTS_DE||[]),...(probe.SUBJECTS_EN||[]));
   for(const sub of REGISTERS){
     for(let gi=0;gi<sub.gens.length;gi++){
       const g=sub.gens[gi];
@@ -969,6 +971,118 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     ok("DE : sa XP (qz_xp_de) augmente sans toucher maths ni PC",
        JSON.parse(lsData.get("qz_xp_de"))>0&&JSON.parse(lsData.get("qz_xp"))===10);
   }
+}
+
+/* ========================================================= */
+console.log("\n[24] Registres par année — structure, ids, stabilité Première");
+{
+  lsData.clear();
+  const env=buildEnv();const ctx=runApp(env);
+  const probe=vm.runInContext("({SUBJECTS_MATH,SUBJECTS_PC,SUBJECTS_DE,SUBJECTS_EN,THEME_BY_ID})",ctx);
+  const oldM=["deriv","suites","logexp","equa2","trig","proba","vect","affine","lim","var"];
+  const oldP=["newton","forces","energie","moles","stoich","cinet","ondes","elec"];
+  ok("Première maths : les 10 ids historiques, ordre inchangé",
+     JSON.stringify(probe.SUBJECTS_MATH.premiere.map(s=>s.id))===JSON.stringify(oldM));
+  ok("Première PC : les 8 ids historiques, ordre inchangé",
+     JSON.stringify(probe.SUBJECTS_PC.premiere.map(s=>s.id))===JSON.stringify(oldP));
+  let lvls=true;
+  for(const y of["seconde","premiere","terminale"])
+    for(const s of [...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[])]){
+      const set=new Set(s.gens.map(g=>g.lvl));
+      if(!set.has("facile")||!set.has("moyen")||!set.has("difficile"))lvls=false;
+    }
+  ok("chaque thème maths/PC porte facile + moyen + difficile",lvls);
+  let pre=true;
+  for(const y of["seconde","terminale"])
+    for(const s of [...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[])]){
+      const want=y==="seconde"?"s2_":"t_";
+      if(!s.id.startsWith(want))pre=false;
+    }
+  ok("ids Seconde préfixés s2_ / Terminale préfixés t_ (quand livrés)",pre);
+  const T=Object.keys(probe.THEME_BY_ID);
+  ok("THEME_BY_ID couvre les 18 ids anciens maths/PC + DE + EN",
+     [...oldM,...oldP,"vocab","conj","art","date","phrasen","trad",
+      "en_vocab","en_verbes","en_art","en_q","en_phrases","en_trad"].every(id=>T.includes(id)));
+  let purgeOk=true;
+  {
+    const env2=buildEnv();
+    lsData.set("qz_stats",JSON.stringify({ans:2,good:1,bySub:{deriv:{ans:2,good:1}},
+      review:[{s:"zzz_orpheline",l:"moyen",q:{prompt:'x',type:'number',answer:1},reps:0,due:0},
+              {s:"deriv",l:"moyen",q:{prompt:'y',type:'number',answer:2},reps:0,due:0}]}));
+    const ctx2=runApp(env2);
+    const R=vm.runInContext("stats.review.map(r=>r.s)",ctx2);
+    purgeOk=R.length===1&&R[0]==="deriv";
+  }
+  ok("purge orphelines loadStats : id inconnue retirée, id connue conservée",purgeOk);
+}
+
+/* ========================================================= */
+console.log("\n[27] Année — état, clés, indépendance maths/PC, THEME_BY_ID");
+{
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    ok("clé absente → « premiere » (défaut)",vm.runInContext("state.annee",ctx)==="premiere");
+  }
+  lsData.clear();
+  lsData.set("qz_year_math","bac-pro");
+  lsData.set("qz_year_pc","SECONDE");
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    ok("valeurs corrompues → « premiere »",vm.runInContext("state.annee",ctx)==="premiere");
+    vm.runInContext("setMatiere('pc')",ctx);
+    ok("PC : corrompue → « premiere » aussi",vm.runInContext("state.annee",ctx)==="premiere");
+  }
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("setAnnee('seconde')",ctx);
+    const storedM=lsData.get("qz_year_math"); /* Map du localStorage factice, lisible côté Node */
+    ok("setAnnee('seconde') → état + clé qz_year_math",
+       vm.runInContext("state.annee",ctx)==="seconde"&&
+       (storedM==='"seconde"'||storedM==="seconde"));
+    vm.runInContext("setMatiere('pc')",ctx);
+    ok("bascule maths→pc : annee PC re-chargée (défaut « premiere »)",
+       vm.runInContext("state.annee",ctx)==="premiere");
+    vm.runInContext("setAnnee('terminale')",ctx);
+    const storedP=lsData.get("qz_year_pc");
+    ok("PC → terminale persistée",storedP==='"terminale"'||storedP==="terminale");
+    vm.runInContext("setMatiere('maths')",ctx);
+    ok("INDÉPENDANCE : maths « seconde », PC « terminale » (clés distinctes)",
+       vm.runInContext("state.annee",ctx)==="seconde"&&storedP!==storedM);
+    vm.runInContext("setAnnee('invalide');",ctx);
+    ok("setAnnee invalide → ignoré",vm.runInContext("state.annee",ctx)==="seconde");
+    vm.runInContext("setMatiere('de')",ctx);
+    ok("DE → state.annee === null",vm.runInContext("state.annee",ctx)===null);
+    vm.runInContext("setMatiere('en')",ctx);
+    ok("EN → state.annee === null",vm.runInContext("state.annee",ctx)===null);
+  }
+}
+
+/* ========================================================= */
+console.log("\n[28] Libellés — eyebrow/lede par matière × année, DE/EN sans « Première »");
+{
+  lsData.clear();
+  const env=buildEnv();const ctx=runApp(env);
+  const cases=[
+    ["maths","seconde","Seconde · maths"],
+    ["maths","premiere","Première · spécialité maths"],
+    ["maths","terminale","Terminale · spécialité maths"],
+    ["pc","seconde","Seconde · physique-chimie"],
+    ["pc","premiere","Première · spécialité physique-chimie"],
+    ["pc","terminale","Terminale · spécialité physique-chimie"]
+  ];
+  for(const [m,y,e] of cases){
+    vm.runInContext("setMatiere('"+m+"');setAnnee('"+y+"')",ctx);
+    ok(m+" / "+y+" : « "+e+" »",
+       vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)===e);
+  }
+  vm.runInContext("setMatiere('de')",ctx);
+  ok("DE : « allemand A2 » (sans « Première »)",
+     vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)==="allemand A2");
+  vm.runInContext("setMatiere('en')",ctx);
+  ok("EN : « anglais A2–B1 » (sans « Première »)",
+     vm.runInContext("document.querySelector('#heroEyebrow').textContent",ctx)==="anglais A2–B1");
 }
 
 console.log("=====================================");
