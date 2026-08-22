@@ -2182,6 +2182,138 @@ const G_ELECTRICITE=[
      explain:`En série, les résistances s'additionnent.<br>R = R₁ + R₂ = ${r1} + ${r2} = <b>${R} Ω</b>.`};
  }}
 ];
+
+/* ---------- Seconde PC : Quantité de matière ---------- */
+const G_S2_MOLES=[
+ {lvl:"facile",make(){
+   const M=pick([16,18,44,64,80]),n=Ri(1,5),m=n*M;
+   return{prompt:`Une espèce chimique a une masse molaire M = ${M} g/mol. Pour n = ${n} mol, quelle est la masse m = n × M ? (en g)`,
+     type:"number",answer:m,
+     explain:`m = n × M = ${n} × ${M} = <b>${m} g</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const n=pick([0.5,1,2,3]),N=Math.round(n*6.02*100)/100,ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
+   return{prompt:`Le nombre de particules vaut N = n × Nₐ avec Nₐ ≈ 6,02 × 10²³. Pour n = ${ns} mol, combien de particules N = … × 10²³ ?`,
+     type:"number",answer:N,tol:0.01,
+     explain:`N = n × Nₐ : ${ns} × 6,02 = <b>${Ns}</b> (en 10²³ particules).`};
+ }},
+ {lvl:"difficile",make(){
+   const n=Ri(1,4),V=24*n;
+   return{prompt:`Le volume molaire des gaz vaut Vm ≈ 24 L/mol. Quel volume V = n × Vm occupe n = ${n} mol de gaz ? (en L)`,
+     type:"number",answer:V,
+     explain:`V = n × Vm = ${n} × 24 = <b>${V} L</b>.`};
+ }}
+];
+
+/* ---------- Seconde PC : Solutions & dilution ---------- */
+const G_S2_DILU=[
+ {lvl:"facile",make(){
+   const n=Ri(1,5),V=pick([0.5,1,2]),C=n/V,vs=String(V).replace(".",","),cs=String(C).replace(".",",");
+   return{prompt:`On dissout n = ${n} mol de soluté dans un volume final V = ${vs} L. Quelle est la concentration C = n/V ? (en mol/L)`,
+     type:"number",answer:C,tol:0.01,
+     explain:`C = n/V = ${n}/${vs} = <b>${cs} mol/L</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const C1=pick([1,2,4]),F=Ri(2,5),C2=C1/F,C2r=Math.round(C2*100)/100,cs=String(C2r).replace(".",",");
+   return{prompt:`Une solution de concentration C₁ = ${C1} mol/L est diluée par un facteur F = ${F}. Quelle est la concentration finale C₂ = C₁/F ? (en mol/L)`,
+     type:"number",answer:C2,tol:0.01,
+     explain:`Diluer par un facteur F, c'est diviser la concentration par F : C₂ = C₁/F = ${C1}/${F} ${C2===C2r?"=":"≈"} <b>${cs} mol/L</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const V1=Ri(10,50)*10,F=Ri(2,10),V2=V1*F;
+   return{prompt:`Pour diluer par un facteur F = ${F}, quel volume final V₂ = V₁ × F faut-il à partir de V₁ = ${V1} mL ? (en mL)`,
+     type:"number",answer:V2,
+     explain:`V₂ = V₁ × F = ${V1} × ${F} = <b>${V2} mL</b>.`};
+ }}
+];
+
+/* ---------- Seconde PC : Énergie ---------- */
+const G_S2_ENER=[
+ {lvl:"facile",make(){
+   const m=Ri(1,9),h=Ri(1,9),E=Math.round(m*9.8*h*100)/100,es=String(E).replace(".",",");
+   return{prompt:`Une masse m = ${m} kg est à une hauteur h = ${h} m au-dessus du sol (g = 9,8 N/kg). Quelle est son énergie de position E_p = m·g·h ? (en J)`,
+     type:"number",answer:E,tol:0.01,
+     explain:`E_p = m·g·h = ${m} × 9,8 × ${h} = <b>${es} J</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const m=Ri(2,9),v=Ri(2,9),E=0.5*m*v*v,es=String(E).replace(".",",");
+   return{prompt:`Un objet de masse m = ${m} kg se déplace à v = ${v} m/s. Quelle est son énergie cinétique E_c = ½·m·v² ? (en J)`,
+     type:"number",answer:E,
+     explain:`E_c = ½·m·v² = 0,5 × ${m} × ${v}² = <b>${es} J</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const v0=pick([8,10,12]),h=v0*v0/(2*9.8),hs=String(Math.round(h*100)/100).replace(".",",");
+   return{prompt:`Une balle est lancée verticalement vers le haut à v₀ = ${v0} m/s. Sans frottement, quelle hauteur h_max = v₀²/(2g) atteint-elle (g = 9,8) ? (en m)`,
+     type:"number",answer:h,tol:0.05,
+     explain:`Au sommet, toute l'énergie cinétique initiale est devenue énergie de position : ½·m·v₀² = m·g·h_max → h_max = v₀²/(2g) = ${v0}²/19,6 = <b>${hs} m</b>.`};
+ }}
+];
+
+/* ---------- Seconde PC : Forces & mouvement ---------- */
+const G_S2_FORCE=[
+ {lvl:"facile",make(){
+   const m=Ri(1,9),a=Ri(1,9),F=m*a;
+   return{prompt:`Un objet de masse m = ${m} kg subit une accélération a = ${a} m/s². Quelle est la résultante F = m·a des forces ? (en N)`,
+     type:"number",answer:F,
+     explain:`2ᵉ loi de Newton : F = m·a = ${m} × ${a} = <b>${F} N</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   return qcm(`1ʳᵉ loi de Newton : un corps soumis à la résultante nulle des forces…`,
+     "se meut à vitesse constante (ou reste immobile)",
+     ["s'arrête forcément","accélère proportionnellement à sa masse"],
+     `1ʳᵉ loi (inertie) : dans le référentiel de la Terre, si la résultante est nulle la vitesse ne change pas — le corps reste immobile ou se meut à vitesse constante.`);
+ }},
+ {lvl:"difficile",make(){
+   const m=Ri(30,150),P=Math.round(m*9.8*100)/100,ps=String(P).replace(".",",");
+   return{prompt:`Un objet a une masse m = ${m} kg. Quel est son poids P = m·g (g = 9,8 N/kg) ? (en N)`,
+     type:"number",answer:P,tol:0.01,
+     explain:`P = m·g = ${m} × 9,8 = <b>${ps} N</b>. Le poids est la force de gravité exercée par la Terre sur l'objet.`};
+ }}
+];
+
+/* ---------- Seconde PC : Signaux & ondes simples ---------- */
+const G_S2_SIG=[
+ {lvl:"facile",make(){
+   const f=pick([1,2,5,10,50,100]),T=1/f,ts=String(T).replace(".",",");
+   return{prompt:`Un signal a une fréquence f = ${f} Hz. Quelle est sa période T = 1/f ? (en s)`,
+     type:"number",answer:T,tol:0.01,
+     explain:`T = 1/f = 1/${f} = <b>${ts} s</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const d=pick([1.5,3,15]),t=d/3,ds=String(d).replace(".",","),ts=String(t).replace(".",",");
+   return{prompt:`La lumière parcourt une distance de ${ds} × 10⁸ m à la vitesse c = 3 × 10⁸ m/s. Combien de temps t met-elle à parcourir cette distance ? (en s)`,
+     type:"number",answer:t,tol:0.05,
+     explain:`t = distance/c = (${ds} × 10⁸)/(3 × 10⁸) = ${ds}/3 = <b>${ts} s</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   return qcm(`Un signal est périodique si…`,
+     "il se répète identiquement au bout d'un intervalle fixe (la période)",
+     ["sa fréquence varie dans le temps","il ne possède qu'un seul maximum"],
+     `Périodique = le signal se répète à l'identique au bout d'un intervalle de temps fixe, la période T. Une fréquence qui varie ou un unique maximum indiquent un signal non périodique.`);
+ }}
+];
+
+/* ---------- Seconde PC : Électricité ---------- */
+const G_S2_CIRC=[
+ {lvl:"facile",make(){
+   const U=pick([6,12,24]),I=Ri(1,4),P=U*I;
+   return{prompt:`Un récepteur est alimenté sous une tension U = ${U} V et parcouru par un courant I = ${I} A. Quelle est la puissance P = U·I ? (en W)`,
+     type:"number",answer:P,
+     explain:`P = U·I = ${U} × ${I} = <b>${P} W</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const R=pick([20,30,40,100,200]),I=Ri(1,5),U=R*I;
+   return{prompt:`Une résistance est parcourue par un courant I = ${I} A sous une tension U = ${U} V. D'après la loi d'Ohm (R = U/I), quelle est sa résistance R ? (en Ω)`,
+     type:"number",answer:R,
+     explain:`Loi d'Ohm : R = U/I = ${U}/${I} = <b>${R} Ω</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const P=pick([20,40,60,100]),t=Ri(10,300)*10,E=P*t;
+   return{prompt:`Un appareil de puissance P = ${P} W fonctionne pendant t = ${t} s. Quelle énergie E = P·t consomme-t-il ? (en J)`,
+     type:"number",answer:E,
+     explain:`E = P·t = ${P} × ${t} = <b>${E} J</b>.`};
+ }}
+];
 /* ================= ALLEMAND A2 (contenu seul — branchement plus tard) =================
    Toutes les questions sont des QCM via qcm(prompt, bonne, distracteurs, explain) →
    {prompt, type:"choice", options, correct, explain} — options mélangées, correct = index
@@ -2941,6 +3073,12 @@ const G_EN_TRAD=[
 /* ---------- REGISTRE PC + helpers matière ---------- */
 const SUBJECTS_PC={
   seconde:[
+  {id:"s2_moles",name:"Quantité de matière",sym:"n = m/M",gens:G_S2_MOLES},
+  {id:"s2_dilution",name:"Solutions & dilution",sym:"C = n/V",gens:G_S2_DILU},
+  {id:"s2_energie",name:"Énergie",sym:"½mv² · mgh",gens:G_S2_ENER},
+  {id:"s2_forces",name:"Forces & mouvement",sym:"F = ma",gens:G_S2_FORCE},
+  {id:"s2_signaux",name:"Signaux & ondes",sym:"T = 1/f",gens:G_S2_SIG},
+  {id:"s2_circuit",name:"Électricité",sym:"P = U·I",gens:G_S2_CIRC}
   ],
   premiere:[
  {id:"newton",name:"Mécanique & Newton",sym:"F=ma",gens:G_NEWTON},
