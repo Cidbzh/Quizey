@@ -320,7 +320,7 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    les tuiles remontent juste en dessous → le bloc est plus court.
    Le TITRE est en HAUT (align-items:flex-start) : il se cale sur la 1ʳᵉ
    ligne de la colonne de sélecteurs, pas au bas (demande Cid 2026-08-23). */
-.lead-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.lead-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:24px;position:relative}
 .lead-head h2{margin-bottom:0}
 .picks{display:flex;flex-direction:column;align-items:stretch;gap:8px}
 /* (2026-08-23, Cid) : les deux sélecteurs empilés (Année + Niveau) font la
@@ -330,11 +330,37 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    années prenaient un peu trop de place à côté du Niveau. */
 .picks .seg-btn{flex:1 1 auto}
 .picks .seg-year .seg-btn{font-size:13px;padding:5px 10px}
+/* (2026-08-23, Cid) : blocs « Année » + « Niveau » MATHS — largeur = PC
+   (283 px, mesuré sur le DOM via .shots/cdp.js : maths 321 px / PC 283 px /
+   DE 208 px). Itinéraire : 208 px (langues) → « comme la PC » (283 px) →
+   « le bloc de NIVEAU (= l'ANNÉE : Seconde/Première/Terminale/Expertes) doit
+   être SUR UNE LIGNE, réduire la taille en conséquence » (pas la grille 2×2).
+   NB « niveau » (classe) ≠ « difficulté » (Facile/Moyen/Difficile) : ce qui
+   change ici c'est la ligne d'ANNÉE, la ligne de DIFFICULTÉ reste identique PC.
+   Scope : :root:not([data-mat]) = MATHS uniquement (setMatiere() RETIRE
+   data-mat en maths, le pose pc/de/en — cf. MAT_DATA/ENGINE).
+   — width:283px (box-sizing:border-box global) : le bloc fait PILE 283 px, = PC.
+   — ligne DIFFICULTÉ (Facile/Moyen/Difficile/Auto) : AUCUN override → base
+     14 px / 6×13 px → EXACTEMENT la même ligne que la PC (4 boutons, 1 ligne).
+   — ligne ANNÉE SUR UNE LIGNE (4 boutons) : .seg n'a PAS de flex-wrap
+     (nowrap par défaut, l.296) → 1 ligne garantie ; boutons flex:1 1 0
+     (largeurs ÉGALES, remplissent les 283 px) + police 13 px / padding 6×2
+     (padding horizontal réduit — « Terminale » est le mot le plus long :
+     nat 65 px dans un bouton de 67 px, marge 2 px, mesuré CDP ; à 12 px
+     c'était 12 px / 6×5). Itinéraire : 12 px → 13 px « augmenter légèrement
+     la police sans changer les dimensions » (2026-08-23) : le gain de police
+     est compensé par le padding horizontal, le bloc reste 283 px.
+   Hauteur maths 82 px (Année 1 ligne + Difficulté 1 ligne) ≈ PC (80 px). */
+:root:not([data-mat]) .picks{width:283px}
+:root:not([data-mat]) .picks .seg-year .seg-btn{flex:1 1 0;font-size:13px;padding:6px 2px}
 .lead-head ~ .subgrid{margin-top:0}
 /* Multi-sélection : ligne « N chapitre(s) sélectionné(s) + Tous » — visible
    seulement si au moins un chapitre est sélectionné (display posé dans renderHome).
-   ~ (frère général) : la ligne #selBar entre en tête ne casse pas l'adjacence. */
-.lead-sel{display:none;align-items:center;gap:10px;margin:-10px 0 14px;font:500 13px/1.3 var(--f-body);color:var(--muted)}
+   (2026-08-23, Cid) : ABSOLUE — la ligne apparaît dans le vide sous le titre
+   (gauche, .lead-head = contenant positionné, bottom:0) et ne pousse PLUS les
+   tuiles vers le bas : elle ne fait pas partie du flux, zéro décalage au
+   moment où elle apparaît (avant : en flux, son apparition décalait tout). */
+.lead-sel{position:absolute;left:0;bottom:0;display:none;align-items:center;gap:10px;font:500 13px/1.3 var(--f-body);color:var(--muted)}
 .lead-sel b{color:var(--ink);font-weight:700}
 .lead-sel button{
   appearance:none;border:1px solid var(--line);background:var(--surface);cursor:pointer;
@@ -881,8 +907,8 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
             <button class="seg-btn on" data-lvl="auto" title="L'app ajuste la difficulté selon ta performance">Auto</button>
           </div>
         </div>
+        <div class="lead-sel" id="selBar" aria-live="polite"></div>
       </div>
-      <div class="lead-sel" id="selBar" aria-live="polite"></div>
       <div class="subgrid" id="subGrid"></div>
       <div class="row">
         <button class="btn btn-primary" id="btnFree">Commencer l'entraînement</button>
@@ -1479,7 +1505,11 @@ const G_T_SUIT=[
    const a=pick([2,3,4,6,9,12].filter(x=>x%b===0&&x!==b));
    const m=Ri(-5,5),k2=Ri(-4,4),l2=Ri(-4,4);
    const ans=a/b;
-   return{prompt:`Calcule la limite quand n → +∞ de (${a}n² + ${m}n + ${k2}) / (${b}n² + ${l2}n + 2).`,
+   /* Terme signé : m/k2/l2 sont NEGATIFS par moitié des tirages — écrire
+      « + -2n » serait illisible, donc « + 2n » / « − 2n » (0 → terme absent).
+      Corrigé 2026-08-23 : le prompt donnait « (9n² + -2n + 3) / … » par exemple. */
+   const t=(v,s)=>v===0?"":(v>0?` + ${v}${s}`:` − ${-v}${s}`);
+   return{prompt:`Calcule la limite quand n → +∞ de (${a}n²${t(m,"n")}${t(k2,"")}) / (${b}n²${t(l2,"n")} + 2).`,
     type:"number",answer:ans,
     explain:`On divise numérateur et dénominateur par n² (le plus haut degré) : les termes n/n² et 1/n² tendent vers 0.<br>La limite est le rapport des coefficients de n² : ${a}/${b} = <b>${ans}</b>.`};
  }}
@@ -4138,7 +4168,7 @@ const MAT_DATA={
    lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."
  },
  de:{
-   lede:"Pour réussir en allemand, il faut s'entourer de la langue : la régularité fera la différence.",
+   lede:"Pour réussir en allemand, il faut se familiariser avec la langue : la régularité fera la différence.",
    noteTop:"der · die · das — trois articles, pas un de plus"
  },
  en:{
@@ -4765,8 +4795,15 @@ function levelUp(oldN,newN){
   }
   const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
   raf(function(){raf(function(){host.classList.add("go");if(fg)fg.style.strokeDashoffset="0";});});
-  /* Anneau plein → tick du niveau : grand numéro N→N+1 (pop + halo) + gerbe d'étincelles. */
-  setTimeout(function(){if(host.classList)host.classList.add("up");},1150);
+  /* Anneau plein → tick du niveau : le grand numéro passe de oldN à newN
+     (pop + halo via .up .lvlup-num) + gerbe d'étincelles. SANS ce swap, la
+     carte s'achevait sur le niveau quitté (le label « N → N+1 » était le seul
+     indice du nouveau — corrigé 2026-08-23, sur demande Cid). */
+  setTimeout(function(){
+    if(host.classList)host.classList.add("up");
+    const num=host.querySelector?host.querySelector(".lvlup-num"):null;
+    if(num)num.textContent=newN;
+  },1150);
   setTimeout(function(){if(host.classList)host.classList.add("bye");},2350);
   setTimeout(function(){if(host.remove)host.remove();},2750);
 }

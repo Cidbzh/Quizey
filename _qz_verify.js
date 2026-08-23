@@ -1143,7 +1143,7 @@ console.log("\n[28] Hero — pas de ligne classe/matière, phrase de base unique
   const cases=[
     ["maths","Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."],
     ["pc","Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."],
-    ["de","Pour réussir en allemand, il faut s'entourer de la langue : la régularité fera la différence."],
+    ["de","Pour réussir en allemand, il faut se familiariser avec la langue : la régularité fera la différence."],
     ["en","Pour réussir en anglais, il faut entendre la langue, la lire et la réutiliser régulièrement."]
   ];
   for(const [m,phrase] of cases){
