@@ -1325,7 +1325,7 @@ console.log("\n[31] Expertes — 4ᵉ ANNÉE maths (programme officiel expertes)
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("setAnnee('experte');setNiveau('difficile');state.subject='mix'",ctx);
+    vm.runInContext("setAnnee('experte');setNiveau('difficile');state.sel=[]",ctx);
     ok("activeSubjects() = les 3 thèmes expertes",
        JSON.stringify(vm.runInContext("activeSubjects().map(s=>s.id).sort()",ctx))===JSON.stringify(["t_arith","t_complexes","t_graphes"]));
     let allOk=true;const seen=new Set();
@@ -1350,11 +1350,68 @@ console.log("\n[31] Expertes — 4ᵉ ANNÉE maths (programme officiel expertes)
   {
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("store.set('qz_xp',0)",ctx);
-    vm.runInContext("setAnnee('experte');setNiveau('facile');state.subject='mix';startFree()",ctx);
+    vm.runInContext("setAnnee('experte');setNiveau('facile');state.sel=[];startFree()",ctx);
     const curLvl=vm.runInContext("state.curLvl",ctx);
     ok("la question servie est au niveau réel (pas « experte »)",["facile","moyen","difficile"].includes(curLvl)&&curLvl!=="experte");
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
     ok("bonne réponse « facile » → +5 XP (pas 20)",JSON.parse(lsData.get("qz_xp"))===5);
+  }
+}
+
+/* ========================================================= */
+console.log("\n[32] Anti-répétition (shuffle-bag) — chaque question disponible servie UNE fois avant remélange");
+{
+  lsData.clear();
+  /* --- A. Mix @ niveau : N tirages → N générateurs DISTINCTS (aucune répétition avant épuisement),
+        puis la poche remélange et reste valide --- */
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    const res=vm.runInContext(`(function(){
+      state.sel=[];state.level='moyen';state.mode='free';
+      const vis=visibleSubjects();
+      let N=0;
+      for(const sub of vis){let idx=0;sub.gens.forEach(g=>{if(g.lvl==='moyen')idx++;});if(!idx)idx=sub.gens.length;N+=idx;}
+      const gens=[];
+      for(let i=0;i<N;i++){gens.push(bagDraw().gen);}
+      return {N, distinct:new Set(gens).size};
+    })()`,ctx);
+    ok(`mix @ moyen : ${res.N} tirages → ${res.N} générateurs DISTINCTS (aucune répétition avant épuisement)`,res.distinct===res.N&&res.N>1);
+    const extra=vm.runInContext(`(function(){const d=bagDraw();return {ok:!!(d&&d.sub&&d.gen&&typeof d.gen.make==='function')};})()`,ctx);
+    ok("après épuisement : la poche remélange, tirage encore valide",extra.ok);
+  }
+  /* --- B. Thème verrouillé : les tirages servent UNIQUEMENT ce thème (pas de fuite vers les autres) --- */
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    const res=vm.runInContext(`(function(){
+      state.sel=[];state.level='moyen';state.mode='free';
+      const target=visibleSubjects()[0].id;
+      state.sel=[target];
+      const ids=[];
+      for(let i=0;i<6;i++)ids.push(bagDraw().sub.id);
+      return {target, allSame:ids.every(x=>x===target)};
+    })()`,ctx);
+    ok(`verrouillé sur « ${res.target} » : 6 tirages → TOUS ce thème (pas de fuite)`,res.allSame===true&&res.target!==null);
+  }
+  /* --- C. Pas de crash + question valide (difficile, qui exerce le repli niveau absent) --- */
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("state.sel=[];state.level='difficile';state.mode='free';",ctx);
+    const r=vm.runInContext("(function(){const d=bagDraw();const q=d.gen.make();return {sub:!!d.sub,prompt:typeof q.prompt==='string'&&q.prompt.length>0,type:!!q.type};})()",ctx);
+    ok("difficile : tirage valide (sujet + prompt non vide + type)",r.sub&&r.prompt&&r.type);
+  }
+  /* --- D. Multi-sélection : 2 thèmes choisis → tirages UNIQUEMENT sur ces 2, et les deux sont servis --- */
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    const res=vm.runInContext(`(function(){
+      state.sel=[];state.level='moyen';state.mode='free';
+      const vis=visibleSubjects();
+      const a=vis[0].id, b=vis[1].id;
+      state.sel=[a,b];
+      const ids=[];
+      for(let i=0;i<12;i++)ids.push(bagDraw().sub.id);
+      return {a,b,inScope:ids.every(x=>x===a||x===b),both:ids.includes(a)&&ids.includes(b)};
+    })()`,ctx);
+    ok(`multi ${res.a}+${res.b} : 12 tirages → UNIQUEMENT ces 2 thèmes, et les deux sont servis`,res.inScope===true&&res.both===true);
   }
 }
 

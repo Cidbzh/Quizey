@@ -320,10 +320,28 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    les tuiles remontent juste en dessous → le bloc est plus court.
    Le TITRE est en HAUT (align-items:flex-start) : il se cale sur la 1ʳᵉ
    ligne de la colonne de sélecteurs, pas au bas (demande Cid 2026-08-23). */
-.lead-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.lead-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:24px}
 .lead-head h2{margin-bottom:0}
-.picks{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-.lead-head + .subgrid{margin-top:0}
+.picks{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+/* (2026-08-23, Cid) : les deux sélecteurs empilés (Année + Niveau) font la
+   MÊME largeur — align-items:stretch (le plus large fixe la largeur du bloc)
+   + boutons flex:1 → les deux blocs s'alignent bord à bord, boutons égaux.
+   Les boutons d'ANNÉE sont LÉGÈREMENT plus compacts (13px / 5×10) : les
+   années prenaient un peu trop de place à côté du Niveau. */
+.picks .seg-btn{flex:1 1 auto}
+.picks .seg-year .seg-btn{font-size:13px;padding:5px 10px}
+.lead-head ~ .subgrid{margin-top:0}
+/* Multi-sélection : ligne « N chapitre(s) sélectionné(s) + Tous » — visible
+   seulement si au moins un chapitre est sélectionné (display posé dans renderHome).
+   ~ (frère général) : la ligne #selBar entre en tête ne casse pas l'adjacence. */
+.lead-sel{display:none;align-items:center;gap:10px;margin:-10px 0 14px;font:500 13px/1.3 var(--f-body);color:var(--muted)}
+.lead-sel b{color:var(--ink);font-weight:700}
+.lead-sel button{
+  appearance:none;border:1px solid var(--line);background:var(--surface);cursor:pointer;
+  font:600 12px/1 var(--f-body);color:var(--accent);border-radius:999px;padding:5px 12px;
+  transition:border-color .16s var(--ease),background .16s var(--ease);
+}
+.lead-sel button:hover{border-color:var(--accent);background:var(--accent-soft)}
 .seg-year .seg-btn{transition:color .25s var(--ease),background .25s var(--ease)}
 @media (prefers-reduced-motion: no-preference){
   .seg-year .seg-btn:active{transform:scale(.95)}
@@ -345,8 +363,6 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 }
 .subcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
 .subcard.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--shadow)}
-.subcard .sym{font:600 24px/1 var(--f-display);color:var(--accent);transition:transform .2s var(--ease)}
-.subcard:hover .sym{transform:scale(1.1)}
 /* Nom de chapitre : police display grasse pour qu'il se lise comme un vrai titre.
    Couleur = accent de la matière (bleu maths / violet PC) : le quasi-noir (--ink)
    était jugé difficilement lisible (2026-08-19). */
@@ -641,17 +657,45 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
    progression réelle. pointer-events:none → ne bloque jamais la partie ;
    auto-nettoyage ~2,7 s. prefers-reduced-motion : transitions coupées,
    l'animation se lit en affichage/texte uniquement (pas de mouvement). */
+/* Montée de niveau : overlay plein écran (non interactif) — LE moment « palier ».
+   Séquence : la carte arrive en spring → l'anneau se remplit (≈1 s) → le grand
+   numéro tick N→N+1 (pop + halo + gerbe d'étincelles) → fondu. ≈2,7 s, décoratif
+   (aria-hidden), désactivé sous prefers-reduced-motion (carte statique). */
 .lvlup{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .25s var(--ease)}
+.lvlup>*{grid-area:1/1}
 .lvlup.go{opacity:1}
-.lvlup-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 34px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);transform:scale(.72);transition:transform .3s cubic-bezier(.2,1.4,.4,1)}
+.lvlup.bye{opacity:0}
+.lvlup-glow{
+  position:absolute;left:50%;top:50%;width:min(440px,94vw);height:min(440px,94vw);border-radius:50%;
+  background:radial-gradient(closest-side,var(--accent-soft),transparent 72%);
+  opacity:0;transform:translate(-50%,-50%) scale(.55);
+  transition:opacity .55s var(--ease),transform .7s cubic-bezier(.2,1.3,.4,1);
+}
+.lvlup.go .lvlup-glow{opacity:.85;transform:translate(-50%,-50%) scale(1)}
+.lvlup.up .lvlup-glow{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
+.lvlup-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 36px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);transform:scale(.7);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
 .lvlup.go .lvlup-card{transform:scale(1)}
-.lvlup-nm{font:700 17px var(--f-body);color:var(--muted)}
-.lvlup-bar{width:min(340px,72vw);height:14px;border-radius:99px;background:var(--accent-soft);overflow:hidden}
-.lvlup-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .95s linear}
-.lvlup-sub{font:600 12.5px var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);opacity:.7}
-.lvlup.done .lvlup-nm{color:var(--accent);font-size:22px}
+.lvlup-kick{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.lvlup-numwrap{position:relative;width:124px;height:124px;display:grid;place-items:center}
+.lvlup-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.lvlup-ring circle{fill:none;stroke-width:4}
+.lvlup-ring .ring-bg{stroke:var(--accent-soft)}
+.lvlup-ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease) .15s}
+.lvlup-num{font:700 46px/1 var(--f-display);color:var(--muted);transition:color .3s var(--ease)}
+.lvlup.up .lvlup-num{color:var(--accent);animation:numPop .55s var(--ease);filter:drop-shadow(0 3px 10px var(--accent))}
+@keyframes numPop{0%{transform:scale(.45)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.lvlup-nm{font:600 14px var(--f-body);color:var(--muted)}
+.lvlup-sparks{position:absolute;inset:0}
+.lvlup-sparks i{position:absolute;left:50%;top:50%;border-radius:50%;opacity:0}
+.lvlup.up .lvlup-sparks i{animation:sparkFly .95s var(--ease) forwards}
+@keyframes sparkFly{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.15)}
+}
 @media (prefers-reduced-motion:reduce){
-  .lvlup,.lvlup-card,.lvlup-bar i{transition:none}
+  .lvlup,.lvlup-card,.lvlup-glow,.lvlup-num,.lvlup-ring .ring-fg{transition:none;animation:none}
+  .lvlup-sparks{display:none}
 }
 /* Pulse du chip « score » quand la réponse est juste. */
 @keyframes chipPulse{0%{transform:scale(1)}35%{transform:scale(1.22)}100%{transform:scale(1)}}
@@ -838,6 +882,7 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
           </div>
         </div>
       </div>
+      <div class="lead-sel" id="selBar" aria-live="polite"></div>
       <div class="subgrid" id="subGrid"></div>
       <div class="row">
         <button class="btn btn-primary" id="btnFree">Commencer l'entraînement</button>
@@ -3936,7 +3981,7 @@ const store={
 ["theme","subject","stats","stats_pc","stats_de","stats_en"].forEach(k=>{try{const old=localStorage.getItem("cz_"+k);if(old!==null&&localStorage.getItem("qz_"+k)===null)localStorage.setItem("qz_"+k,old);}catch(e){}});
 /* ---- Matière : "maths" (défaut), "pc" ou "de" — persistée sous qz_subject ---- */
 const SUBJECT_KEY="qz_subject";
-const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",subject:"mix",q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,answered:false,skipQueue:[],skips:0,qT0:0,annee:null};
+const state={matiere:(function(){try{const v=JSON.parse(localStorage.getItem(SUBJECT_KEY));return v==="pc"?"pc":v==="de"?"de":v==="en"?"en":"maths";}catch(e){return"maths";}})(),mode:null,level:"auto",sel:[],q:null,sub:null,curLvl:null,streak:0,maxStreak:0,score:0,good:0,bad:0,n:0,answered:false,skipQueue:[],skips:0,qT0:0,annee:null};
 /* Niveau : défaut "auto" (2026-08-22, sur demande) — l'app adapte la difficulté
    à la performance du thème (autoLevel) ; session uniquement, jamais persisté. */
 /* ---- Stats : quatre emplacements (qz_stats maths / qz_stats_pc / qz_stats_de / qz_stats_en), même forme,
@@ -4049,7 +4094,7 @@ function setMatiere(m){
   state.annee=readYear(m); /* chaque matière garde son année (DE/EN → null) */
   store.set(SUBJECT_KEY,m);
   stats=loadStats(activeStatsKey()); /* une seule variable échangée — tout passe déjà par stats */
-  state.subject="mix";               /* réinitialise la tuile sélectionnée */
+  state.sel=[];                      /* réinitialise la sélection de chapitres (vide = mix) */
   /* Accent matière (violet PC / vert DE / rouge EN) : data-mat sur <html> → variables d'accent. La bascule est
      IMMÉDIATE, sans temps mort : le swap et la cascade démarrent au clic, la
      cascade masquant elle-même le changement de contenu (titre, slogan et
@@ -4173,16 +4218,29 @@ function renderHome(){
     `<div class="stat"><div class="v">${acc}%</div><div class="k">précision globale</div></div>`+
     `<div class="stat"><div class="v">${stats.bestStreak}</div><div class="k">meilleure série</div></div>`+
     `<div class="stat"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`;
+  /* Multi-sélection : ligne compteur + « Tous » — masquée en mode mix (sélection vide). */
+  const selBar=$("#selBar");
+  if(selBar){
+    const n=state.sel.length;
+    selBar.style.display=n?"flex":"none";
+    if(n){
+      selBar.innerHTML='<span><b>'+n+'</b> chapitre'+(n>1?"s":"")+' sélectionné'+(n>1?"s":"")+'</span>'+
+        '<button type="button" id="selClear">✕ Tous</button>';
+      const clr=$("#selClear");
+      if(clr)clr.addEventListener("click",()=>{state.sel=[];renderHome();});
+    }
+  }
   const grid=$("#subGrid");
   grid.innerHTML=visibleSubjects().map((s,i)=>{
     const st=stats.bySub[s.id]||{ans:0,good:0};
     let pc=st.ans?Math.round(100*st.good/st.ans)+"% · "+st.ans+" q":"pas encore pratiqué";
     if(st.skips)pc+=" · "+st.skips+" passées";
-    return `<button type="button" class="subcard${state.subject===s.id?" on":""}" data-sub="${s.id}" style="--cd:${i*60}ms">
-      <span class="sym">${s.sym}</span><span class="nm">${s.name}</span>${s.tag?`<span class="subtag">${s.tag}</span>`:""}<span class="pc">${pc}</span></button>`;
+    return `<button type="button" class="subcard${state.sel.includes(s.id)?" on":""}" data-sub="${s.id}" style="--cd:${i*60}ms">
+      <span class="nm">${s.name}</span>${s.tag?`<span class="subtag">${s.tag}</span>`:""}<span class="pc">${pc}</span></button>`;
   }).join("");
   grid.querySelectorAll(".subcard").forEach(b=>b.addEventListener("click",()=>{
-    state.subject=(state.subject===b.dataset.sub)?"mix":b.dataset.sub;
+    const id=b.dataset.sub, i=state.sel.indexOf(id);   /* toggle : la sélection est un ensemble */
+    if(i>=0)state.sel.splice(i,1);else state.sel.push(id);
     renderHome();
   }));
   /* ---- v2 : « À réviser » (rangée du hero) / « Par thème » (colonne) / points
@@ -4330,7 +4388,7 @@ function goHome(){
 function trainWeak(s,l){
   const lv=(l==="facile"||l==="moyen"||l==="difficile")?l:"auto";
   state.level=lv;
-  state.subject=s;
+  state.sel=[s];                      /* verrouille ce thème (multi-sélection d'un seul) */
   document.querySelectorAll(".seg-btn[data-lvl]").forEach(x=>x.classList.toggle("on",x.dataset.lvl===lv));
   startFree();
 }
@@ -4348,22 +4406,47 @@ function autoLevel(id){
   return "facile";
 }
 /* ---------- Questions ---------- */
+/* Anti-répétition (shuffle-bag) : la poche contient toutes les questions
+   disponibles pour le tirage courant — chaque thème (visible, ou verrouillé)
+   × niveau cible — et on sert chaque question UNE fois avant de re-mélanger.
+   En « mix » on parcourt TOUS les thèmes avant toute répétition ; verrouillé
+   sur un thème, on ne sert que ce thème (1 question/niveau → on le re-drille).
+   Poche EN MÉMOIRE (jamais persistée) ; la clé suit l'état (matière/année/
+   thème/niveau) → tout changement ré-initialise la poche. Review hors poche
+   (item ÉCHU). */
+const genBag={};   /* clé état -> [paires [sub, indexGen] restants, mélangés] */
+function bagKey(){
+  return [state.matiere,state.annee,state.sel.join(","),state.level==="auto"?"auto":state.level].join("|");
+}
+function bagDraw(){
+  const key=bagKey();
+  let bag=genBag[key];
+  if(!bag||!bag.length){
+    const vis=visibleSubjects();
+    let scope=state.sel.length?vis.filter(s=>state.sel.includes(s.id)):vis;   /* sélection vide = mix */
+    if(!scope.length)scope=vis;            /* sélection orpheline (année/matière changée) → tous les visibles */
+    const pool=[];
+    for(const sub of scope){
+      const t=state.level==="auto"?autoLevel(sub.id):state.level;   /* Auto : niveau adapté au thème */
+      let idx=[];
+      sub.gens.forEach((g,i)=>{if(!t||g.lvl===t)idx.push(i);});
+      if(!idx.length)sub.gens.forEach((g,i)=>idx.push(i));   /* repli : aucun au niveau → tous */
+      for(const i of idx)pool.push([sub,i]);
+    }
+    bag=shuf(pool);genBag[key]=bag;        /* poche vide → remélange des questions dispo */
+  }
+  const pair=bag.shift();
+  return{sub:pair[0],gen:pair[0].gens[pair[1]]};
+}
 function pickQ(){
   if(state.mode==="review"){
     const item=reviewDue()[0];              /* premier item ÉCHU (répétition espacée) */
     if(!item)return null;
     return{q:item.q,sub:THEME_BY_ID[item.s],lvl:item.l};
   }
-  const vis=visibleSubjects();
-  const sub=vis.find(s=>s.id===state.subject)||pick(vis);
-  let gens=sub.gens;
-  if(state.mode==="free"){
-    const target=state.level==="auto"?autoLevel(sub.id):state.level;   /* Auto : niveau adapté au thème */
-    gens=gens.filter(g=>g.lvl===target);
-  }
-  if(!gens.length)gens=sub.gens;
-  let g=pick(gens);let q=g.make();
-  return{q,sub,lvl:g.lvl};   /* vrai niveau de la QUESTION (g.lvl) */
+  const d=bagDraw();
+  const q=d.gen.make();
+  return{q,sub:d.sub,lvl:d.gen.lvl};   /* vrai niveau de la QUESTION (gen.lvl) */
 }
 function renderQ(){
   state.answered=false;
@@ -4651,25 +4734,41 @@ function levelUp(oldN,newN){
   const host=document.createElement("div");
   host.className="lvlup";
   host.setAttribute("aria-hidden","true");
-  host.innerHTML='<div class="lvlup-card"><span class="lvlup-nm">Niveau '+oldN+'</span>'+
-    '<div class="lvlup-bar"><i></i></div><span class="lvlup-sub">palier franchi</span></div>';
+  /* Halo + carte (anneau + grand numéro) + étincelles — le tout est décoratif. */
+  host.innerHTML=
+    '<div class="lvlup-glow"></div>'+
+    '<div class="lvlup-card">'+
+      '<span class="lvlup-kick">Niveau supérieur</span>'+
+      '<div class="lvlup-numwrap">'+
+        '<svg class="lvlup-ring" viewBox="0 0 124 124"><circle class="ring-bg" cx="62" cy="62" r="54"/><circle class="ring-fg" cx="62" cy="62" r="54"/></svg>'+
+        '<span class="lvlup-num">'+oldN+'</span>'+
+      '</div>'+
+      '<span class="lvlup-nm">Niveau '+oldN+' → '+newN+'</span>'+
+    '</div>'+
+    '<div class="lvlup-sparks"></div>';
   document.body.appendChild(host);
-  const fill=host.querySelector?host.querySelector(".lvlup-bar i"):null;
-  const nm=host.querySelector?host.querySelector(".lvlup-nm"):null;
-  const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
-  raf(function(){raf(function(){host.classList.add("go");if(fill)fill.style.width="100%";});});
-  setTimeout(function(){
-    if(nm)nm.textContent="Niveau "+newN;
-    host.classList.add("done");
-    if(fill){
-      const pct=lvlInfo(getXP()).pct*100;   /* retour à la vraie progression */
-      fill.style.transition="none";
-      fill.style.width=Math.max(3,Math.min(100,pct))+"%";
-      void fill.offsetWidth;
-      fill.style.transition="";
+  const C=2*Math.PI*54;                        /* circonférence de l'anneau (r=54) */
+  const fg=host.querySelector?host.querySelector(".ring-fg"):null;
+  if(fg){fg.style.strokeDasharray=C;fg.style.strokeDashoffset=C;}    /* vide ; .go le remplit */
+  /* Étincelles : 14 particules accent + ambre, dispersées autour de la carte. */
+  const box=host.querySelector?host.querySelector(".lvlup-sparks"):null;
+  if(box){
+    let h="";
+    for(let i=0;i<14;i++){
+      const a=Math.random()*Math.PI*2, d=78+Math.random()*95;
+      const dx=Math.round(Math.cos(a)*d), dy=Math.round(Math.sin(a)*d);
+      const s=Math.round(4+Math.random()*4);
+      const col=Math.random()<.6?"var(--accent)":"#FBBF24";
+      h+='<i style="width:'+s+'px;height:'+s+'px;background:'+col+';--dx:'+dx+'px;--dy:'+dy+'px;animation-delay:'+Math.round(Math.random()*140)+'ms"></i>';
     }
-  },1150);
-  setTimeout(function(){if(host.remove)host.remove();},2700);
+    box.innerHTML=h;
+  }
+  const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
+  raf(function(){raf(function(){host.classList.add("go");if(fg)fg.style.strokeDashoffset="0";});});
+  /* Anneau plein → tick du niveau : grand numéro N→N+1 (pop + halo) + gerbe d'étincelles. */
+  setTimeout(function(){if(host.classList)host.classList.add("up");},1150);
+  setTimeout(function(){if(host.classList)host.classList.add("bye");},2350);
+  setTimeout(function(){if(host.remove)host.remove();},2750);
 }
 
 /* ---------- Câblage ---------- */
@@ -4695,6 +4794,7 @@ function setAnnee(a){
   if(!yearsFor(state.matiere).includes(a))return;   /* "experte" acceptée en maths, rejetée en PC/DE/EN */
   if(a===state.annee)return;
   state.annee=a;
+  state.sel=[];                       /* la sélection porte sur les ids de l'ANCIENNE année → on la vide */
   store.set(YEAR_KEY[state.matiere],a);
   document.querySelectorAll(".seg-btn[data-year]").forEach(x=>x.classList.toggle("on",x.dataset.year===a));
   renderHome();
