@@ -12,7 +12,6 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 - **Révision par répétition espacée** — une méthode éprouvée : les questions que vous ratez reviennent, tandis que celles que vous maîtrisez sont espacées par l’algorithme.
 - **Corrigés pédagogiques** — chaque réponse est expliquée par la méthode, avec un dessin quand c'est possible.
 - **Vos points faibles** — Quizey repère où vous réussissez le moins et vous propose de vous y entraîner.
-- **Un niveau par matière** — une progression motivante, qui ne bloque jamais.
 
 ## Contenu
 
