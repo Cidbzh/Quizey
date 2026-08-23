@@ -27,7 +27,7 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 2. Répondez à votre rythme, l'algorithme s'occupe de tout.
 3. Revenez quand vous voulez : votre liste « à réviser » est toujours là, avec un aperçu du temps qu'elle représente.
 
-Le bouton « Passer » n'est pas pénalisant : vous pourrez retrouver la question plus tard.
+Le bouton « Passer » n'est pas pénalisant : il vous permet de retrouver la question plus tard.
 
 ![Le mode allemand — questions à choix multiples](img/accueil-allemand.png)
 
