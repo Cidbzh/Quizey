@@ -215,6 +215,13 @@ body{
   border-radius:999px;padding:4px 10px;white-space:nowrap;
 }
 .chip b{color:var(--ink);font-weight:600}
+/* Puce de NIVEAU (écran de question, 2026-08-23 sur demande) : « Niv. N » +
+   BARRE de progression vers le palier suivant — même code couleur que la carte
+   du hero (--accent). Track en --surface : la puce est en --accent-soft, le
+   --surface reste lisible en clair comme en sombre. */
+.chip .nlvlbar{display:inline-block;vertical-align:middle;width:52px;height:6px;margin-left:8px;border-radius:999px;background:var(--surface);overflow:hidden}
+.chip .nlvlbar i{display:block;height:100%;border-radius:999px;background:var(--accent)}
+@media (prefers-reduced-motion: no-preference){.chip .nlvlbar i{transition:width .3s var(--ease)}}
 /* Titre + slogan : deux registres — le titre domine, le slogan est sa
    sous-ligne en italique (le « · » n'a plus lieu d'être : l'espace fait le travail).
    Pas de ligne d'indication classe/matière au-dessus (retirée 2026-08-22) :
@@ -307,8 +314,16 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 /* Sélecteur d'ANNÉE (spec §3.3) : même langage que .seg-lvl, réaction
    press+rebond SCOPIÉE à .seg-year — les boutons de MATIÈRE et de NIVEAU
    ne doivent PAS « pop ». */
-.yrrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.yrrow .yrlabel{font:500 15px var(--f-body);color:var(--muted)}
+/* Tête du bloc « Entraînement libre » (2026-08-23, capture Cid) : TITRE à
+   gauche, sélecteurs Année + Niveau à DROITE (empilés, alignés à droite) —
+   les 3 étiquettes de ligne (« Année », « Niveau », « Thème ») supprimées,
+   les tuiles remontent juste en dessous → le bloc est plus court.
+   Le TITRE est en HAUT (align-items:flex-start) : il se cale sur la 1ʳᵉ
+   ligne de la colonne de sélecteurs, pas au bas (demande Cid 2026-08-23). */
+.lead-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.lead-head h2{margin-bottom:0}
+.picks{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.lead-head + .subgrid{margin-top:0}
 .seg-year .seg-btn{transition:color .25s var(--ease),background .25s var(--ease)}
 @media (prefers-reduced-motion: no-preference){
   .seg-year .seg-btn:active{transform:scale(.95)}
@@ -619,6 +634,25 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
   from{transform:translate(0,0) rotate(0);opacity:1}
   to{transform:translate(var(--drift,0px),105vh) rotate(var(--rot,540deg));opacity:.05}
 }
+/* Montée de niveau (2026-08-23, sur demande) : REMPLACE les confettis au
+   franchissement de palier (les confettis restent à la fin de révision).
+   Carte au centre de l'écran — le niveau quitté apparaît, la barre se
+   remplit, puis le NOUVEAU niveau s'affiche grossi et la barre revient à la
+   progression réelle. pointer-events:none → ne bloque jamais la partie ;
+   auto-nettoyage ~2,7 s. prefers-reduced-motion : transitions coupées,
+   l'animation se lit en affichage/texte uniquement (pas de mouvement). */
+.lvlup{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .25s var(--ease)}
+.lvlup.go{opacity:1}
+.lvlup-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 34px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);transform:scale(.72);transition:transform .3s cubic-bezier(.2,1.4,.4,1)}
+.lvlup.go .lvlup-card{transform:scale(1)}
+.lvlup-nm{font:700 17px var(--f-body);color:var(--muted)}
+.lvlup-bar{width:min(340px,72vw);height:14px;border-radius:99px;background:var(--accent-soft);overflow:hidden}
+.lvlup-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .95s linear}
+.lvlup-sub{font:600 12.5px var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);opacity:.7}
+.lvlup.done .lvlup-nm{color:var(--accent);font-size:22px}
+@media (prefers-reduced-motion:reduce){
+  .lvlup,.lvlup-card,.lvlup-bar i{transition:none}
+}
 /* Pulse du chip « score » quand la réponse est juste. */
 @keyframes chipPulse{0%{transform:scale(1)}35%{transform:scale(1.22)}100%{transform:scale(1)}}
 .chip.pulse{animation:chipPulse .5s var(--ease)}
@@ -702,6 +736,12 @@ html[data-ui="m"] .substathead span,html[data-ui="m"] .substatrow b{min-width:0;
 html[data-ui="m"] .btn{padding:14px 22px;font-size:16.5px}
 html[data-ui="m"] .btn.small{padding:13px 16px;font-size:14.5px}
 html[data-ui="m"] .seg-btn{padding:14px 14px;font-size:15px}
+/* Tête « Entraînement libre » : sur téléphone, les sélecteurs passent sous le
+   titre (pleine largeur) et leurs boutons peuvent REPLIER sur 2 lignes —
+   « Terminale (maths expertes) » est long : mieux vaut 2 lignes qu'un débordement. */
+html[data-ui="m"] .lead-head{flex-direction:column;align-items:stretch}
+html[data-ui="m"] .picks{align-items:stretch}
+html[data-ui="m"] .picks .seg{width:100%;justify-content:center;flex-wrap:wrap;row-gap:3px}
 /* « À réviser » : cellules empilées, séparateurs plume masqués, bouton pleine largeur. */
 html[data-ui="m"] .hero .revcta{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px}
 html[data-ui="m"] .hero .revcta .revsep{display:none}
@@ -781,25 +821,23 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
     <div class="home-main">
 
     <section class="panel lead" aria-labelledby="hFree" data-rv style="--d:1.06s">
-      <h2 id="hFree">Entraînement libre</h2>
-      <div class="yrrow" id="yearRow">
-        <span class="yrlabel">Année</span>
-        <div class="seg seg-year">
-          <button type="button" class="seg-btn" data-year="seconde">Seconde</button>
-          <button type="button" class="seg-btn on" data-year="premiere">Première</button>
-          <button type="button" class="seg-btn" data-year="terminale">Terminale</button>
+      <div class="lead-head">
+        <h2 id="hFree">Entraînement libre</h2>
+        <div class="picks">
+          <div class="seg seg-year" id="yearRow" role="group" aria-label="Année">
+            <button type="button" class="seg-btn" data-year="seconde">Seconde</button>
+            <button type="button" class="seg-btn on" data-year="premiere">Première</button>
+            <button type="button" class="seg-btn" data-year="terminale">Terminale</button>
+            <button type="button" class="seg-btn" data-year="experte" hidden title="Programme « maths expertes » : complexes, arithmétique, graphes & Markov (maths uniquement)">Terminale (maths expertes)</button>
+          </div>
+          <div class="seg seg-lvl" role="group" aria-label="Niveau">
+            <button class="seg-btn" data-lvl="facile">Facile</button>
+            <button class="seg-btn" data-lvl="moyen">Moyen</button>
+            <button class="seg-btn" data-lvl="difficile">Difficile</button>
+            <button class="seg-btn on" data-lvl="auto" title="L'app ajuste la difficulté selon ta performance">Auto</button>
+          </div>
         </div>
       </div>
-      <div class="row space-between wrap-row" style="margin-bottom:16px">
-        <span class="lbl">Niveau</span>
-        <div class="seg seg-lvl" role="group" aria-label="Niveau">
-          <button class="seg-btn" data-lvl="facile">Facile</button>
-          <button class="seg-btn" data-lvl="moyen">Moyen</button>
-          <button class="seg-btn" data-lvl="difficile">Difficile</button>
-          <button class="seg-btn on" data-lvl="auto" title="L'app ajuste la difficulté selon ta performance">Auto</button>
-        </div>
-      </div>
-      <p class="lbl" style="margin:0 0 8px">Thème</p>
       <div class="subgrid" id="subGrid"></div>
       <div class="row">
         <button class="btn btn-primary" id="btnFree">Commencer l'entraînement</button>
@@ -827,7 +865,9 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
       <span class="grow"></span>
       <!-- 2026-08-22 (sur demande) : le NIVEAU de la matière (le « Niveau N » de
            la carte du hero) pendant les questions. À DROITE, près du compteur —
-           pour ne pas être confondu avec la puce de DIFFICULTÉ (gauche). -->
+           pour ne pas être confondu avec la puce de DIFFICULTÉ (gauche).
+           2026-08-23 (sur demande) : la puce porte aussi sa BARRE de progression
+           vers le niveau suivant (.nlvlbar, remplie par paintChipNiv()). -->
       <span class="chip" id="chipNiv"></span>
       <span class="mono muted" id="qCount" style="font-size:13px"></span>
     </div>
@@ -850,889 +890,789 @@ const F=(n,d)=>{const f=fr(n,d);if(f.d===1)return f.n<0?"−"+(-f.n):String(f.n)
 const fs=(n,d)=>F(n,d);   /* affichage d'une réponse fraction (fraction empilée) */
 const fa=(n,d)=>fr(n,d);   /* réponse "fraction" : {n,d} simplifiée */
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Ri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
-const qcm=(p,bonne,ds,explain)=>{const o=shuf([bonne,...ds]);return{prompt:p,type:"choice",options:o,correct:o.indexOf(bonne),explain};}; /* QCM : options mélangées, correct = index réel de la bonne option */
+const qcm=(p,bonne,ds,explain,viz)=>{const o=shuf([bonne,...ds]);const r={prompt:p,type:"choice",options:o,correct:o.indexOf(bonne),explain};if(viz)r.viz=viz;return r;}; /* QCM : options mélangées, correct = index réel de la bonne option ; viz optionnel (mini-visuel) */
 /* ================= GENERATORS ================= */
-/* ---------- Dérivées ---------- */
+
+/* ---------- SECONDE — Logique & ensembles (nouveau — BO 2026) ---------- */
+const G_S2_LOG=[
+ {lvl:"facile",make(){
+   const p=pick([2,3,4,5,6]),q=pick([2,3,4,5,6].filter(x=>x!==p));
+   const l=(p*q)/gcd(p,q);
+   const ca=Math.floor(30/p),cb=Math.floor(30/q),cl=Math.floor(30/l);
+   return{prompt:`E = {1, 2, …, 30}. A = les multiples de ${p}, B = les multiples de ${q}. Combien d'éléments contient A ∪ B ?`,
+    type:"number",answer:ca+cb-cl,
+    explain:`|A| = ${ca}, |B| = ${cb}. A ∩ B = les multiples du PPCM(${p}, ${q}) = ${l}, donc |A ∩ B| = ${cl}.<br>Donc |A ∪ B| = ${ca} + ${cb} − ${cl} = <b>${ca+cb-cl}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const bank=[
+    {p:"Tout carré d'un entier est positif.",n:"Il existe un entier dont le carré n'est pas positif.",d:["Aucun carré d'entier n'est positif.","Tous les carrés d'entiers sont négatifs."]},
+    {p:"Tout multiple de 4 est un multiple de 2.",n:"Il existe un multiple de 4 qui n'est pas un multiple de 2.",d:["Aucun multiple de 4 n'est un multiple de 2.","Tout multiple de 2 est un multiple de 4."]},
+    {p:"Il existe un nombre réel dont le carré vaut −1.",n:"Tout nombre réel a un carré différent de −1.",d:["Aucun nombre réel n'a de carré.","Tous les carrés de réels valent −1."]}
+   ];
+   const b=pick(bank);
+   return qcm(`Quelle est la négation de la proposition « ${b.p} » ?`,b.n,b.d,
+    `Négation de « tout A est B » = « il existe un A qui n'est pas B » ; négation de « il existe un A tel que B » = « aucun A n'est B ».<br>→ « ${b.n} ».`);
+ }},
+ {lvl:"difficile",make(){
+   const V=[
+    {t:"x² > 0 pour tout réel x",f:1,c:"x = 0 donne x² = 0, pas > 0"},
+    {t:"x² ≥ 0 pour tout réel x",f:0},
+    {t:"a · 0 = 0 pour tout réel a",f:0},
+    {t:"si x ≠ 0, alors 1/x existe",f:0},
+    {t:"le produit de deux nombres pairs est pair",f:0},
+    {t:"la somme de deux nombres impairs est impaire",f:1,c:"3 + 5 = 8, qui est pair"},
+    {t:"un nombre qui finit par 5 est divisible par 5",f:0},
+    {t:"n = 15 est un multiple de 3 et de 5",f:0},
+    {t:"√2 est un nombre rationnel",f:1,c:"√2 ne s'écrit jamais sous forme a/b"}
+   ];
+   const faux=pick(V.filter(v=>v.f===1));
+   const trois=shuf(V.filter(v=>v.f===0)).slice(0,3).map(v=>v.t);
+   return qcm("Laquelle de ces propositions est <b>fausse</b> ?",faux.t,trois,
+    `« ${faux.t} » est fausse — contre-exemple : ${faux.c}.<br>Les trois autres propositions sont vraies.`);
+ }}
+];
+
+/* ---------- SECONDE — Algorithmique (nouveau — BO 2026) ---------- */
+const G_S2_ALGO=[
+ {lvl:"facile",make(){
+   const n=Ri(4,12);
+   return{prompt:`Algorithme : s ← 0, puis « pour k de 1 à ${n} : s ← s + k ». Quelle est la valeur finale de s ?`,
+    type:"number",answer:n*(n+1)/2,
+    explain:`s = 1 + 2 + … + ${n} = ${n} × (${n} + 1)/2 = <b>${n*(n+1)/2}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const x=Ri(1,15)*2+1;
+   let a=x; const tr=[a];
+   for(let i=0;i<3;i++){a=(a%2===0)?a/2:3*a+1;tr.push(a);}
+   return{prompt:`Algorithme : « si x est pair, x ← x/2 ; sinon x ← 3x + 1 ». En partant de x = ${x} et en appliquant la règle 3 fois, quelle est la valeur de x ?`,
+    type:"number",answer:tr[3],
+    explain:`Succession des valeurs : ${tr.join(" → ")}.<br>Donc x = <b>${tr[3]}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const N=Ri(5,500);
+   let s=1; while(s<N)s*=2;
+   return{prompt:`Algorithme : s ← 1, puis « tant que s < ${N} : s ← s × 2 ». Quelle est la valeur finale de s ?`,
+    type:"number",answer:s,
+    explain:`s double à chaque tour : 1, 2, 4, 8, …<br>La boucle s'arrête dès que s ≥ ${N} : la plus petite puissance de 2 au moins égale à ${N} est <b>${s}</b>.`};
+ }}
+];
+
+let _s2flip=0; /* alternance PGCD / PPCM entre tirages consécutifs */
+/* ---------- SECONDE — Nombres & algèbre (fusion « Nombres & calcul » + « Équations » + « 2e degré ») ---------- */
+const G_S2_NUM=[
+ {lvl:"facile",make(){
+   const a=Ri(2,7),b=Ri(0,4);
+   return{prompt:`Calcule 2^${a} × 2^${b} = 2^c. Quel est c ?`,
+    type:"number",answer:a+b,
+    explain:`Même base : on additionne les exposants — ${a} + ${b} = <b>${a+b}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const pgcd=(++_s2flip)%2===0;
+   const p=pick([[12,18],[16,24],[20,30],[21,35],[36,48],[28,42],[45,60],[54,72]]);
+   const x=p[0],y=p[1],g=gcd(x,y),l=x*y/g;
+   return{prompt:`Calcule ${pgcd?"PGCD":"PPCM"}(${x} ; ${y}).`,
+    type:"number",answer:pgcd?g:l,
+    explain:pgcd
+     ?`${x} et ${y} se décomposent en facteurs premiers — on garde les facteurs communs aux puissances minimales : PGCD = <b>${g}</b>.<br>Vérif : ${x} = ${x/g} × ${g} et ${y} = ${y/g} × ${g}.`
+     :`PPCM(a, b) = a × b / PGCD(a, b) = ${x} × ${y} / ${g} = <b>${l}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   let a=Ri(-6,6)||3;
+   let b=Ri(-6,6)||2;
+   if(b===a)b=a===6?-6:7;
+   const s=a+b,p=a*b;
+   const sx=s===0?"":(s>0?` + ${s}x`:` − ${-s}x`);
+   const px=p===0?"":(p>0?` + ${p}`:` − ${-p}`);
+   return{prompt:`Les nombres a et b sont les deux racines de l'équation x²${sx}${px} = 0. Calcule a + b.`,
+    type:"number",answer:s,
+    explain:`Relations de Viète : pour x² + px + q = 0, la somme des racines vaut −p et le produit vaut q.<br>Ici la somme est <b>${s}</b> (et le produit est ${p}).`};
+ }}
+];
+
+/* ---------- SECONDE — Fonctions & variations ---------- */
+const G_S2_FONC=[
+ {lvl:"facile",make(){
+   const a=Ri(2,6),b=pick([-6,-4,-3,-2,2,3,4,6]),k=Ri(-3,4);
+   const bt=b<0?"− "+(-b):"+ "+b;
+   return{prompt:`f(x) = ${a}x ${bt}. Calcule f(${k}).`,
+    type:"number",answer:a*k+b,
+    explain:`f(${k}) = ${a} × (${k}) ${bt} = <b>${a*k+b}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(2,7),a2=a*a;
+   return qcm(`Sur quel intervalle a-t-on x² − ${a2} < 0 ?`,
+    `(−${a} ; ${a})`,
+    [`x < −${a} ou x > ${a}`,`[−${a} ; ${a}]`,`x ≥ ${a}`],
+    `x² − ${a2} < 0 ⇔ x² < ${a2} ⇔ −${a} < x < ${a}.<br>L'intervalle est ouvert : <b>(−${a} ; ${a})</b> (les bornes ne sont pas incluses, car x² = ${a2} est strictement positif, pas < 0).`);
+ }},
+ {lvl:"difficile",make(){
+   const a=Ri(-6,6),b=pick([-8,-5,-3,-2,-1,1,2,3,5,8]);
+   const h=a===0?"x":(a>0?`x − ${a}`:`x + ${-a}`);
+   const bt=b<0?` − ${-b}`:` + ${b}`;
+   return{prompt:`f(x) = (${h})²${bt}. Quelle est la valeur minimale de f ?`,
+    type:"number",answer:b,
+    explain:`(${h})² ≥ 0 pour tout x, et ce carré vaut bien 0 (pour x = ${a}).<br>Donc f ≥ ${b}, minimum atteint en x = ${a} → <b>${b}</b>.`};
+ }}
+];
+
+/* ---------- SECONDE — Vecteurs & droites (BO 2026 : vecteurs + équations de droites) ---------- */
+const G_S2_VECT=[
+ {lvl:"facile",make(){
+   const u=[Ri(1,4),Ri(1,4)],k=Ri(2,6);
+   return{prompt:`u = (${u[0]} ; ${u[1]}) et v = (${k*u[0]} ; ${k*u[1]}). Sachant que v = k · u, calcule k.`,
+    type:"number",answer:k,
+    explain:`v = k·u ⇒ k = v_x / u_x = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2ᵉ coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};
+ }},
+ {lvl:"moyen",make(){
+   const d=pick([[3,4,5],[5,12,13],[8,15,17],[9,12,15]]);
+   const A=[Ri(-5,5),Ri(-5,5)];
+   const B=[A[0]+pick([d[0],-d[0]]),A[1]+pick([d[1],-d[1]])];
+   return{prompt:`A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}). Calcule la distance AB.`,
+    type:"number",answer:d[2],
+    explain:`AB = √((Δx)² + (Δy)²) = √(${d[0]}² + ${d[1]}²) = √${d[0]*d[0]+d[1]*d[1]} = <b>${d[2]}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const d=pick([[1,2],[3,2],[1,4],[2,2],[3,1],[2,1],[4,2],[6,4]]);
+   const m=pick([1,-1]);
+   const dy=d[0]*m,dx=d[1];
+   const A=[Ri(-4,4),Ri(-4,4)],B=[A[0]+dx,A[1]+dy];
+   const p=dy/dx;
+   return{prompt:`A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}) appartiennent à la même droite. Calcule la pente de (AB).`,
+    type:"number",answer:p,
+    explain:`Pente = Δy / Δx = ${dy} / ${dx} = ${F(dy,dx)} → <b>${p}</b>.`};
+ }}
+];
+
+/* ---------- SECONDE — Stats & probabilités (BO 2026 : proportions + probabilités simples) ---------- */
+const G_S2_STAT=[
+ {lvl:"facile",make(){
+   const n1=Ri(5,18),n2=Ri(5,18);
+   const ok=[];for(let t=5;t<=20;t++)if((n1+n2+t)%3===0)ok.push(t);
+   const n3=pick(ok),mtot=n1+n2+n3;
+   return{prompt:`Une élève obtient ${n1}, ${n2} et ${n3} /20 en maths. Quelle est sa moyenne ?`,
+    type:"number",answer:mtot/3,
+    explain:`Moyenne = (note 1 + note 2 + note 3) / 3 = ${mtot} / 3 = <b>${mtot/3}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const fav=Ri(1,6),neut=10-fav;
+   return{prompt:`Une urne contient ${fav} boules rouges et ${neut} boules bleues. On tire une boule au hasard. Quelle est la probabilité d'obtenir une boule rouge ?`,
+    type:"frac",answer:fa(fav,10),
+    explain:`P = nombre de cas favorables / nombre de cas possibles = ${fav} / 10 = <b>${F(fav,10)}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const a=pick([[1,4],[1,3],[1,5],[2,5]]),b=pick([[1,2],[1,3],[2,3],[3,4]]);
+   const n=a[0]*b[0],d=a[1]*b[1];
+   return{prompt:`On sait que P(A) = ${F(a[0],a[1])} et P(B|A) = ${F(b[0],b[1])}. Calcule P(A ∩ B).`,
+    type:"frac",answer:fa(n,d),
+    explain:`Formule du produit : P(A ∩ B) = P(A) × P(B|A) = ${F(a[0],a[1])} × ${F(b[0],b[1])} = <b>${F(n,d)}</b>.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Logique & algorithmique (nouveau — BO 2026) ---------- */
+const G_P1_LOG=[
+ {lvl:"facile",make(){
+   return qcm(`Quelle est la contraposée de la proposition « si n est pair, alors n² est pair » ?`,
+    `si n² est impair, alors n est impair`,
+    [`si n² est pair, alors n est pair`,`si n est impair, alors n² est impair`,`si n est pair, alors n² est impair`],
+    `Contraposée de « A ⇒ B » = « non B ⇒ non A ».<br>Ici : « n² est impair ⇒ n est impair ». (« n² pair ⇒ n pair » serait la <b>réciproque</b>.)`);
+ }},
+ {lvl:"moyen",make(){
+   const bank=[
+    {c:"x² = 4",p:"x = 2",r:"nécessaire mais non suffisante",
+     ex:"x = 2 ⇒ x² = 4 : la condition est <b>nécessaire</b>. Mais x = −2 donne aussi x² = 4 : elle n'est <b>pas suffisante</b>."},
+    {c:"x + y = 5",p:"x = 2 et y = 3",r:"nécessaire mais non suffisante",
+     ex:"x = 2 et y = 3 ⇒ x + y = 5 : <b>nécessaire</b>. Mais x = 1, y = 4 convient aussi : <b>non suffisante</b>."},
+    {c:"n est divisible par 2",p:"n est divisible par 4",r:"nécessaire mais non suffisante",
+     ex:"n divisible par 4 ⇒ n divisible par 2 : <b>nécessaire</b>. Mais 6 est divisible par 2 sans l'être par 4 : <b>non suffisante</b>."},
+    {c:"x = 2",p:"x² = 4",r:"suffisante mais non nécessaire",
+     ex:"x = 2 ⇒ x² = 4 : <b>suffisante</b>. Mais x = −2 convient aussi : <b>non nécessaire</b>."},
+    {c:"n est divisible par 12",p:"n est divisible par 3",r:"suffisante mais non nécessaire",
+     ex:"n divisible par 12 ⇒ n divisible par 3 : <b>suffisante</b>. Mais 9 est divisible par 3 sans l'être par 12 : <b>non nécessaire</b>."},
+    {c:"n² est pair",p:"n est pair",r:"nécessaire et suffisante (équivalente)",
+     ex:"n pair ⇒ n² pair ; et n² pair ⇒ n pair (sinon n impair ⇒ n² impair). Les deux propositions sont <b>équivalentes</b>."}
+   ];
+   const b=pick(bank);
+   const all=["nécessaire mais non suffisante","suffisante mais non nécessaire","nécessaire et suffisante (équivalente)"];
+   return qcm(`« ${b.c} » est pour « ${b.p} » une condition :`,b.r,all.filter(x=>x!==b.r),b.ex);
+ }},
+ {lvl:"difficile",make(){
+   const a=Ri(2,9),b=Ri(2,9),c=Ri(2,9);
+   return{prompt:`lst = [${a}, ${b}, ${c}] ; lst.append(a + b). Quelle est la valeur de lst[1] + lst[−1] ?`,
+    type:"number",answer:b+(a+b),
+    explain:`lst devient [${a}, ${b}, ${c}, ${a+b}]. lst[1] = ${b} et lst[−1] = ${a+b} (le dernier élément).<br>${b} + ${a+b} = <b>${2*b+a}</b>.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Fonctions & variations (fusion « Droites & affines » + « Variations ») ---------- */
+const G_VAR=[
+ {lvl:"facile",make(){
+   const m=pick([1,-1,2,-2,3,-3]),x0=Ri(-5,5),dx=Ri(1,5);
+   const A=[x0,0],B=[x0+dx,m*dx];
+   return{prompt:`A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}) sont sur la même droite. Calcule sa pente.`,
+    type:"number",answer:m,
+    explain:`Pente = (y_B − y_A) / (x_B − x_A) = ${m*dx} / ${dx} = <b>${m}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=pick([1,2,3,-1,-2,-3]),k=Ri(-6,6),b=-a*k;
+   const pos=a>0?`x > ${k}`:`x < ${k}`,neg=a>0?`x < ${k}`:`x > ${k}`;
+   const bt=b<0?` − ${-b}`:` + ${b}`;
+   return qcm(`f(x) = ${a}x${bt}. Pour quels x a-t-on f(x) > 0 ?`,
+    pos,[neg,`x ≥ ${k}`,`x ≤ ${k}`],
+    `f(${k}) = 0 (racine). Comme le coefficient de x est ${a} ${a>0?">":"<"} 0, f est ${a>0?"croissante":"décroissante"} :<br>f(x) > 0 pour <b>${pos}</b> (la borne n'est pas incluse, car f(${k}) = 0).`);
+ }},
+ {lvl:"difficile",make(){
+   const p=Ri(4,12)*2;
+   return{prompt:`Un rectangle a un périmètre de ${2*p}. Son aire, en fonction de la largeur x, vaut A(x) = x(${p} − x). Quelle est la valeur maximale de A ?`,
+    type:"number",answer:p*p/4,
+    explain:`A(x) = ${p}x − x² = −(x − ${p/2})² + ${p*p/4}.<br>Le carré est ≥ 0, donc A ≤ ${p*p/4}, maximum atteint pour x = ${p/2} (le rectangle carré) → <b>${p*p/4}</b>.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Suites ---------- */
+const G_SUITES=[
+ {lvl:"facile",make(){
+   const u0=Ri(-5,15),r=pick([-4,-3,-2,-1,1,2,3,4]),n=Ri(2,8);
+   const sub=x=>"₀₁₂₃₄₅₆₇₈"[x];
+   return{prompt:`(uₙ) est arithmétique de premier terme u₀ = ${u0} et de raison r = ${r}. Calcule u${sub(n)}.`,
+    type:"number",answer:u0+n*r,
+    explain:`uₙ = u₀ + n · r = ${u0} + ${n} × (${r}) = <b>${u0+n*r}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const u0=pick([1,2,3,-1,-2,-3]),q=pick([2,-2,3]),n=Ri(2,4);
+   const sub=x=>"₀₁₂₃₄₅₆₇₈"[x];
+   const an=u0*Math.pow(q,n);
+   return{prompt:`(uₙ) est géométrique de premier terme u₀ = ${u0} et de raison q = ${q}. Calcule u${sub(n)}.`,
+    type:"number",answer:an,
+    explain:`uₙ = u₀ × qⁿ = ${u0} × ${q}^${n} = <b>${an}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const a=pick([2,3,-2]),b=pick([-4,-2,2,4]),u0=pick([-3,-2,-1,1,2,3]);
+   const seq=[u0];for(let i=0;i<3;i++)seq.push(a*seq[i]+b);
+   const bt=b<0?` − ${-b}`:` + ${b}`;
+   return{prompt:`(uₙ) est définie par u₀ = ${u0} et uₙ₊₁ = ${a}uₙ${bt}. Calcule u₃.`,
+    type:"number",answer:seq[3],
+    explain:`u₁ = ${a} × ${u0}${bt} = ${seq[1]} ; u₂ = ${a} × ${seq[1]}${bt} = ${seq[2]} ; u₃ = ${a} × ${seq[2]}${bt} = <b>${seq[3]}</b>.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Équations & polynômes du second degré ---------- */
+const G_EQ2=[
+ {lvl:"facile",make(){
+   const b=Ri(-8,8),c=Ri(-6,6);
+   const D=b*b-4*c;
+   const bt=b===0?"":(b>0?` + ${b}x`:` − ${-b}x`);
+   const ct=c===0?"":(c>0?` + ${c}`:` − ${-c}`);
+   const q4=-4*c;
+   return{prompt:`Calcule le discriminant Δ de l'équation x²${bt}${ct} = 0.`,
+    type:"number",answer:D,
+    explain:`Δ = b² − 4ac = (${b})² ${q4<0?"− "+(-q4):"+ "+q4} = <b>${D}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const a=Ri(1,6)*pick([1,-1]),b=Ri(1,6)*pick([1,-1]);
+   const p=-(a+b),q=a*b;
+   const pt=p===0?"":(p>0?` + ${p}x`:` − ${-p}x`);
+   const qt=q>0?` + ${q}`:` − ${-q}`;
+   const somme=pick([1,0]);
+   return{prompt:`L'équation x²${pt}${qt} = 0 a deux racines réelles. Calcule ${somme?"la somme":"le produit"} des racines.`,
+    type:"number",answer:somme?a+b:a*b,
+    explain:`Relations de Viète : pour x² + px + q = 0, la somme des racines vaut −p et le produit vaut q.<br>Ici ${somme?`la somme vaut −(${p}) = <b>${a+b}</b>`:`le produit vaut q = <b>${a*b}</b>`}.`};
+ }},
+ {lvl:"difficile",make(){
+   const h=Ri(-5,5)||2,k=pick([-7,-5,-3,-2,-1,1,3,5,7]);
+   const b=-2*h,c=h*h+k;
+   const bt=b===0?"":(b>0?` + ${b}x`:` − ${-b}x`);
+   const ct=c<0?` − ${-c}`:(c>0?` + ${c}`:"");
+   const ht=h>0?`x − ${h}`:(h<0?`x + ${-h}`:"x");
+   return{prompt:`f(x) = x²${bt}${ct}. Quelle est la valeur minimale de f ?`,
+    type:"number",answer:k,
+    explain:`Forme canonique : f(x) = (${ht})² + ${k}.<br>Le carré est ≥ 0 → minimum = <b>${k}</b>, atteint en x = ${h}.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Dérivées ---------- */
 const G_DERIV=[
  {lvl:"facile",make(){
    const a=Ri(2,9),b=pick([-6,-5,-4,-3,-2,2,3,4,5,6]),c=Ri(-5,5),k=Ri(1,5);
    const bs=b<0?"− "+(-b):"+ "+b, cs=c<0?"− "+(-c):"+ "+c;
+   const m=2*a*k+b;
    return{prompt:`Soit f(x) = ${a}x² ${bs}x ${cs}. Calcule f′(${k}).`,
-     type:"number",answer:2*a*k+b,
-     viz:{kind:"tan",f:"quad",a:a,b:b,c:c,k:k,m:2*a*k+b},
-     explain:`La dérivée de f(x) = ${a}x² ${bs}x ${cs} est f′(x) = ${2*a}x ${b<0?"− "+(-b):"+ "+b}.<br>Donc f′(${k}) = ${2*a} × ${k} + (${b}) = <b>${2*a*k+b}</b>.`};
- }},
- {lvl:"facile",make(){
-   const a=pick([1,2,3,4,5,6,8,9]),k=pick([2,3,4]);
-   return{prompt:`Soit f(x) = ${a}/x. Calcule f′(${k}).`,
-     type:"frac",answer:fa(-a,k*k),
-     viz:{kind:"tan",f:"rec",a:a,k:k,m:-a/(k*k)},
-     explain:`Règle : (a/x)′ = −a/x².<br>Donc f′(${k}) = ${FR(-a,k*k)} = <b>${F(-a,k*k)}</b>.`};
+    type:"number",answer:m,
+    viz:{kind:"tan",f:"quad",a:a,b:b,c:c,k:k,m:m},
+    explain:`La dérivée de f(x) = ${a}x² ${bs}x ${cs} est f′(x) = ${2*a}x ${b<0?"− "+(-b):"+ "+b}.<br>Donc f′(${k}) = ${2*a} × ${k} + (${b}) = <b>${m}</b>.`};
  }},
  {lvl:"moyen",make(){
-   const a=Ri(1,4),b=pick([-9,-6,-4,-3,3,4,6,9]),k=Ri(1,4);
-   return{prompt:`Soit f(x) = ${a}x³ ${b<0?"− "+(-b):"+ "+b}x. Calcule f′(${k}).`,
-     type:"number",answer:3*a*k*k+b,
-     viz:{kind:"tan",f:"cub",a:a,b:b,k:k,m:3*a*k*k+b},
-     explain:`f′(x) = ${3*a}x² ${b<0?"− "+(-b):"+ "+b}.<br>Donc f′(${k}) = ${3*a} × ${k*k} + (${b}) = <b>${3*a*k*k+b}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(1,4),b=Ri(-9,9),k=Ri(1,2);
-   const ans=a*Math.exp(k)+b;
-   return{prompt:`Soit f(x) = ${a}·eˣ ${b<0?"− "+(-b):"+ "+b}x. Calcule f′(${k}), arrondi au centième.`,
-     type:"number",answer:Math.round(ans*100)/100,tol:0.011,
-     viz:{kind:"tan",f:"exp",a:a,b:b,k:k,m:a*Math.exp(k)+b},
-     explain:`f′(x) = ${a}·eˣ ${b<0?"− "+(-b):"+ "+b} (la dérivée de eˣ est eˣ).<br>f′(${k}) = ${a} × ${Math.exp(k).toFixed(4)} + (${b}) ≈ <b>${Math.round(ans*100)/100}</b>.`};
+   const a=pick([1,2,3,-1,-2]),k=Ri(-3,3)||1;
+   const atxt=a===1?"x²":(a===-1?"−x²":`${a}x²`);
+   const m=2*a*k;
+   return{prompt:`f(x) = ${atxt}. Quelle est la pente de la tangente à la courbe de f au point d'abscisse ${k} ?`,
+    type:"number",answer:m,
+    viz:{kind:"tan",f:"quad",a:a,b:0,c:0,k:k,m:m},
+    explain:`f′(x) = ${2*a}x, donc f′(${k}) = ${2*a} × ${k} = <b>${m}</b>.<br>La pente de la tangente en ${k} vaut ${m}.`};
  }},
  {lvl:"difficile",make(){
-   const a=pick([2,3,4,5,6]),b=Ri(-5,5),k=pick([2,3,4]);
-   return{prompt:`Soit f(x) = ${a}·ln(x) ${b<0?"− "+(-b):"+ "+b}x. Calcule f′(${k}).`,
-     type:"frac",answer:fr(a+b*k,k),
-     viz:{kind:"tan",f:"ln",a:a,b:b,k:k,m:a/k+b},
-     explain:`f′(x) = ${a}/x ${b<0?"− "+(-b):"+ "+b}.<br>f′(${k}) = ${FR(a,k)} ${b<0?"− "+Math.abs(b):"+ "+b} = ${FR(a+b*k,k)} = <b>${F(a+b*k,k)}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const a=Ri(2,5),b=Ri(-6,6),k=Ri(1,3);
-   const ans=2*a*(a*k+b);
-   return{prompt:`Soit f(x) = (${a}x ${b<0?"− "+(-b):"+ "+b})². Calcule f′(${k}).`,
-     type:"number",answer:ans,
-     viz:{kind:"tan",f:"sq",a:a,b:b,k:k,m:2*a*(a*k+b)},
-     explain:`Règle de la chaîne : la dérivée de (ax+b)² est 2(ax+b) × ${a}.<br>Donc f′(${k}) = ${2*a} × (${a}×${k} ${b<0?"− "+(-b):"+ "+b}) = ${2*a} × (${a*k+b}) = <b>${ans}</b>.`};
- }},
- {lvl:"facile",make(){
-   const a=pick([1,2]),x0=pick([1,2,3]);let b;do{b=Ri(-5,5);}while(b===0);
-   const m=2*a*x0+b;
-   return{prompt:`Soit f(x) = ${a>1?a+" ":""}x² ${b<0?"− "+(-b):"+ "+b}x. Pour quelle valeur x₀ de x la tangente à la courbe a-t-elle une pente de ${m} ?`,
-     type:"number",answer:x0,
-     explain:`La pente de la tangente en x₀ vaut f′(x₀) = ${2*a}·x₀ ${b<0?"− ":"+ "}${Math.abs(b)}.<br>On résout ${2*a}·x₀ ${b<0?"− ":"+ "}${Math.abs(b)} = ${m} → x₀ = <b>${x0}</b>.`};
- }},
- {lvl:"moyen",make(){
-   let a,b,c,x0,m,q,y0;
-   do{
-     a=pick([1,2]); b=Ri(-5,5); c=Ri(-4,4); x0=pick([1,2]);
-     m=2*a*x0+b; y0=a*x0*x0+b*x0+c; q=y0-m*x0;
-   }while(b===0 || m===0 || y0===m || y0===-m || x0===q);
-   const eq=(mm,qq)=>`y = ${mm}x ${qq<0?"− "+(-qq):"+ "+qq}`;
-   const good=eq(m,q);
-   const opts=shuf([good, eq(y0,q), eq(m,x0), eq(-m,q)]);
-   return{prompt:`Soit f(x) = ${a>1?a+" ":""}x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c}. Quelle est l'équation de la tangente à la courbe au point d'abscisse ${x0} ?`,
-     type:"choice",options:opts,correct:opts.indexOf(good),
-     viz:{kind:"tan",f:"quad",a:a,b:b,c:c,k:x0,m:m},
-     explain:`Pente de la tangente = f′(${x0}) = 2×${a}×${x0} ${b<0?"− ":"+ "}${Math.abs(b)} = ${m}.<br>Le point de contact est T(${x0} ; ${y0}).<br>Ordonnée à l'origine : q = y₀ − m·x₀ = ${y0} ${m*x0<0?"+ ":"− "}${Math.abs(m)}×${x0} = ${q}.<br>Équation de la tangente : <b>${good}</b>.`};
+   const k=pick([2,3,-2,-3]);
+   return{prompt:`f(x) = 1/x. Calcule f′(${k}).`,
+    type:"frac",answer:fa(-1,k*k),
+    explain:`f′(x) = −1/x², donc f′(${k}) = −1 / (${k})² = <b>${F(-1,k*k)}</b>.`};
  }}
 ];
 
-/* ---------- Suites ---------- */
-const G_SUITES=[
- {lvl:"facile",make(){
-   const u0=Ri(-5,10),r=pick([-4,-3,-2,-1,1,2,3,4]),n=Ri(2,8);
-   return{prompt:`Soit (uₙ) arithmétique de raison ${r} avec u₀ = ${u0}. Calcule u${n}.`,
-     type:"number",answer:u0+n*r,
-     explain:`uₙ = u₀ + n·r = ${u0} + ${n} × (${r}) = <b>${u0+n*r}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const u0=pick([1,2,3,-1,-2]),q=pick([-3,-2,2,3]),n=Ri(2,5);
-   return{prompt:`Soit (uₙ) géométrique de raison ${q} avec u₀ = ${u0}. Calcule u${n}.`,
-     type:"number",answer:u0*Math.pow(q,n),
-     explain:`uₙ = u₀ × qⁿ = ${u0<0?"("+u0+")":u0} × ${q<0?"("+q+")":q}^${n} = <b>${u0*Math.pow(q,n)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const u0=Ri(-6,6),r=pick([-3,-2,2,3]),n=Ri(3,7);
-   const S=n*(2*u0+(n-1)*r)/2;
-   const ans=Number.isInteger(S)?fa(S,1):fa(2*S,2);
-   return{prompt:`Soit (uₙ) arithmétique de raison ${r}, u₀ = ${u0}. Calcule S = u₀ + u₁ + … + u${n-1} (somme des ${n} premiers termes).`,
-     type:"frac",answer:ans,
-     explain:`S = n/2 × (2u₀ + (n−1)r) = ${FR(n,2)} × (${2*u0} ${(n-1)*r<0?"− "+(-(n-1)*r):"+ "+((n-1)*r)}) = <b>${Number.isInteger(S)?S:F(2*S,2)}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const u0=pick([1,2,-1,-2]),q=pick([2,3,-2]),n=Ri(3,4);
-   const num=u0*(1-Math.pow(q,n)),den=1-q;
-   return{prompt:`Soit (uₙ) géométrique de raison ${q}, u₀ = ${u0}. Calcule S = u₀ + u₁ + … + u${n-1}.`,
-     type:"frac",answer:fr(num,den),
-     explain:`S = u₀ × (1 − qⁿ)/(1 − q) = ${u0} × (1 ${Math.pow(q,n)<0?"+ "+(-Math.pow(q,n)):"− "+Math.pow(q,n)})/(1 ${q<0?"+ "+(-q):"− "+q}) = <b>${F(num,den)}</b>.`};
- }},
-];
-
-/* ---------- Log & exp ---------- */
+/* ---------- PREMIÈRE — Exponentielle (le logarithme ln est en Terminale, selon le BO) ---------- */
 const G_LOGEXP=[
  {lvl:"facile",make(){
-   const a=Ri(2,15);
-   return{prompt:`Simplifie : e^{ln(${a})}.`,
-     type:"number",answer:a,
-     explain:`e et ln sont réciproques : e^{ln(x)} = x pour x > 0.<br>Donc e^{ln(${a})} = <b>${a}</b>.`};
+   const a=Ri(-5,5),b=Ri(-5,5);
+   return{prompt:`Sachant que e^${a} × e^${b} = e^c, calcule c.`,
+    type:"number",answer:a+b,
+    explain:`Propriété de l'exponentielle : e^a × e^b = e^(a+b).<br>Donc c = ${a} + ${b} = <b>${a+b}</b>.`};
  }},
+ {lvl:"moyen",make(){
+   const m=pick([2,3,-2]),x=Ri(-4,4),c=m*x;
+   return{prompt:`Résous l'équation e^(${m}x) = e^${c}.`,
+    type:"number",answer:x,
+    explain:`La fonction exp est strictement croissante, donc injective : e^u = e^v ⇔ u = v.<br>Donc ${m}x = ${c} → x = <b>${x}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const n=pick([1,2,3]);
+   return qcm(`Quelle est la limite de e^x / x^${n} quand x → +∞ ?`,
+    `+∞`,[`0`,`−∞`,`La limite n'existe pas`],
+    `Croissance comparée : l'exponentielle l'emporte sur toute puissance de x.<br>e^x / x^${n} → <b>+∞</b> (et réciproquement x^${n} / e^x → 0).`);
+ }}
+];
+
+const ANGRAD={"0":0,"π/6":Math.PI/6,"π/4":Math.PI/4,"π/3":Math.PI/3,"π/2":Math.PI/2}; /* radians, pour le visuel « unit » */
+/* ---------- PREMIÈRE — Trigonométrie ---------- */
+const G_TRIG=[
  {lvl:"facile",make(){
-   const a=Ri(-3,5);
-   return{prompt:`Simplifie : ln(e^{${a<0?"−"+(-a):a}}).`,
-     type:"number",answer:a,
-     explain:`ln(eˣ) = x, car le ln « annule » l'exp.<br>Donc ln(e^${a}) = <b>${a}</b>.`};
+   const d=pick([
+    {ang:"π/6",leg:"sin",val:"1/2",n:1,dn:2},
+    {ang:"π/3",leg:"cos",val:"1/2",n:1,dn:2},
+    {ang:"π/2",leg:"sin",val:"1",n:1,dn:1},
+    {ang:"0",leg:"cos",val:"1",n:1,dn:1},
+    {ang:"0",leg:"sin",val:"0",n:0,dn:1},
+    {ang:"π/2",leg:"cos",val:"0",n:0,dn:1}
+   ]);
+   return{prompt:`Calcule ${d.leg}(${d.ang}).`,
+    type:"frac",answer:fa(d.n,d.dn),
+    viz:{kind:"unit",ang:ANGRAD[d.ang],angLabel:d.ang,leg:d.leg,valLabel:d.val},
+    explain:`Valeur remarquable sur le cercle trigonométrique : ${d.leg}(${d.ang}) = <b>${d.val}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const d=pick([
+    {q:"cos(π/4)",v:"√2/2"},
+    {q:"sin(π/4)",v:"√2/2"},
+    {q:"cos(π/6)",v:"√3/2"},
+    {q:"sin(π/6)",v:"1/2"},
+    {q:"cos(0)",v:"1"},
+    {q:"sin(π/2)",v:"1"}
+   ]);
+   const pool=["1/2","√2/2","√3/2","1","0"];
+   return qcm(`Quelle est la valeur de ${d.q} ?`,d.v,pool.filter(x=>x!==d.v).slice(0,3),
+    `Valeurs remarquables du cercle trigonométrique (angles 0, π/6, π/4, π/3, π/2) : ${d.q} = <b>${d.v}</b>.`);
+ }},
+ {lvl:"difficile",make(){
+   const a=pick(["1/2","√2/2","√3/2"]);
+   return qcm(`Combien de solutions l'équation cos x = ${a} admet-elle sur [0 ; 2π] ?`,
+    `2`,[`1`,`0`,`4`],
+    `Sur [0 ; 2π], la courbe de cos x coupe la droite y = ${a} (avec 0 < ${a} < 1) en deux points : x et 2π − x.<br>→ <b>2</b> solutions.`);
+ }}
+];
+
+/* ---------- PREMIÈRE — Vecteurs & produit scalaire ---------- */
+const G_VECT=[
+ {lvl:"facile",make(){
+   const u=[Ri(-5,5)||2,Ri(-5,5)||1],v=[Ri(-5,5)||1,Ri(-5,5)||3];
+   const p=u[0]*v[0]+u[1]*v[1];
+   return{prompt:`u = (${u[0]} ; ${u[1]}) et v = (${v[0]} ; ${v[1]}). Calcule le produit scalaire u·v.`,
+    type:"number",answer:p,
+    explain:`u·v = ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} = <b>${p}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const u=pick([[1,2],[2,1],[1,3],[3,2]]);
+   const v=[u[1],-u[0]];
+   const bad=shuf([[1,1],[2,3],[1,-1],[3,1]].filter(w=>u[0]*w[0]+u[1]*w[1]!==0)).slice(0,2);
+   const d1=bad[0],d2=bad[1];
+   return qcm(`Quel couple de vecteurs du plan est orthogonal ?`,
+    `u = (${u[0]} ; ${u[1]}) et v = (${v[0]} ; ${v[1]})`,
+    [`u = (${u[0]} ; ${u[1]}) et v = (${d1[0]} ; ${d1[1]})`,`u = (${u[0]} ; ${u[1]}) et v = (${d2[0]} ; ${d2[1]})`],
+    `Deux vecteurs sont orthogonaux si et seulement si u·v = 0 : ici ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = <b>0</b>.`);
+ }},
+ {lvl:"difficile",make(){
+   const d=pick([[3,4,5],[5,12,13],[8,15,17],[9,12,15]]);
+   return{prompt:`Dans le triangle ABC, AB = ${d[0]}, AC = ${d[1]} et BÂC = 90°. Calcule BC.`,
+    type:"number",answer:d[2],
+    explain:`Al-Kashi (cas de l'angle droit, c'est-à-dire Pythagore) : BC² = AB² + AC² = ${d[0]}² + ${d[1]}² = ${d[0]*d[0]+d[1]*d[1]}.<br>BC = √${d[0]*d[0]+d[1]*d[1]} = <b>${d[2]}</b>.`};
+ }}
+];
+
+/* ---------- PREMIÈRE — Probabilités (conditionnelles, indépendance, variables aléatoires) ---------- */
+const G_PROBA=[
+ {lvl:"facile",make(){
+   const n=pick([2,3,4]);
+   return{prompt:`On lance ${n} fois une pièce équilibrée. Quelle est la probabilité d'obtenir pile les ${n} fois ?`,
+    type:"frac",answer:fa(1,Math.pow(2,n)),
+    explain:`Les lancers sont indépendants : P = (1/2)^${n} = 1/${Math.pow(2,n)} = <b>${F(1,Math.pow(2,n))}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const bank=[
+    {A:[2,5],cA:[3,4],cAn:[1,2],ans:[3,5],ex:"(2/5) × (3/4) + (3/5) × (1/2) = 6/20 + 3/10 = 3/10 + 3/10"},
+    {A:[1,3],cA:[1,2],cAn:[2,3],ans:[11,18],ex:"(1/3) × (1/2) + (2/3) × (2/3) = 1/6 + 4/9 = 3/18 + 8/18"},
+    {A:[3,4],cA:[2,3],cAn:[1,2],ans:[3,4],ex:"(3/4) × (2/3) + (1/4) × (1/2) = 1/2 + 1/4"}
+   ];
+   const b=pick(bank);
+   return{prompt:`On sait que P(A) = ${F(b.A[0],b.A[1])}, P(B|A) = ${F(b.cA[0],b.cA[1])} et P(B|Ā) = ${F(b.cAn[0],b.cAn[1])}. Calcule P(B).`,
+    type:"frac",answer:fa(b.ans[0],b.ans[1]),
+    explain:`Formule des probabilités totales : P(B) = P(A)·P(B|A) + P(Ā)·P(B|Ā).<br>= ${b.ex} = <b>${F(b.ans[0],b.ans[1])}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const bank=[
+    {v:[0,2,6],p:[[1,2],[1,4],[1,4]],e:2},
+    {v:[1,3,5],p:[[1,3],[1,3],[1,3]],e:3},
+    {v:[0,4,8],p:[[1,4],[1,2],[1,4]],e:4}
+   ];
+   const b=pick(bank);
+   return{prompt:`La variable aléatoire X prend la valeur ${b.v[0]} avec probabilité ${F(b.p[0][0],b.p[0][1])}, la valeur ${b.v[1]} avec probabilité ${F(b.p[1][0],b.p[1][1])} et la valeur ${b.v[2]} avec probabilité ${F(b.p[2][0],b.p[2][1])}. Calcule E(X).`,
+    type:"number",answer:b.e,
+    explain:`E(X) = ${b.v[0]} × ${F(b.p[0][0],b.p[0][1])} + ${b.v[1]} × ${F(b.p[1][0],b.p[1][1])} + ${b.v[2]} × ${F(b.p[2][0],b.p[2][1])} = <b>${b.e}</b>.`};
+ }}
+];
+
+/* ---------- TERMINALE — Logique & listes (nouveau — BO 2026) ---------- */
+const G_T_LOG=[
+ {lvl:"facile",make(){
+   return qcm(`Quelle est la négation de « il existe un réel x tel que x² = 2 » ?`,
+    `tout réel x vérifie x² ≠ 2`,
+    [`il existe un réel x tel que x² ≠ 2`,`tout réel x vérifie x² = 2`,`il n'existe aucun réel`],
+    `Négation de « ∃ x, P(x) » = « ∀ x, non P(x) ».<br>→ « tout réel a un carré différent de 2 ».`);
  }},
  {lvl:"moyen",make(){
    const a=Ri(1,6),b=Ri(1,6);
-   return{prompt:`Simplifie : ln(e^{${a}} × e^{${b}}).`,
-     type:"number",answer:a+b,
-     explain:`ln(eᵃ × eᵇ) = ln(eᵃ) + ln(eᵇ) = a + b.<br>Donc = ${a} + ${b} = <b>${a+b}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(2,15),ans=Math.round(Math.log(a)*10000)/10000;
-   return{prompt:`Résous : eˣ = ${a}. (x ≈ ? , au centième)`,
-     type:"number",answer:Math.round(Math.log(a)*100)/100,tol:0.011,
-     explain:`Appliquons ln des deux côtés : x = ln(${a}) ≈ <b>${Math.round(Math.log(a)*100)/100}</b>.`};
+   return{prompt:`lst = [${a}, ${b}] ; lst = lst + lst. Quelle est la somme de tous les éléments de lst ?`,
+    type:"number",answer:2*(a+b),
+    explain:`lst + lst = [${a}, ${b}, ${a}, ${b}] (concaténation des listes, pas de fusion).<br>Somme = 2 × (${a} + ${b}) = <b>${2*(a+b)}</b>.`};
  }},
  {lvl:"difficile",make(){
-   const a=Ri(2,7),b=pick([-3,-2,-1,1,2,3]);
-   const ans=Math.round(Math.exp(a-b)*100)/100;
-   return{prompt:`Résous : ln(x) ${b<0?"− "+(-b):"+ "+b} = ${a}. (x ≈ ? , au centième)`,
-     type:"number",answer:ans,tol:0.011,
-     explain:`ln(x) = ${a} ${b<0?"+ "+(-b):"− "+b} = ${a-b}, donc x = e^${a-b} ≈ <b>${ans}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const a=Ri(3,12);
-   return{prompt:`Résous : e^{2x} = ${a}².`,
-     type:"number",answer:Math.round(Math.log(a)*100)/100,tol:0.011,
-     explain:`e^{2x} = (eˣ)² = ${a}², donc eˣ = ${a} (car eˣ > 0 et ${a} > 0).<br>x = ln(${a}) ≈ <b>${Math.round(Math.log(a)*100)/100}</b>.`};
- }},
- {lvl:"facile",make(){
-   const a=pick([3,4,5,6,8,10]);
-   const x=a-1;
-   return{prompt:`Résous : e^{x+1} = e^{${a}}.`,
-     type:"number",answer:x,
-     explain:`Même base e : les exposants sont égaux → x + 1 = ${a} → x = ${a} − 1 = <b>${x}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=pick([2,3,4,5]),b=pick([2,3,4,6]);
-   const x=a*b;
-   return{prompt:`Résous : ln(x) = ln(${a}) + ln(${b}).`,
-     type:"number",answer:x,
-     explain:`Règle : ln(a) + ln(b) = ln(a·b).<br>Donc ln(x) = ln(${a}×${b}) = ln(${x}).<br>Même fonction → x = <b>${x}</b>.`};
+   return qcm(`Quelle proposition est la contraposée de « si n est pair, alors n² est pair » ?`,
+    `si n² est impair, alors n est impair`,
+    [`si n² est pair, alors n est pair`,`si n est impair, alors n² est impair`,`il existe un entier n pair tel que n² soit impair`],
+    `Contraposée de « A ⇒ B » = « non B ⇒ non A ».<br>« si n est impair, alors n² est impair » est la <b>réciproque</b> — à ne pas confondre.`);
  }}
 ];
 
-/* ---------- Équations du 2e degré ---------- */
-const G_EQ2=[
+/* ---------- TERMINALE — Combinatoire & dénombrement ---------- */
+const G_T_DEN=[
  {lvl:"facile",make(){
-   const r1=Ri(-6,6),r2=pick(shuf(Array.from({length:13},(_,i)=>i-6)).filter(x=>x!==r1));
-   const b=-(r1+r2),c=r1*r2,D=Math.pow(r1-r2,2);
-   const bs=b<0?"− "+(-b):"+ "+b;
-   return{prompt:`Calcule le discriminant Δ de : x² ${bs}x ${c<0?"− "+(-c):"+ "+c} = 0.`,
-     type:"number",answer:D,
-     viz:{kind:"par",a:1,b:b,c:c,r1:r1,r2:r2},
-     explain:`Δ = b² − 4ac = (${b})² ${c<0?"+ ":"− "}4 × ${Math.abs(c)} = ${b*b} ${4*c<0?"+ ":"− "}${Math.abs(4*c)} = <b>${D}</b>.<br>(Δ > 0 : deux solutions, x = ${r1} et x = ${r2}.)`};
+   const n=Ri(4,9),k=pick([2,3]),an=Math.pow(n,k);
+   return{prompt:`Combien de mots de ${k} lettres peut-on former avec un alphabet de ${n} lettres (répétition autorisée) ?`,
+    type:"number",answer:an,
+    explain:`Principe multiplicatif : ${n} choix pour la 1ʳᵉ lettre, ${n} pour la 2ᵉ, etc.<br>Nombre de k-uplets = ${n}^${k} = <b>${an}</b>.`};
  }},
  {lvl:"moyen",make(){
-   let r1=Ri(-6,6),r2;do{r2=Ri(-6,6);}while(r2===r1);
-   const a=pick([1,2,3]),b=-a*(r1+r2),c=a*r1*r2;
-   return{prompt:`Résous : ${a>1?a+" ":""}x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c} = 0. Donne la plus petite solution.`,
-     type:"number",answer:Math.min(r1,r2),
-     viz:{kind:"par",a:a,b:b,c:c,r1:r1,r2:r2},
-     explain:`Δ = ${b*b-4*a*c}, √Δ = ${Math.abs(r1-r2)*a}… en pratique : Δ = a²(r₁−r₂)², √Δ = ${Math.abs(r1-r2)*a}.<br>x = (${b>0?"−":"+"} ${Math.abs(b)} ± ${Math.abs(r1-r2)*a})/(${2*a}) → solutions ${r1} et ${r2}.<br>La plus petite est <b>${Math.min(r1,r2)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   let r1,r2;do{r1=Ri(-5,5);r2=Ri(-5,5);}while(r1===r2||r1===-r2||r1===0||r2===0);
-   const b=-(r1+r2),c=r1*r2;
-   const fac=r=>`(x ${r>0?"− "+r:"+ "+(-r)})`, leurre=r=>`(x ${r>0?"+ "+r:"− "+(-r)})`;
-   const opts=shuf([fac(r1)+" "+fac(r2), fac(r1)+" "+leurre(r2), leurre(r1)+" "+fac(r2), leurre(r1)+" "+leurre(r2)]);
-   const right=opts.indexOf(fac(r1)+" "+fac(r2));
-   return{prompt:`Factorise : x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c}.`,
-     type:"choice",options:opts,correct:right,
-     viz:{kind:"par",a:1,b:b,c:c,r1:r1,r2:r2},
-     explain:`Racines x = ${r1} et x = ${r2}, a = 1, donc la forme factorisée est (x ${r1>0?"− "+r1:"+ "+(-r1)})(x ${r2>0?"− "+r2:"+ "+(-r2)}).`};
+   const n=Ri(3,7);
+   let f=1;for(let i=2;i<=n;i++)f*=i;
+   const prods=Array.from({length:n},(_,i)=>n-i).join(" × ");
+   return{prompt:`De combien de manières peut-on ordonner ${n} objets distincts ?`,
+    type:"number",answer:f,
+    explain:`${n}! = ${prods} = <b>${f}</b>.`};
  }},
  {lvl:"difficile",make(){
-   let r1=Ri(-5,5),r2;do{r2=Ri(-5,5);}while(r2===r1);
-   const a=pick([2,3,4]),b=-a*(r1+r2),c=a*r1*r2;
-   return{prompt:`Résous : ${a}x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c} = 0. Donne la plus grande solution.`,
-     type:"number",answer:Math.max(r1,r2),
-     viz:{kind:"par",a:a,b:b,c:c,r1:r1,r2:r2},
-     explain:`Δ = ${b*b-4*a*c} > 0, √Δ = ${Math.abs(r1-r2)*a}.<br>x = (${b>0?"−":"+"} ${Math.abs(b)} ± ${Math.abs(r1-r2)*a}) / ${2*a} → x = ${r1} ou x = ${r2}.<br>La plus grande est <b>${Math.max(r1,r2)}</b>.`};
- }},
- {lvl:"facile",make(){
-   let r1,r2;do{r1=Ri(-6,6);r2=Ri(-6,6);}while(r1===r2||r1===0||r2===0||r1+r2===0);
-   const b=-(r1+r2),c=r1*r2,s=r1+r2;
-   const bs=b<0?"− "+(-b):"+ "+b,cs=c<0?"− "+(-c):"+ "+c;
-   return{prompt:`Le trinôme x² ${bs}x ${cs} = 0 admet deux racines réelles. Quelle est la somme de ces racines ?`,
-     type:"number",answer:s,
-     explain:`Règle de Viète : la somme des racines vaut −b (ici a = 1).<br>−b = −(${b}) = <b>${s}</b>.<br>(Vérif : racines ${r1} et ${r2}, somme ${r1} ${r2<0?"− ":"+ "}${Math.abs(r2)} = ${s}.)`};
- }},
- {lvl:"moyen",make(){
-   let r1;do{r1=Ri(-5,2);}while(r1===0);
-   let r2;do{r2=Ri(r1+3,5);}while(r2===0);
-   const xt=r1+1;
-   const pf=r=>"(x "+(r>0?"− "+r:"+ "+(-r))+")";
-   const pt=(xt-r1)*(xt-r2);
-   const opts=shuf(["négatif","positif","nul"]);
-   return{prompt:`Soit P(x) = ${pf(r1)} ${pf(r2)}. Que vaut le signe de P(${xt}) ?`,
-     type:"choice",options:opts,correct:opts.indexOf("négatif"),
-     explain:`${xt} est strictement entre ${r1} et ${r2}.<br>P(${xt}) = ${xt-r1<0?"("+xt-r1+")":xt-r1} × ${xt-r2<0?"("+xt-r2+")":xt-r2} = ${pt} < 0.<br>Entre ses deux racines, un trinôme de tête a > 0 est <b>négatif</b>.`};
- }}
-];
-/* ---------- Trigonométrie ---------- */
-/* Valeurs exactes affichées en fractions empilées (1/2 → ½ verticalement, √2/2, √3/2) */
-const TRIGV={"0":"0","1":"1","1/2":F(1,2),"√2/2":fracHTML("√2","2"),"√3/2":fracHTML("√3","2")};
-const ANGRAD={"0":0,"π/6":Math.PI/6,"π/4":Math.PI/4,"π/3":Math.PI/3,"π/2":Math.PI/2}; /* pour le cercle trigonométrique (viz) */
-const G_TRIG=[
- {lvl:"facile",make(){
-   const defs=[
-     {t:"0",f:"sin",v:"0"},{t:"0",f:"cos",v:"1"},
-     {t:"π/2",f:"sin",v:"1"},{t:"π/2",f:"cos",v:"0"},
-     {t:"π/6",f:"sin",v:"1/2"},{t:"π/3",f:"cos",v:"1/2"},
-     {t:"π/4",f:"sin",v:"√2/2"},{t:"π/4",f:"cos",v:"√2/2"},
-     {t:"π/3",f:"sin",v:"√3/2"},{t:"π/6",f:"cos",v:"√3/2"}
-   ];
-   const d=pick(defs);
-   const pool=shuf(["0","1","1/2","√2/2","√3/2"].filter(x=>x!==d.v));
-   const opts=shuf([d.v,pool[0],pool[1]]),right=opts.indexOf(d.v);
-   return{prompt:`Calcule : ${d.f}(${d.t}).`,
-     type:"choice",options:opts.map(v=>TRIGV[v]),correct:right,
-     viz:{kind:"unit",ang:ANGRAD[d.t],angLabel:d.t,leg:d.f,valLabel:d.v},
-     explain:`Valeur exacte à connaître : ${d.f}(${d.t}) = <b>${TRIGV[d.v]}</b>.`};
- }},
- {lvl:"moyen",make(){
-   /* Triplet pythagoricien [côté sin, côté cos, hypoténuse] — 3-4-5 et 5-12-13.
-      L'hypoténuse est celle du triplet (pas un 5 durci) : sin/cos sont sur celle-ci,
-      sinon [5,12]/[12,5] (côtés du 5-12-13) donnaient sin = 5/5 ou 12/5 → faux. */
-   const trip=pick([[3,4,5],[4,3,5],[5,12,13],[12,5,13]]);
-   const sinN=trip[0],cosN=trip[1],hyp=trip[2];
-   const s2=sinN*sinN,h2=hyp*hyp;
-   return{prompt:`Soit x dans [0 ; π/2] avec sin(x) = ${F(sinN,hyp)}. Calcule cos(x).`,
-     type:"frac",answer:fa(cosN,hyp),
-     viz:{kind:"unit",ang:Math.asin(sinN/hyp),angLabel:"x",leg:"cos",valLabel:F(cosN,hyp)},
-     explain:`sin²x + cos²x = 1 → cos²x = 1 − ${FR(s2,h2)} = ${FR(h2-s2,h2)}.<br>Comme x ∈ [0 ; π/2], cos(x) > 0 : cos(x) = ${fracHTML("√"+(h2-s2),hyp)} = <b>${F(cosN,hyp)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const combos=[[0,"π/2"],["π/2",0]];
-   const c=pick(combos),a=c[0],b=c[1];
-   return{prompt:`Calcule : cos(${a} + ${b}).`,
-     type:"number",answer:0,
-     explain:`cos(a+b) = cos a cos b − sin a sin b = cos(${a})cos(${b}) − sin(${a})sin(${b}) = <b>0</b>.`};
- }},
- {lvl:"difficile",make(){
-   const trip=pick([[3,4],[4,3]]);
-   const sinN=trip[0],cosN=trip[1];
-   const num=25-2*sinN*sinN;
-   return{prompt:`Soit x dans [0 ; π/2] avec sin(x) = ${F(sinN,5)}. Calcule cos(2x).`,
-     type:"frac",answer:fa(num,25),
-     viz:{kind:"unit",ang:Math.asin(sinN/5),angLabel:"x",leg:"cos",valLabel:F(cosN,5)},
-     explain:`Formule de l'angle double : cos(2x) = 1 − 2sin²x = 1 − ${FR(2*sinN*sinN,25)} = <b>${F(num,25)}</b>.`};
- }},
-];
-
-/* ---------- Probabilités ---------- */
-const G_PROBA=[
- {lvl:"facile",make(){
-   const s=pick([2,5,7,12]);
-   const n={2:1,5:4,7:6,12:1}[s];
-   return{prompt:`On lance deux dés équilibrés à 6 faces. Quelle est la probabilité d'obtenir un total de ${s} ?`,
-     type:"frac",answer:fa(n,36),
-     explain:`36 issues équiprobables. Paires donnant ${s} : ${n} possibilités.<br>P = <b>${F(n,36)}</b>.`};
- }},
- {lvl:"facile",make(){
-   return{prompt:`On lance deux pièces équilibrées. Quelle est la probabilité d'obtenir exactement une face ?`,
-     type:"frac",answer:fa(1,2),
-     explain:`4 issues : FF, FP, PF, PP. « Exactement une face » : FP et PF → 2 issues sur 4.<br>P = ${FR(2,4)} = <b>${F(1,2)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const r=pick([2,3,4]),b=pick([2,3,4]);
-   const num=r*r,den=(r+b)*(r+b);
-   return{prompt:`Une urne contient ${r} boules rouges et ${b} bleues. On tire une boule, on la remet, puis on en retire une. Quelle est la probabilité de tirer deux boules rouges ?`,
-     type:"frac",answer:fr(num,den),
-     explain:`Tirage avec remise → indépendance.<br>P = ${FR(r,r+b)} × ${FR(r,r+b)} = <b>${F(num,den)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const c1=Ri(3,6),c2=Ri(4,8);
-   return{prompt:`Un menu comporte ${c1} entrées et ${c2} plats. Combien de menus (1 entrée + 1 plat) peut-on composer ?`,
-     type:"number",answer:c1*c2,
-     explain:`Règle du produit : chaque entrée se combine avec chaque plat.<br>${c1} × ${c2} = <b>${c1*c2}</b> menus.`};
- }},
- {lvl:"difficile",make(){
-   /* arbre : A (p) / A' (1-p), puis de A → B (q) ; P(A|B) = pq / (pq + (1-p)q2) */
-   const pN=pick([1,2,3]),pD=pick([3,4,5]),qN=pick([1,2]),qD=pick([2,3,4]);
-   const q2N=pick([1,2]);
-   const num=pN*qN;
-   const den=pN*qN+(pD-pN)*q2N;
-   return{prompt:`P(A) = ${FR(pN,pD)}, P(B|A) = ${FR(qN,qD)} et P(B|A′) = ${FR(q2N,qD)}. Calcule P(A|B).`,
-     type:"frac",answer:fr(num,den),
-     explain:`P(A∩B) = ${FR(pN,pD)} × ${FR(qN,qD)} = ${FR(pN*qN,pD*qD)}.<br>P(B) = ${FR(pN*qN,pD*qD)} + ${FR((pD-pN)*q2N,pD*qD)}.<br>P(A|B) = P(A∩B) ÷ P(B) = <b>${F(num,den)}</b>.`};
- }},
- {lvl:"facile",make(){
-   let f1,f2;do{f1=pick([1,2,3,4,5,6]);f2=pick([1,2,3,4,5,6]);}while(f2===f1);
-   return{prompt:`On lance un dé équilibré à 6 faces. A = « la face ${f1} », B = « la face ${f2} ». Quelle est P(A ou B) ?`,
-     type:"frac",answer:fa(1,3),
-     explain:`A et B sont disjoints (on ne peut pas avoir les deux faces à la fois).<br>P(A ou B) = P(A) + P(B) = ${FR(1,6)} + ${FR(1,6)} = ${FR(2,6)} = <b>${F(1,3)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const P=[
-     {A:"le nombre est pair",B:"le nombre est un multiple de 3",Ain:"{2,4,6}",Bin:"{3,6}",I:"{6}",sa:3,sb:2,si:1},
-     {A:"le nombre est supérieur à 3",B:"le nombre est pair",Ain:"{4,5,6}",Bin:"{2,4,6}",I:"{4,6}",sa:3,sb:3,si:2},
-     {A:"le nombre est pair",B:"le nombre est supérieur à 4",Ain:"{2,4,6}",Bin:"{5,6}",I:"{6}",sa:3,sb:2,si:1}
-   ];
-   const e=pick(P),union=e.sa+e.sb-e.si;
-   return{prompt:`On lance un dé à 6 faces. A = « ${e.A} », B = « ${e.B} ». Quelle est P(A ou B) ?`,
-     type:"frac",answer:fr(union,6),
-     explain:`A = ${e.Ain}, B = ${e.Bin} → A∩B = ${e.I} (non vide, ${e.si} élément${e.si>1?"s":""}).<br>P(A ou B) = P(A)+P(B)−P(A∩B) = ${FR(e.sa,6)}+${FR(e.sb,6)}−${FR(e.si,6)} = ${FR(union,6)} = <b>${F(union,6)}</b>.`};
+   const n=Ri(4,8),k=pick([2,3]);
+   const fact=m=>{let r=1;for(let i=2;i<=m;i++)r*=i;return r;};
+   const c=fact(n)/(fact(k)*fact(n-k));
+   return{prompt:`Combien de groupes de ${k} élèves peut-on former dans une classe de ${n} élèves ?`,
+    type:"number",answer:c,
+    explain:`L'ordre des membres du groupe n'a pas d'importance : on compte des combinaisons.<br>C(${n},${k}) = ${n}! / (${k}! × ${n-k}!) = <b>${c}</b>.`};
  }}
 ];
 
-/* ---------- Vecteurs & produit scalaire ---------- */
-const G_VECT=[
+/* ---------- TERMINALE — Espace & vecteurs 3D ---------- */
+const G_T_ESP=[
  {lvl:"facile",make(){
-   const u=[Ri(-4,4),Ri(-4,4)],v=[Ri(-4,4),Ri(-4,4)];
-   const dot=u[0]*v[0]+u[1]*v[1];
-   return{prompt:`Soit u(${u[0]} ; ${u[1]}) et v(${v[0]} ; ${v[1]}). Calcule u·v (produit scalaire).`,
-     type:"number",answer:dot,
-     explain:`u·v = x₁x₂ + y₁y₂ = ${u[0]<0?"("+u[0]+")":u[0]}×${v[0]<0?"("+v[0]+")":v[0]} ${u[1]*v[1]<0?"− ":"+ "}${Math.abs(u[1])}×${Math.abs(v[1])} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− ":"+ "}${Math.abs(u[1]*v[1])} = <b>${dot}</b>.`};
- }},
- {lvl:"facile",make(){
-   const A=[Ri(-5,5),Ri(-5,5)],dx=pick([-4,-3,-2,2,3,4]),dy=pick([-4,-3,-2,2,3,4]);
-   const B=[A[0]+dx,A[1]+dy];
-   return{prompt:`Soit A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}). Quelle est la composante x du vecteur AB ?`,
-     type:"number",answer:dx,
-     explain:`AB = (x_B − x_A ; y_B − y_A) = (${B[0]} ${A[0]<0?"+ ":"− "}${Math.abs(A[0])} ; ${B[1]} ${A[1]<0?"+ ":"− "}${Math.abs(A[1])}) = (${dx} ; ${dy}).<br>La composante x est <b>${dx}</b>.`};
+   const u=[Ri(1,4),Ri(1,4),Ri(1,3)],k=Ri(2,4);
+   const v=[k*u[0],k*u[1],k*u[2]];
+   return qcm(`u = (${u[0]} ; ${u[1]} ; ${u[2]}) et v = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
+    `colinéaires`,
+    [`orthogonaux`,`ni colinéaires ni orthogonaux`,`égaux`],
+    `Les trois composantes de v sont égales à ${k} fois celles de u : v = ${k}·u, donc <b>colinéaires</b>.`);
  }},
  {lvl:"moyen",make(){
-   const trip=pick([[3,4],[4,3],[6,8],[8,6],[5,12],[12,5]]);
-   const A=[Ri(-5,5),Ri(-5,5)],B=[A[0]+trip[0],A[1]+trip[1]];
-   return{prompt:`Soit A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}). Calcule la longueur AB.`,
-     type:"number",answer:Math.hypot(trip[0],trip[1]),
-     explain:`AB = (x_B − x_A ; y_B − y_A) = (${trip[0]} ; ${trip[1]}).<br>AB = √(${trip[0]}² + ${trip[1]}²) = √${trip[0]*trip[0]+trip[1]*trip[1]} = <b>${Math.hypot(trip[0],trip[1])}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const base=[pick([1,2,3]),pick([1,2,3])],k=pick([-3,-2,2,3]);
-   const u=base,v=[k*base[0],k*base[1]];
-   return qcm(`Les vecteurs u(${u[0]} ; ${u[1]}) et v(${v[0]} ; ${v[1]}) sont-ils colinéaires ?`,
-     "Oui, ils sont colinéaires",["Non, ils ne sont pas colinéaires"],
-     `v = ${k} × u (chaque composante est multipliée par ${k}), donc <b>oui, ils sont colinéaires</b>.`);
+   const u=[Ri(1,5),Ri(1,5),Ri(1,4)];
+   const ortho=pick([1,0]);
+   const v=ortho?[u[1],-u[0],0]:[Ri(1,4),Ri(1,4),Ri(1,4)];
+   const p=u[0]*v[0]+u[1]*v[1]+u[2]*v[2];
+   return{prompt:`u = (${u[0]} ; ${u[1]} ; ${u[2]}) et v = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u·v.`,
+    type:"number",answer:p,
+    explain:`u·v = ${u[0]} × ${v[0]} + (${u[1]} × ${v[1]}) + (${u[2]} × ${v[2]}) = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} ${u[2]*v[2]<0?"− "+(-u[2]*v[2]):"+ "+u[2]*v[2]} = <b>${p}</b>${ortho?" (donc u et v sont orthogonaux).":""}`};
  }},
  {lvl:"difficile",make(){
-   const u=[Ri(-5,5),Ri(-5,5)],v=[Ri(-5,5),Ri(-5,5)];
-   const det=Math.abs(u[0]*v[1]-u[1]*v[0]);
-   return{prompt:`Soit u(${u[0]} ; ${u[1]}) et v(${v[0]} ; ${v[1]}). Calcule l'aire du triangle formé par les origines de ces vecteurs (aire = |det(u,v)|/2).`,
-     type:"frac",answer:fa(det,2),
-     explain:`det(u,v) = x₁y₂ − y₁x₂ = ${u[0]<0?"("+u[0]+")":u[0]}×${v[1]<0?"("+v[1]+")":v[1]} ${u[1]*v[0]<0?"+ ":"− "}${Math.abs(u[1])}×${Math.abs(v[0])} = ${u[0]*v[1]-u[1]*v[0]}.<br>Aire = ${FR(det,2)} = <b>${F(det,2)}</b>.`};
- }},
-];
-
-/* ---------- Droites & fonctions affines ---------- */
-const G_AFF=[
- {lvl:"facile",make(){
-   const dx=pick([1,2,3,4]),dy=pick([-6,-4,-3,-2,2,3,4,6]);
-   const A=[Ri(-4,4),Ri(-4,4)],B=[A[0]+dx,A[1]+dy];
-   return{prompt:`Calcule le coefficient directeur de la droite passant par A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}).`,
-     type:"frac",answer:fr(dy,dx),
-     explain:`a = (y_B − y_A)/(x_B − x_A) = ${FR(dy,dx)} = <b>${F(dy,dx)}</b>.`};
- }},
- {lvl:"facile",make(){
-   const a=Ri(-6,6)||2,b=Ri(-8,8),k=Ri(1,5);
-   const bs=b<0?"− "+(-b):"+ "+b;
-   return{prompt:`Soit f(x) = ${a}x ${bs}. Calcule f(${k}).`,
-     type:"number",answer:a*k+b,
-     explain:`f(${k}) = ${a} × ${k} + (${b}) = <b>${a*k+b}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const dx=pick([2,3,4]),dy=pick([1,2,3]);
-   const A=[Ri(-4,4),Ri(-4,4)],B=[A[0]+dx,A[1]+dy];
-   const aN=dy,aD=dx,b0=A[1]-A[0]*dy/dx;
-   return{prompt:`La droite (D) passe par A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}). Déterminer l'ordonnée à l'origine b de sa forme y = ax + b.`,
-     type:"frac",answer:fr(A[1]*dx-dy*A[0],dx),
-     explain:`a = ${FR(dy,dx)} = ${F(dy,dx)}.<br>b = y_A − a·x_A = ${A[1]} ${A[0]<0?"+ ":"− "}${F(dy,dx)} × ${Math.abs(A[0])} = <b>${F(A[1]*dx-dy*A[0],dx)}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const m=pick([-2,-1,1,2]),b=Ri(-5,5),C=[Ri(-4,4),Ri(-4,4)];
-   const b2=C[1]-m*C[0];
-   return{prompt:`La droite (d) a pour équation y = ${m}x ${b<0?"− "+(-b):"+ "+b}. La droite (d′) passe par C(${C[0]} ; ${C[1]}) et est parallèle à (d). Calcule l'ordonnée à l'origine de (d′).`,
-     type:"number",answer:b2,
-     explain:`Parallèles → même coefficient directeur m = ${m}.<br>b′ = y_C − m·x_C = ${C[1]} ${C[0]<0?"+ ":"− "}${Math.abs(m)}×${Math.abs(C[0])} = <b>${b2}</b>.`};
- }},
-];
-
-/* ---------- Limites ---------- */
-const G_LIM=[
- {lvl:"facile",make(){
-   return qcm("Calcule la limite de eˣ quand x tend vers +∞.","+∞",["−∞","0","La limite ne existe pas"],
-     "Quand x → +∞, eˣ croît sans limite : eˣ → <b>+∞</b>.");
- }},
- {lvl:"facile",make(){
-   return qcm("Calcule la limite de ln(x) quand x tend vers 0 par la droite (x → 0⁺).","−∞",["+∞","0","La limite ne existe pas"],
-     "Quand x → 0⁺, ln(x) descend sans limite : ln(x) → <b>−∞</b>.");
- }},
- {lvl:"facile",make(){
-   return{prompt:"Calcule la limite de 1/x quand x tend vers +∞.",
-     type:"number",answer:0,
-     explain:"1/x devient de plus en plus petit : 1/x → <b>0</b>."};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(2,5),c=Ri(2,4),b=Ri(-9,9),d=Ri(-9,9);
-   const bs=b<0?"− "+(-b):"+ "+b,ds=d<0?"− "+(-d):"+ "+d;
-   return{prompt:`Calcule la limite de (${a}x ${bs}) / (${c}x ${ds}) quand x tend vers +∞.`,
-     type:"frac",answer:fa(a,c),
-     explain:`Divisons numérateur et dénominateur par x (x → +∞, donc 1/x → 0) :<br>= (${a} ${b<0?"− ":"+ "}${Math.abs(b)}/x) / (${c} ${d<0?"− ":"+ "}${Math.abs(d)}/x) → ${FR(a,c)} = <b>${F(a,c)}</b>.`};
- }},
- {lvl:"moyen",make(){
-   return{prompt:"Calcule la limite de sin(x)/x quand x tend vers 0.",
-     type:"number",answer:1,
-     explain:"Limite remarquable : sin(x)/x → <b>1</b> quand x → 0."};
- }},
- {lvl:"moyen",make(){
-   return{prompt:"Calcule la limite de ln(x)/x quand x tend vers +∞.",
-     type:"number",answer:0,
-     explain:"Comparaison des croissances : x « gagne » beaucoup plus vite que ln(x).<br>Donc ln(x)/x → <b>0</b>."};
- }},
- {lvl:"difficile",make(){
-   return{prompt:"Calcule la limite de x·ln(x) quand x tend vers 0 par la droite (x → 0⁺).",
-     type:"number",answer:0,
-     explain:"Forme indéterminée 0 × (−∞). Écrivons x·ln(x) = ln(x) / (1/x) : forme (−∞)/(+∞).<br>La puissance « gagne » sur le ln : x·ln(x) → <b>0</b>."};
- }},
- {lvl:"difficile",make(){
-   return{prompt:"Calcule la limite de eˣ quand x tend vers −∞.",
-     type:"number",answer:0,
-     explain:"eˣ = 1/e^{−x} et −x → +∞ quand x → −∞.<br>Donc eˣ → <b>0</b>."};
+   const [a,b,c]=shuf([1,2,3,4,5,6]).slice(0,3);
+   const d=pick([-6,-3,-1,0,8,9].filter(x=>x!==c));
+   const dt=d===0?"":(d>0?` + ${d}`:` − ${-d}`);
+   return qcm(`Le plan P a pour équation cartésienne ${a}x + ${b}y + ${c}z${dt} = 0. Un vecteur normal à P est :`,
+    `(${a} ; ${b} ; ${c})`,
+    [`(${b} ; ${a} ; ${c})`,`(${a} ; ${b} ; ${d})`,`(${a+b} ; ${b+c} ; ${c+a})`],
+    `Équation cartésienne ax + by + cz + d = 0 : le vecteur normal est (a ; b ; c).<br>Le terme constant ne fait pas partie du vecteur normal.`);
  }}
 ];
 
-/* ---------- Étude de variations ----------
-   Règles de génération : sommet toujours à abscisse ENTIERE (b = −2ah),
-   extremums toujours à valeurs entières — la correction reste lisible. */
-const G_VAR=[
- {lvl:"facile",make(){
-   const a=pick([-6,-4,-3,-2,2,3,4,6]),b=Ri(-9,9),inc=a>0;
-   return{...qcm(`Soit f(x) = ${a}x ${b<0?"− "+(-b):"+ "+b}. Est-elle croissante ou décroissante sur ℝ ?`,
-     inc?"Croissante sur ℝ":"Décroissante sur ℝ",inc?["Décroissante sur ℝ"]:["Croissante sur ℝ"],
-     `f est affine de coefficient a = ${a} ${a>0?"> 0":"< 0"}.<br>Donc f est <b>${inc?"croissante":"décroissante"}</b> sur ℝ.`),
-     viz:{kind:"var",f:"lin",a:a,b:b,arrows:[[ -8,8,inc?1:-1]],ex:[]}};
- }},
- {lvl:"facile",make(){
-   const a=pick([2,3,4,-2,-3]),b=Ri(-6,6),c=Ri(-6,6);
-   const h=-b/(2*a),fh=a*h*h+b*h+c;
-   return{prompt:`Soit f(x) = ${a<0?"− ":""}${Math.abs(a)>1?Math.abs(a)+" ":""}x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c}. Combien d'extremums locaux f possède-t-elle ?`,
-     type:"number",answer:1,
-     viz:{kind:"var",f:"quad",a:a,b:b,c:c,
-       arrows:a>0?[[-8,h,-1],[h,8,1]]:[[-8,h,1],[h,8,-1]],
-       ex:[[h,fh,a>0?"min":"max"]]},
-     explain:`f est une parabole de coefficient a ${a>0?"> 0":"< 0"} : elle a un seul sommet.<br>Donc f possède <b>1 extremum local</b> (${a>0?"un minimum":"un maximum"} en x = ${h}).`};
- }},
- {lvl:"moyen",make(){
-   const a=pick([2,3,-2,-3]),h=pick([-3,-2,-1,1,2,3]);
-   const b=-2*a*h,c=Ri(-6,6),fh=a*h*h+b*h+c;
-   return{...qcm(`Soit f(x) = ${a<0?"− ":""}${Math.abs(a)>1?Math.abs(a)+" ":""}x² ${b<0?"− "+(-b):"+ "+b}x ${c<0?"− "+(-c):"+ "+c}. Sur quel intervalle f est-elle décroissante ?`,
-     a>0?`(−∞ ; ${h}]`:`[${h} ; +∞)`,
-     [a>0?`[${h} ; +∞)`:`(−∞ ; ${h}]`,`Sur tout ℝ`],
-     `f′(x) = ${2*a}x ${b<0?"− "+(-b):"+ "+b}. Le signe de f′ change en x = ${h} (sommet).<br>Donc f est <b>décroissante sur ${a>0?"(−∞ ; "+h+"]":"["+h+" ; +∞)"}</b>.`),
-     viz:{kind:"var",f:"quad",a:a,b:b,c:c,
-       arrows:a>0?[[-8,h,-1],[h,8,1]]:[[-8,h,1],[h,8,-1]],
-       ex:[[h,fh,a>0?"min":"max"]]}};
- }},
- {lvl:"moyen",make(){
-   const a=pick([1,2,3]);
-   return{...qcm(`Soit f(x) = ${a>1?a+" ":""}eˣ ${a>1?"− "+a:"− 1"}. Sur quel intervalle f est-elle décroissante ?`,
-     "(−∞ ; 0]",["[0 ; +∞)","Sur tout ℝ"],
-     `f′(x) = ${a}·eˣ − ${a}, donc f′(x) a le signe de (eˣ − 1) car ${a} > 0.<br>eˣ − 1 < 0 ⇔ x < 0 : f est <b>décroissante sur (−∞ ; 0]</b> (le minimum est en x = 0).`),
-     viz:{kind:"var",f:"expx",a:a,b:-a,arrows:[[-8,0,-1],[0,8,1]],ex:[[0,0,"min"]]}};
- }},
- {lvl:"moyen",make(){
-   const a=pick([1,2,3]);
-   return{prompt:`Soit f(x) = ${a>1?a+" ":""}eˣ ${a>1?"− "+a:"− 1"}. Quel est le minimum de f ?`,
-     type:"number",answer:0,
-     viz:{kind:"var",f:"expx",a:a,b:-a,arrows:[[-8,0,-1],[0,8,1]],ex:[[0,0,"min"]]},
-     explain:`Le minimum est atteint en x = 0 (c'est là que f′ = 0).<br>f(0) = ${a}·e⁰ − ${a} = ${a} − ${a} = <b>0</b>.`};
- }},
- {lvl:"difficile",make(){
-   return{prompt:"Soit f(x) = x³ − 3x. Quelle est l'abscisse du maximum de f ?",
-     type:"number",answer:-1,
-     viz:{kind:"var",f:"x3m",b:-3,arrows:[[-8,-1,1],[-1,1,-1],[1,8,1]],ex:[[-1,2,"max"],[1,-2,"min"]]},
-     explain:"f′(x) = 3x² − 3 = 3(x − 1)(x + 1).<br>Table des signes : f′ est positive sur (−∞ ; −1], négative sur [−1 ; 1], positive sur [1 ; +∞).<br>Maximum en x = <b>−1</b> (f(−1) = 2), minimum en x = 1 (f(1) = −2)."};
- }},
- {lvl:"difficile",make(){
-   return{prompt:"Soit f(x) = ln(x) − x. Quelle est l'abscisse du maximum de f ?",
-     type:"number",answer:1,
-     viz:{kind:"var",f:"lnmx",arrows:[[0.2,1,1],[1,6,-1]],ex:[[1,-1,"max"]]},
-     explain:"f′(x) = 1/x − 1 = (1 − x)/x.<br>Sur ]0 ; 1[ : f′ > 0 (f croît) ; sur ]1 ; +∞[ : f′ < 0 (f décroît).<br>Maximum en x = <b>1</b> (f(1) = −1)."};
- }}
-];
-
-/* ---------- Seconde : Nombres & calcul ---------- */
-let _s2flip=0; /* alternance PGCD / PPCM entre tirages consécutifs */
-const G_S2_NUM=[
- {lvl:"facile",make(){
-   const a=Ri(2,9),p=Ri(2,5),S="⁰¹²³⁴⁵⁶⁷⁸⁹",n=a*Math.pow(10,p);
-   return{prompt:`Calcule : ${a} × 10${S[p]} = ?`,type:"number",answer:n,
-     explain:`a × 10ᵖ : on décale la virgule de ${p} rangs vers la droite.<br>${a} × 10${S[p]} = <b>${n}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const d=Ri(2,15);
-   let x=Ri(2,9),y=Ri(2,9),t=0;
-   while(gcd(x,y)!==1&&++t<50){x=Ri(2,9);y=Ri(2,9);}
-   const g=gcd(x,y),A=d*x,B=d*y,pgcd=(++_s2flip)%2===0;
-   const ans=pgcd?d*g:d*x*y/g;
-   return{prompt:pgcd?`PGCD de ${A} et ${B} ?`:`PPCM de ${A} et ${B} ?`,type:"number",answer:ans,
-     explain:`Factorisation : ${A} = ${d} × ${x}, ${B} = ${d} × ${y} — les facteurs communs forment le PGCD, tous les facteurs (chacun une fois) le PPCM.<br>${pgcd?`PGCD = ${d}${g>1?" × "+g:""} = <b>${d*g}</b>`:`PPCM = ${d} × ${x} × ${y}${g>1?" ÷ "+g:""} = <b>${d*x*y/g}</b>`}.`};
- }},
- {lvl:"difficile",make(){
-   const a=Ri(1,3),b=Ri(1,3),c=pick([0,1]),S="⁰¹²³⁴⁵⁶⁷⁸⁹",ans=(a+1)*(b+1)*(c+1);
-   const N=`2${S[a]} × 3${S[b]}${c?" × 5":""}`;
-   return{prompt:`Soit N = ${N}. Combien de diviseurs entiers N a-t-il ?`,type:"number",answer:ans,
-     explain:`N = ${N} = ∏ pᵢ^eᵢ : le nombre de diviseurs est ∏ (eᵢ+1).<br>${a+1} × ${b+1} × ${c+1} = <b>${ans}</b>.`};
- }}
-];
-
-/* ---------- Seconde : Équations & inéquations ---------- */
-const G_S2_EQ=[
- {lvl:"facile",make(){
-   let x=Ri(-8,12),t=0;
-   while(x===0&&++t<50)x=Ri(-8,12);
-   if(x===0)x=1;
-   const a=Ri(2,9),b=-a*x;
-   return{prompt:`Résous : ${a}x ${b<0?"− "+(-b):"+ "+b} = 0`,type:"number",answer:x,
-     explain:`ax + b = 0 ⇔ x = −b/a.<br>x = ${b<0?"":"− "}${Math.abs(b)}/${a} = <b>${x}</b>.`};
- }},
- {lvl:"moyen",make(){
-   let x=Ri(-8,12),t=0;
-   while(x===0&&++t<50)x=Ri(-8,12);
-   if(x===0)x=1;
-   const a=Ri(2,5);
-   let b=Ri(-5,5),u=0;
-   while(b===0&&++u<50)b=Ri(-5,5);
-   if(b===0)b=1;
-   const c=a*(x+b);
-   return{prompt:`Résous : ${a}(x ${b<0?"− "+(-b):"+ "+b}) = ${c}`,type:"number",answer:x,
-     explain:`D'abord diviser par a, ou développer : x ${b<0?"− "+(-b):"+ "+b} = ${c}/${a} = ${x+b}.<br>x = ${x+b} ${b>0?"−":"+"} ${Math.abs(b)} = <b>${x}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const a=Ri(1,5),b=Ri(-10,10),c=Ri(-15,15);
-   const p=c-b,q=Math.floor(p/a),r=p-q*a,ans=r===0?q:q+1;
-   return{prompt:`Plus petite valeur entière de x telle que ${a>1?a+" ":""}x ${b<0?"− "+(-b):"+ "+b} ≥ ${c} ?`,
-     type:"number",answer:ans,
-     explain:`ax + b ≥ c ⇔ x ≥ (c − b)/a (a = ${a} > 0).<br>(c − b)/a = ${F(c-b,a)} : la plus petite valeur entière est ⌈${F(c-b,a)}⌉ = <b>${ans}</b>.`};
- }}
-];
-
-/* ---------- Seconde : 2e degré ---------- */
-const G_S2_EQ2=[
- {lvl:"facile",make(){
-   let b=Ri(-8,8),c=Ri(-8,8),t=0;
-   while(b*b-4*c<0&&++t<50){b=Ri(-8,8);c=Ri(-8,8);}
-   if(b*b-4*c<0){b=3;c=1;}
-   const D=b*b-4*c;
-   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
-   return{prompt:`Δ de ${P} = 0 ?`,type:"number",answer:D,
-     explain:`Δ = b² − 4ac, avec a = 1 : Δ = (${b})² − 4 × (${c}) = <b>${D}</b>.`};
- }},
- {lvl:"moyen",make(){
-   let b=Ri(-8,8),c=Ri(-8,8),t=0;
-   while(b*b-4*c<=0&&++t<50){b=Ri(-8,8);c=Ri(-8,8);}
-   if(b*b-4*c<=0){b=3;c=1;}
-   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
-   return{prompt:`Somme des deux racines réelles de ${P} = 0 ?`,type:"number",answer:-b,
-     explain:`Règle de Viète : x₁ + x₂ = −b/a, avec a = 1.<br>x₁ + x₂ = −(${b}) = <b>${-b}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const a=Ri(2,5);
-   let b=Ri(-9,9),c=Ri(-9,9),t=0;
-   while(b*b-4*a*c<0&&++t<50){b=Ri(-9,9);c=Ri(-9,9);}
-   if(b*b-4*a*c<0)c=0;
-   const f=fa(c,a);
-   const P=`${a}x²`+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
-   return{prompt:`Produit des deux racines de ${P} = 0 ?`,type:"frac",answer:f,
-     explain:`Règle de Viète : x₁·x₂ = c/a.<br>x₁·x₂ = ${c}/${a} = <b>${F(f.n,f.d)}</b>.`};
- }}
-];
-
-/* ---------- Seconde : Fonctions & variations ---------- */
-const G_S2_FONC=[
- {lvl:"facile",make(){
-   let a=Ri(-9,9),t=0;
-   while(a===0&&++t<50)a=Ri(-9,9);
-   if(a===0)a=1;
-   let b=Ri(-9,9),u=0;
-   while(b===0&&++u<50)b=Ri(-9,9);
-   if(b===0)b=1;
-   const x0=Ri(-5,5),ans=a*x0+b;
-   return{prompt:`f(x) = ${a<0?"− ":""}${Math.abs(a)>1?Math.abs(a)+" ":""}x ${b<0?"− "+(-b):"+ "+b}. f(${x0}) = ?`,
-     type:"number",answer:ans,
-     explain:`On remplace x par ${x0} : f(${x0}) = (${a}) × (${x0}) ${b<0?"− "+(-b):"+ "+b} = <b>${ans}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const b=Ri(-6,6),c=Ri(-6,6),x0=Ri(-4,4),ans=x0*x0+b*x0+c;
-   const P="x²"+(b?` ${b<0?"− ":"+ "}${Math.abs(b)}x`:"")+(c?` ${c<0?"− ":"+ "}${Math.abs(c)}`:"");
-   return{prompt:`f(x) = ${P}. f(${x0}) = ?`,type:"number",answer:ans,
-     explain:`f(${x0}) = (${x0})² + (${b}) × (${x0}) + (${c}) = <b>${ans}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const cas=pick([1,2,3]);
-   let a,b,bonne,desc;
-   if(cas===1){const B=Ri(1,5),K=Ri(1,4);a=-(B+K);b=-B;bonne="strictement décroissante";desc="entièrement à gauche de 0 (dans ℤ⁻)";}
-   else if(cas===2){const A=Ri(1,5),K=Ri(1,4);a=A;b=A+K;bonne="strictement croissante";desc="entièrement à droite de 0 (dans ℤ₊)";}
-   else{a=-Ri(1,5);b=Ri(1,5);bonne="ni l'une ni l'autre";desc="traversé par 0 (a < 0 < b)";}
-   const ds=["strictement croissante","strictement décroissante","ni l'une ni l'autre"].filter(o=>o!==bonne);
-   return qcm(`Sur l'intervalle [${a} ; ${b}], la fonction x ↦ x² est…`,bonne,ds,
-     `x ↦ x² a son sommet en 0 : strictement décroissante sur (−∞ ; 0] puis strictement croissante sur [0 ; +∞).<br>L'intervalle [${a} ; ${b}] est ${desc} : f y est <b>${bonne}</b>.`);
- }}
-];
-
-/* ---------- Seconde : Vecteurs ---------- */
-const G_S2_VECT=[
- {lvl:"facile",make(){
-   const x1=Ri(-9,9),y1=Ri(-9,9),x2=Ri(-9,9),y2=Ri(-9,9),ans=x2-x1;
-   return{prompt:`A(${x1} ; ${y1}) et B(${x2} ; ${y2}). Coordonnée x du vecteur AB ?`,
-     type:"number",answer:ans,
-     explain:`AB = (xB − xA ; yB − yA) = (${x2} − ${x1} ; ${y2} − ${y1}).<br>Coordonnée x = ${x2} − ${x1} = <b>${ans}</b>.`};
- }},
- {lvl:"moyen",make(){
-   let a=Ri(-5,5),t=0;
-   while(a===0&&++t<50)a=Ri(-5,5);
-   if(a===0)a=1;
-   const b=Ri(-5,5),k=Ri(2,4);
-   return{prompt:`u = (${a} ; ${b}), v = ${k}·u. Coordonnée x de v ?`,type:"number",answer:k*a,
-     explain:`v = k·u : on multiplie chaque coordonnée de u par k = ${k}.<br>v = (${k} × ${a} ; ${k} × ${b}) = (${k*a} ; ${k*b}) : coordonnée x = <b>${k*a}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const al=Ri(0,1),x1=Ri(-6,6),y1=Ri(-6,6);
-   let dx,dy,k;
-   if(al){dx=pick([-4,-3,-2,-1,1,2,3,4]);dy=Ri(-4,4);k=pick([2,3]);}
-   else{dx=Ri(1,4);dy=Ri(-4,4);k=1;}
-   const x2=x1+dx,y2=y1+dy;
-   const cx=x1+k*dx,cy=y1+(al?k*dy:dy+1);
-   const acx=cx-x1,acy=cy-y1,det=dx*acy-dy*acx;
-   const bonne=al?"Oui — AB et AC sont colinéaires":"Non — AB et AC ne sont pas colinéaires";
-   const leurre=al?"Non — AB et AC ne sont pas colinéaires":"Oui — AB et AC sont colinéaires";
-   return qcm(`A(${x1} ; ${y1}), B(${x2} ; ${y2}) et C(${cx} ; ${cy}) sont-ils alignés ?`,bonne,[leurre],
-     `AB = (${dx} ; ${dy}), AC = (${acx} ; ${acy}).<br>Déterminant = ${dx} × ${acy} − ${dy} × ${acx} = ${det} ${det===0?"= 0 : AB et AC sont colinéaires":"≠ 0 : AB et AC ne sont pas colinéaires"}.<br>Alignés ⇔ det(AB, AC) = 0 : <b>${bonne}</b>.`);
- }}
-];
-
-/* ---------- Seconde : Stats & proportions ---------- */
-const G_S2_STAT=[
- {lvl:"facile",make(){
-   const N=Ri(10,100)*10,p=Ri(1,9)*10,ans=N*p/100;
-   return{prompt:`${p} % de ${N} = ?`,type:"number",answer:ans,
-     explain:`N × p / 100 : ${N} × ${p} / 100 = <b>${ans}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(10,90),VS=[-50,-25,-20,-10,10,20,25,50,100];
-   let v=pick(VS),t=0;
-   while(a*(100+v)%100!==0&&++t<50)v=pick(VS);
-   if(a*(100+v)%100!==0)v=100;
-   const f=a*(100+v)/100;
-   return{prompt:`Une quantité passe de ${a} à ${f}. Variation relative en % ?`,
-     type:"number",answer:v,
-     explain:`(final − initial) / initial × 100 = (${f} − ${a})/${a} × 100 = <b>${v}%</b>.`};
- }},
- {lvl:"difficile",make(){
-   const n1=Ri(6,18),n2=Ri(6,18),n3=Ri(6,18);
-   const w1=Ri(1,4),w2=Ri(1,4),w3=Ri(1,4);
-   const num=n1*w1+n2*w2+n3*w3,den=w1+w2+w3,f=fa(num,den);
-   return{prompt:`Moyenne pondérée : ${n1} (coef ${w1}), ${n2} (coef ${w2}), ${n3} (coef ${w3}) ?`,
-     type:"frac",answer:f,
-     explain:`Σ(note × coef) / Σ(coef) = (${n1}×${w1} + ${n2}×${w2} + ${n3}×${w3}) / (${w1}+${w2}+${w3}) = ${num}/${den} = <b>${F(f.n,f.d)}</b>.`};
- }}
-];
-
-/* ---------- Terminale : Exponentielle ---------- */
-const G_T_EXP=[
- {lvl:"facile",make(){
-   const a=Ri(2,9);
-   return{prompt:`f(x) = ${a}·eˣ. f′(0) = ?`,type:"number",answer:a,
-     explain:`(eˣ)′ = eˣ, donc (a·eˣ)′ = a·eˣ.<br>f′(0) = ${a} × 1 = <b>${a}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(2,6),b=Ri(2,4),N=Math.pow(a,b),v=Math.log(N);
-   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
-   return{prompt:`Résous eˣ = ${N}. x = ln ${N} ≈ ?`,type:"number",answer:v,tol:0.01,
-     explain:`eˣ = ${N} ⇔ x = ln ${N} = ${b} × ln ${a} ≈ <b>${d2(v)}</b>.`};
- }},
- {lvl:"difficile",make(){
-   const k=Ri(2,9),v=k*(1-Math.log(k));
-   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
-   return{prompt:`Tangente à la courbe de f(x) = eˣ au point d'abscisse ln ${k} : ordonnée à l'origine ?`,
-     type:"number",answer:v,tol:0.01,
-     explain:`Tangente en x₀ : y = f′(x₀)·(x − x₀) + f(x₀) = e^{x₀}·x + e^{x₀}·(1 − x₀).<br>Avec x₀ = ln ${k} : e^{x₀} = ${k}, ordonnée à l'origine = ${k} × (1 − ln ${k}) ≈ <b>${d2(v)}</b>.`};
- }}
-];
-
-/* ---------- Terminale : Logarithme népérien ---------- */
-const G_T_LN=[
- {lvl:"facile",make(){
-   const a=Ri(2,6);
-   return{prompt:`ln(e^{${a}}) = ?`,type:"number",answer:a,
-     explain:`ln est la réciproque de l'exponentielle : ln(e^a) = a.<br>ln(e^{${a}}) = <b>${a}</b>.`};
- }},
- {lvl:"moyen",make(){
-   const a=Ri(1,4),v=Math.exp(a);
-   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
-   return{prompt:`Résous ln x = ${a}. x = e^{${a}} ≈ ?`,type:"number",answer:v,tol:0.01,
-     explain:`ln x = ${a} ⇔ x = e^{${a}} ≈ <b>${d2(v)}</b>.`};
- }},
- {lvl:"difficile",make(){
-   return{prompt:`f(x) = x·ln x. f′(1) = ?`,type:"number",answer:1,
-     explain:`Produit : (x·ln x)′ = 1 × ln x + x × (1/x) = ln x + 1.<br>f′(1) = ln 1 + 1 = 0 + 1 = <b>1</b>.`};
- }}
-];
-
-/* ---------- Terminale : Suites & convergence ---------- */
+/* ---------- TERMINALE — Suites & convergence ---------- */
 const G_T_SUIT=[
  {lvl:"facile",make(){
-   const u0=Ri(1,20),r=Ri(2,6),n=Ri(2,8);
-   return{prompt:`Soit (uₙ) arithmétique de raison ${r} avec u₀ = ${u0}. Calcule u${n}.`,
-     type:"number",answer:u0+n*r,
-     explain:`uₙ = u₀ + n·r : u${n} = ${u0} + ${n} × ${r} = <b>${u0+n*r}</b>.`};
+   return qcm(`Quelle est la limite de la suite (2ⁿ) quand n → +∞ ?`,
+    `+∞`,[`−∞`,`0`,`La suite n'a pas de limite`],
+    `Règle des puissances : si q > 1, alors qⁿ → +∞. Ici q = 2 → <b>+∞</b>.`);
  }},
  {lvl:"moyen",make(){
-   const u0=Ri(1,5),r=Ri(2,4),n=Ri(2,5);
-   return{prompt:`Soit (uₙ) géométrique de raison ${r} avec u₀ = ${u0}. Calcule u${n}.`,
-     type:"number",answer:u0*Math.pow(r,n),
-     explain:`uₙ = u₀ × rⁿ : u${n} = ${u0} × ${r}^${n} = <b>${u0*Math.pow(r,n)}</b>.`};
+   const q=pick(["1/2","−1/2","1/3","2","3"]);
+   const small=(q==="1/2"||q==="−1/2"||q==="1/3");
+   const r=small?"0":"+∞";
+   return qcm(`Quelle est la limite de (${q})ⁿ quand n → +∞ ?`,
+    r,small?["+∞","−∞","La suite n'a pas de limite"]:["0","−∞","La suite n'a pas de limite"],
+    `Règle : si |q| < 1 alors qⁿ → 0 (même si q est négatif : (−1/2)ⁿ → 0) ; si q > 1 alors qⁿ → +∞.<br>Ici q = ${q} → <b>${r}</b>.`);
  }},
  {lvl:"difficile",make(){
-   const bonne="convergente";
-   const ds=["divergente vers +∞","nécessairement de signe constant"];
-   return qcm(`Une suite réelle croissante et majorée est…`,bonne,ds,
-     `Théorème de la convergence monotone : une suite réelle croissante et majorée converge.<br>→ <b>${bonne}</b>.`);
+   const b=pick([1,2,3]);
+   const a=pick([2,3,4,6,9,12].filter(x=>x%b===0&&x!==b));
+   const m=Ri(-5,5),k2=Ri(-4,4),l2=Ri(-4,4);
+   const ans=a/b;
+   return{prompt:`Calcule la limite quand n → +∞ de (${a}n² + ${m}n + ${k2}) / (${b}n² + ${l2}n + 2).`,
+    type:"number",answer:ans,
+    explain:`On divise numérateur et dénominateur par n² (le plus haut degré) : les termes n/n² et 1/n² tendent vers 0.<br>La limite est le rapport des coefficients de n² : ${a}/${b} = <b>${ans}</b>.`};
  }}
 ];
 
-/* ---------- Terminale : Probas conditionnelles ---------- */
-const G_T_PROBA=[
+/* ---------- TERMINALE — Exponentielle & logarithme (fusion « Exponentielle » + « Logarithme népérien ») ---------- */
+const G_T_EXP=[
  {lvl:"facile",make(){
-   const x=Ri(1,5),y=Ri(1,10-x),ans=(x+y)/10;
-   return{prompt:`A et B sont incompatibles : P(A) = ${x}/10 et P(B) = ${y}/10. P(A ∪ B) = ?`,
-     type:"number",answer:ans,tol:0.01,
-     explain:`Incompatibles : P(A ∪ B) = P(A) + P(B) = ${x}/10 + ${y}/10 = ${F(x+y,10)} = <b>${ans.toString().replace(".",",")}</b>.`};
+   const a=Ri(-5,5);
+   return{prompt:`Calcule ln(e^${a}).`,
+    type:"number",answer:a,
+    explain:`ln est la fonction réciproque de exp : ln(e^x) = x pour tout réel x.<br>Donc ln(e^${a}) = <b>${a}</b>.`};
  }},
  {lvl:"moyen",make(){
-   const a=Ri(2,9),b=Ri(2,9),ans=a*b/100;
-   return{prompt:`A et B sont indépendants : P(A) = ${a}/10 et P(B) = ${b}/10. P(A ∩ B) = ?`,
-     type:"number",answer:ans,tol:0.01,
-     explain:`Indépendants : P(A ∩ B) = P(A) × P(B) = ${a}/10 × ${b}/10 = ${F(a*b,100)} = <b>${ans.toString().replace(".",",")}</b>.`};
+   const a=Ri(2,12);
+   return{prompt:`Résous l'équation ln(x) = ln(${a}).`,
+    type:"number",answer:a,
+    explain:`ln est strictement croissante, donc injective : ln(x) = ln(a) ⇔ x = a.<br>→ x = <b>${a}</b>.`};
  }},
  {lvl:"difficile",make(){
-   const bonne="P(A∩B) = P(A) × P(B)";
-   const ds=["P(A∩B) = 0","P(A|B) = P(A|B̄)"];
-   return qcm(`P(A) > 0, P(B) > 0. A et B indépendants ⇔`,bonne,ds,
-     `Définition de l'indépendance : P(A ∩ B) = P(A) × P(B).<br>→ <b>${bonne}</b>.`);
+   return qcm(`Quelle est la limite de ln(x)/x quand x → +∞ ?`,
+    `0`,[`+∞`,`−∞`,`La limite n'existe pas`],
+    `Croissance comparée : la puissance x l'emporte sur le logarithme.<br>ln(x)/x → <b>0</b> (et x/ln(x) → +∞).`);
  }}
 ];
 
-/* ---------- Terminale : Dérivées (exp/ln) ---------- */
+/* ---------- TERMINALE — Sinus & cosinus ---------- */
+const G_T_TRIG=[
+ {lvl:"facile",make(){
+   return qcm(`Quelle est la dérivée de f(x) = cos x ?`,
+    `f′(x) = −sin x`,
+    [`f′(x) = sin x`,`f′(x) = −cos x`,`f′(x) = cos x`],
+    `À connaître : (cos)′ = −sin, et (sin)′ = cos.`);
+ }},
+ {lvl:"moyen",make(){
+   const A=Ri(2,9);
+   return{prompt:`Quelle est la valeur maximale de f(x) = ${A} sin x ?`,
+    type:"number",answer:A,
+    explain:`sin x ∈ [−1 ; 1] pour tout x, donc ${A}·sin x ∈ [−${A} ; ${A}].<br>Maximum = <b>${A}</b>, atteint quand sin x = 1.`};
+ }},
+ {lvl:"difficile",make(){
+   return qcm(`Combien de solutions l'équation sin x = 1/2 admet-elle sur [0 ; π] ?`,
+    `2`,[`1`,`3`,`0`],
+    `Sur [0 ; π] : sin x = 1/2 ⇔ x = π/6 ou x = π − π/6 = 5π/6 (symétrie autour de π/2).<br>→ <b>2</b> solutions.`);
+ }}
+];
+
+/* ---------- TERMINALE — Dérivées, primitives & intégrales (fusion « Dérivées (exp/ln) » + « Intégrale ») ---------- */
 const G_T_DER=[
  {lvl:"facile",make(){
-   const a=Ri(2,9);
-   return{prompt:`f(x) = ${a}·ln x. f′(1) = ?`,type:"number",answer:a,
-     explain:`(ln x)′ = 1/x, donc f′(x) = ${a}/x.<br>f′(1) = ${a}/1 = <b>${a}</b>.`};
+   const a=pick([2,4,6,8]),h=a/2;
+   return qcm(`Quelle est une primitive de f(x) = ${a}x ?`,
+    `F(x) = ${h}x²`,
+    [`F(x) = ${a}x²`,`F(x) = ${a} + x`,`F(x) = ${h}x³ / 3`],
+    `Vérification : (${h}x²)′ = ${h} × 2x = ${a}x. ✓ (La constante C est omise — toute primitive convient.)`);
  }},
  {lvl:"moyen",make(){
-   const v=2*Math.E;
-   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
-   return{prompt:`f(x) = x·eˣ. f′(1) = ?`,type:"number",answer:v,tol:0.01,
-     explain:`Produit : f′(x) = 1 × eˣ + x × eˣ = eˣ(1 + x).<br>f′(1) = e(1 + 1) = 2e ≈ <b>${d2(v)}</b>.`};
+   const d=pick([
+    {a:4,n:1,ans:[8,1]},
+    {a:3,n:2,ans:[9,1]},
+    {a:6,n:2,ans:[12,1]},
+    {a:2,n:3,ans:[4,1]},
+    {a:4,n:3,ans:[16,1]},
+    {a:1,n:2,ans:[1,3]}
+   ]);
+   return{prompt:`Calcule ∫₀^${d.a} x^${d.n} dx.`,
+    type:"frac",answer:fa(d.ans[0],d.ans[1]),
+    explain:`Une primitive de x^${d.n} est F(x) = x^${d.n+1} / ${d.n+1}.<br>∫₀^${d.a} x^${d.n} dx = F(${d.a}) − F(0) = <b>${F(d.ans[0],d.ans[1])}</b>.`};
  }},
  {lvl:"difficile",make(){
-   const bonne="x = 0 et x = −2";
-   const ds=["x = 0 et x = 2","x = −1 et x = 1"];
-   return qcm(`Pour f(x) = x²·eˣ, les solutions de f′(x) = 0 sont…`,bonne,ds,
-     `f′(x) = 2x·eˣ + x²·eˣ = eˣ(x² + 2x) = eˣ·x·(x + 2).<br>eˣ ≠ 0, donc x = 0 ou x + 2 = 0.<br>→ <b>${bonne}</b>.`);
+   return{prompt:`Calcule ∫₀¹ x · eˣ dx (intégration par parties).`,
+    type:"number",answer:1,
+    explain:`Par parties : u = x, dv = eˣ dx → du = dx, v = eˣ.<br>∫₀¹ x·eˣ dx = [x·eˣ]₀¹ − ∫₀¹ eˣ dx = e − (e − 1) = <b>1</b>.`};
  }}
 ];
 
-/* ---------- Terminale : Intégrale ---------- */
-const G_T_INT=[
+/* ---------- TERMINALE — Probabilités (loi de Bernoulli, loi binomiale) ---------- */
+const G_T_PROBA=[
  {lvl:"facile",make(){
-   return{prompt:`∫₀¹ 2x dx = ?`,type:"number",answer:1,
-     explain:`Une primitive de 2x est x².<br>∫₀¹ 2x dx = [x²]₀¹ = 1² − 0² = <b>1</b>.`};
+   const n=pick([2,3]),k=Ri(1,n-1);
+   const C=(N,K)=>{K=Math.min(K,N-K);let r=1;for(let i=0;i<K;i++)r=r*(N-i)/(i+1);return r;};
+   const num=C(n,k),den=Math.pow(2,n);
+   return{prompt:`X suit la loi binomiale B(${n} ; 1/2). Calcule P(X = ${k}).`,
+    type:"frac",answer:fa(num,den),
+    explain:`P(X = k) = C(${n},${k}) × (1/2)^${n} = ${num}/${den} = <b>${F(num,den)}</b>.`};
  }},
  {lvl:"moyen",make(){
-   const v=Math.E-1;
-   const d2=x=>{const r=Math.round(x*100)/100;return(r<0?"−":"")+Math.abs(r).toString().replace(".",",");};
-   return{prompt:`∫₀¹ eˣ dx ≈ ?`,type:"number",answer:v,tol:0.01,
-     explain:`eˣ est sa propre primitive.<br>∫₀¹ eˣ dx = [eˣ]₀¹ = e − 1 ≈ <b>${d2(v)}</b>.`};
+   const bank=[
+    {n:6,p:[1,3],e:2},{n:6,p:[2,3],e:4},{n:8,p:[1,2],e:4},
+    {n:8,p:[3,4],e:6},{n:10,p:[1,2],e:5},{n:12,p:[1,4],e:3},
+    {n:9,p:[1,3],e:3},{n:15,p:[2,5],e:6}
+   ];
+   const b=pick(bank);
+   return{prompt:`X suit la loi binomiale B(${b.n} ; ${F(b.p[0],b.p[1])}). Calcule l'espérance E(X).`,
+    type:"number",answer:b.e,
+    explain:`Formule : E(X) = n × p = ${b.n} × ${F(b.p[0],b.p[1])} = <b>${b.e}</b>.`};
  }},
  {lvl:"difficile",make(){
-   return{prompt:`Valeur moyenne de x² sur [0 ; 1] = ?`,type:"frac",answer:fa(1,3),
-     explain:`Valeur moyenne = (1/(1 − 0)) × ∫₀¹ x² dx = [x³/3]₀¹ = 1/3.<br>→ <b>${F(1,3)}</b>.`};
+   const bank=[
+    {n:6,p:[1,3],v:[4,3]},{n:8,p:[1,2],v:[2,1]},{n:10,p:[2,5],v:[12,5]},
+    {n:12,p:[1,4],v:[9,4]},{n:9,p:[1,3],v:[2,1]}
+   ];
+   const b=pick(bank),q=[b.p[1]-b.p[0],b.p[1]];
+   return{prompt:`X suit la loi binomiale B(${b.n} ; ${F(b.p[0],b.p[1])}). Calcule la variance V(X).`,
+    type:"frac",answer:fa(b.v[0],b.v[1]),
+    explain:`Formule : V(X) = n · p · (1 − p) = ${b.n} × ${F(b.p[0],b.p[1])} × ${F(q[0],q[1])} = <b>${F(b.v[0],b.v[1])}</b>.`};
  }}
 ];
 
 /* ---------- Terminale : Complexes ---------- */
+/* ---------- Nombres complexes (maths expertes) ----------
+   Module, produit conjugué, Moivre, racines de l'unité, arguments —
+   programme « maths expertes » (depuis le 2026-08-23 : 4ᵉ année maths,
+   plus le niveau « experte ») — re-nivelées facile/moyen/difficile
+   selon l'effort demandé : module facile, conjugué + argument moyen,
+   Moivre + racines difficile. */
 const G_T_CPLX=[
  {lvl:"facile",make(){
    const T=[[3,4,5],[5,12,13],[8,15,17]],v=pick(T);
    return{prompt:`z = ${v[0]} + ${v[1]}i. |z| = ?`,type:"number",answer:v[2],
-     explain:`|z| = √(a² + b²) = √(${v[0]}² + ${v[1]}²) = √${v[2]*v[2]} = <b>${v[2]}</b>.`};
+     explain:`|z| = √(a² + b²) = √(${v[0]}² + ${v[1]}²) = √${v[2]*v[2]} = <b>${v[2]}</b>.<br>(Le module est la distance de z à l'origine du plan complexe.)`};
  }},
  {lvl:"moyen",make(){
-   const r=Ri(2,9);
-   return{prompt:`z = ${r} × (cos π/3 + i·sin π/3). |z| = ?`,type:"number",answer:r,
-     explain:`Forme trigonométrique : z = r·(cos θ + i·sin θ), et |z| = r quel que soit θ.<br>|z| = <b>${r}</b>.`};
+   const a=pick([1,2,3]),b=pick([1,2,3,4]),s=a*a+b*b;
+   return{prompt:`z = ${a} + ${b}i. z̄ × z = ?`,type:"number",answer:s,
+     explain:`z̄ = ${a} − ${b}i, donc z̄ × z = (a − bi)(a + bi) = a² + b² = ${a*a} + ${b*b} = <b>${s}</b>.<br>(z̄·z = |z|², toujours réel positif.)`};
  }},
  {lvl:"difficile",make(){
+   return qcm("Formule de Moivre : (cos π/3 + i·sin π/3)³ = ?",
+     "−1",
+     ["1","i","cos π/9 + i·sin π/9"],
+     "Moivre : (cos θ + i·sin θ)ⁿ = cos nθ + i·sin nθ, avec θ = π/3, n = 3.<br>3θ = π → cos π + i·sin π = −1 + 0i = <b>−1</b>.");
+ }},
+ {lvl:"difficile",make(){
+   return{prompt:"z₁, z₂, z₃ sont les trois solutions de z³ = 1. z₁ + z₂ + z₃ = ?",
+     type:"number",answer:0,
+     explain:"z³ = 1 ⇔ (z − 1)(z² + z + 1) = 0 : une racine est 1, les deux autres sont celles de z² + z + 1.<br>Viète : la somme des racines de z² + z + 1 est −1, donc z₁ + z₂ + z₃ = 1 + (−1) = <b>0</b>.<br>(Général : la somme des racines n-ièmes de l'unité vaut toujours 0.)"};
+ }},
+ {lvl:"moyen",make(){
    const bonne="π/4";
    const ds=["−π/4","3π/4","π/2"];
    return qcm(`L'argument principal de z = 1 + i est…`,bonne,ds,
      `z = 1 + i : cos θ = 1/√2, sin θ = 1/√2, θ ∈ (0, π) → θ = π/4.<br>→ <b>${bonne}</b>.`);
  }}
 ];
-
-/* ---------- Terminale : Espace & vecteurs 3D ---------- */
-const G_T_ESP=[
+/* ---------- Arithmétique (maths expertes) ----------
+   PGCD, Bézout, congruences, Fermat — programme « maths expertes ». */
+const G_T_ARITH=[
  {lvl:"facile",make(){
-   const bad=(x,y,z)=>(x===0&&y===0&&z===0)||(z*(y-x)===0&&x*x===y*y)||(y*(x-z)===0&&z*z===x*x);
-   let ax,ay,az,bx,by,bz,t=0;
-   do{
-     ax=Ri(-5,5);ay=Ri(-5,5);az=Ri(-5,5);
-     bx=Ri(-5,5);by=Ri(-5,5);bz=Ri(-5,5);
-   }while(bad(bx-ax,by-ay,bz-az)&&++t<50);
-   if(bad(bx-ax,by-ay,bz-az)){ax=0;ay=0;az=0;bx=1;by=2;bz=3;}
-   const dx=bx-ax,dy=by-ay,dz=bz-az;
-   const bonne=`(${dx} ; ${dy} ; ${dz})`;
-   const ds=[`(${dy} ; ${dx} ; ${dz})`,`(${dz} ; ${dy} ; ${dx})`];
-   return qcm(`A(${ax} ; ${ay} ; ${az}) et B(${bx} ; ${by} ; ${bz}). Un vecteur directeur de la droite (AB) est…`,bonne,ds,
-     `AB = B − A = (${bx} − ${ax} ; ${by} − ${ay} ; ${bz} − ${az}) = ${bonne}.<br>Un vecteur directeur de (AB) a les coordonnées de B − A, dans le même ordre : une permutation change le vecteur.<br>→ <b>${bonne}</b>.`);
+   const T=[[84,126,42],[90,120,30],[60,75,15]],v=pick(T);
+   return{prompt:`PGCD(${v[0]} ; ${v[1]}) = ?`,type:"number",answer:v[2],
+     explain:`Algorithme d'Euclide : ${v[1]} = ${Math.floor(v[1]/v[0])} × ${v[0]} + ${v[1]%v[0]}, puis on itère avec le reste.<br>PGCD(${v[0]} ; ${v[1]}) = <b>${v[2]}</b>.`};
  }},
  {lvl:"moyen",make(){
-   const T=[[1,2,2,3],[2,3,6,7],[1,4,8,9],[2,6,9,11]],v=pick(T);
-   return{prompt:`AB = (${v[0]} ; ${v[1]} ; ${v[2]}). ‖AB‖ = ?`,type:"number",answer:v[3],
-     explain:`‖AB‖ = √(dx² + dy² + dz²) = √(${v[0]}² + ${v[1]}² + ${v[2]}²) = √${v[3]*v[3]} = <b>${v[3]}</b>.`};
+   return qcm("5x + 7y = 1. Une solution entière (x ; y) est…",
+     "(3 ; −2)",
+     ["(−1 ; 2)","(2 ; −1)","(−3 ; 2)"],
+     "x = 3 : 5×3 + 7y = 1 → 15 + 7y = 1 → 7y = −14 → y = −2.<br>Vérification : 5×3 + 7×(−2) = 15 − 14 = 1. ✓<br>→ <b>(3 ; −2)</b>. (Bézout : des solutions existent car PGCD(5 ; 7) = 1.)");
  }},
  {lvl:"difficile",make(){
-   const px=Ri(1,5),py=Ri(1,5),pz=Ri(1,5),S=2*px+2*py+pz;
-   const d=[0,1,2].find(v=>(S+v)%3===0),N=S+d;
-   return{prompt:`Le plan π : 2x + 2y + z + ${d} = 0, et le point P(${px} ; ${py} ; ${pz}). Distance de P au plan ?`,
-     type:"number",answer:N/3,
-     explain:`Distance = |ax₀ + by₀ + cz₀ + d| / √(a² + b² + c²).<br>Ici : |${2*px} + ${2*py} + ${pz} + ${d}| / √(4 + 4 + 1) = ${N} / 3 = <b>${N/3}</b>.`};
+   return{prompt:"Trouve x tel que 3x ≡ 1 [mod 7], avec 0 ≤ x ≤ 6.",
+     type:"number",answer:5,
+     explain:"On teste x de 0 à 6 : 3×5 = 15 = 2×7 + 1, donc 3×5 ≡ 1 [7].<br>→ x = <b>5</b>. (3 a un inverse modulo 7 car PGCD(3 ; 7) = 1 ; ici 3⁻¹ ≡ 5 [7].)"};
+ }},
+ {lvl:"difficile",make(){
+   const a=pick([2,3,5]);
+   return{prompt:`Petit théorème de Fermat : ${a}⁷ mod 7 = ?`,type:"number",answer:a,
+     explain:`Fermat : si p est premier et p ∤ a, alors a^{p−1} ≡ 1 [p]. Ici p = 7, donc a⁶ ≡ 1 [7].<br>D'où a⁷ ≡ a [7] → ${a}⁷ mod 7 = <b>${a}</b>.`};
+ }}
+];
+/* ---------- Graphes & chaînes de Markov (maths expertes) ----------
+   Matrice d'adjacence, nombre de chemins, distribution invariante. */
+const G_T_GRAPHES=[
+ {lvl:"facile",make(){
+   return{prompt:"Trois villes A, B, C : des routes A–B et B–C (pas de route A–C). Nombre de chemins de longueur 2 de A à C ?",
+     type:"number",answer:1,
+     explain:"Un chemin de longueur 2 de A à C passe par un intermédiaire : A → B → C. Il n'y en a qu'un (pas d'arête A–C, pas d'autre intermédiaire).<br>En langage matrice d'adjacence M : c'est l'entrée (A, C) de M², qui vaut <b>1</b>. (Le nombre de chemins de longueur n = l'entrée correspondante de Mⁿ.)"};
+ }},
+ {lvl:"difficile",make(){
+   return qcm("Chaîne de Markov 2 états : P(A→B) = 1/2 et P(B→A) = 1/4. La distribution invariante (pA ; pB) est…",
+     "(1/3 ; 2/3)",
+     ["(2/3 ; 1/3)","(1/2 ; 1/2)","(1/4 ; 3/4)"],
+     "Invariante : pA = pA·P(A→A) + pB·P(B→A) = pA·(1/2) + pB·(1/4), avec pA + pB = 1.<br>Donc pA = pA/2 + (1−pA)/4 = pA/4 + 1/4 → (3/4)·pA = 1/4 → pA = 1/3, pB = 2/3.<br>→ <b>(1/3 ; 2/3)</b>.",
+     {kind:"markov",ab:[1,2],ba:[1,4]});
+ }},
+ {lvl:"moyen",make(){
+   return{prompt:"Chaîne de Markov 2 états : P(A→B) = 1/2, P(B→A) = 1/4. Au départ de A, probabilité d'être dans A après 2 transitions ?",
+     type:"frac",answer:{n:3,d:8},
+     viz:{kind:"markov",ab:[1,2],ba:[1,4]},
+     explain:"Deux chemins ramènent à A en 2 transitions :<br>· A → A → A : (1/2) × (1/2) = 1/4<br>· A → B → A : (1/2) × (1/4) = 1/8<br>Total : 1/4 + 1/8 = 2/8 + 1/8 = <b>3/8</b>."};
  }}
 ];
 
-/* ---------- REGISTRE DES THÈMES (deux matières, un seul moteur) ---------- */
+/* ---------- REGISTRE DES THÈMES (quatre matières, un seul moteur) ---------- */
+/* Maths par année — refondue le 2026-08-23 sur les programmes officiels (BO) :
+   1 thème ≈ 1 section officielle. Ids conservés quand le sujet est proche
+   (zéro perte d'historique) ; les ids supprimés sont purgés par loadStats. */
 const SUBJECTS_MATH={
   seconde:[
-  {id:"s2_nombres",name:"Nombres & calcul",sym:"PGCD · 10ⁿ",gens:G_S2_NUM},
-  {id:"s2_equa",name:"Équations & inéquations",sym:"ax + b",gens:G_S2_EQ},
-  {id:"s2_equa2",name:"2e degré",sym:"Δ = b²−4ac",gens:G_S2_EQ2},
+  {id:"s2_log",name:"Logique & ensembles",sym:"∀ · ∃ · ∩ · ∪",gens:G_S2_LOG},
+  {id:"s2_algo",name:"Algorithmique",sym:"s ← s + k",gens:G_S2_ALGO},
+  {id:"s2_nombres",name:"Nombres & algèbre",sym:"PGCD · Viète",gens:G_S2_NUM},
   {id:"s2_fonctions",name:"Fonctions & variations",sym:"f(x)",gens:G_S2_FONC},
-  {id:"s2_vecteurs",name:"Vecteurs",sym:"AB = B − A",gens:G_S2_VECT},
-  {id:"s2_stats",name:"Stats & proportions",sym:"% · moyenne",gens:G_S2_STAT}
+  {id:"s2_vecteurs",name:"Vecteurs & droites",sym:"v = ku · pente",gens:G_S2_VECT},
+  {id:"s2_stats",name:"Stats & probabilités",sym:"P(A) · moyenne",gens:G_S2_STAT}
   ],
   premiere:[
- {id:"deriv",name:"Dérivées",sym:"∂",gens:G_DERIV},
- {id:"suites",name:"Suites",sym:"uₙ",gens:G_SUITES},
- {id:"logexp",name:"Log & exp",sym:"eˣ",gens:G_LOGEXP},
- {id:"equa2",name:"2e degré",sym:"Δ",gens:G_EQ2},
- {id:"trig",name:"Trigonométrie",sym:"sin",gens:G_TRIG},
- {id:"proba",name:"Probabilités",sym:"P",gens:G_PROBA},
- {id:"vect",name:"Vecteurs",sym:"·",gens:G_VECT},
- {id:"affine",name:"Droites & affines",sym:"y=ax+b",gens:G_AFF},
- {id:"lim",name:"Limites",sym:"→",gens:G_LIM},
- {id:"var",name:"Variations",sym:"↗",gens:G_VAR}
- ],
+  {id:"p1_log",name:"Logique & algorithmique",sym:"A ⇒ B · lst",gens:G_P1_LOG},
+  {id:"var",name:"Fonctions & variations",sym:"↗ · y = ax + b",gens:G_VAR},
+  {id:"suites",name:"Suites",sym:"uₙ",gens:G_SUITES},
+  {id:"equa2",name:"Équations & polynômes du 2nd degré",sym:"Δ = b²−4ac",gens:G_EQ2},
+  {id:"deriv",name:"Dérivées",sym:"f′(x)",gens:G_DERIV},
+  {id:"logexp",name:"Exponentielle",sym:"eˣ",gens:G_LOGEXP},
+  {id:"trig",name:"Trigonométrie",sym:"sin · cos",gens:G_TRIG},
+  {id:"vect",name:"Vecteurs & produit scalaire",sym:"u·v",gens:G_VECT},
+  {id:"proba",name:"Probabilités",sym:"P(B|A) · E(X)",gens:G_PROBA}
+  ],
   terminale:[
-  {id:"t_exp",name:"Exponentielle",sym:"eˣ",gens:G_T_EXP},
-  {id:"t_ln",name:"Logarithme népérien",sym:"ln",gens:G_T_LN},
-  {id:"t_suites",name:"Suites & convergence",sym:"uₙ",gens:G_T_SUIT},
-  {id:"t_proba",name:"Probas conditionnelles",sym:"P(B|A)",gens:G_T_PROBA},
-  {id:"t_derivee",name:"Dérivées (exp/ln)",sym:"f′",gens:G_T_DER},
-  {id:"t_integrale",name:"Intégrale",sym:"∫",gens:G_T_INT},
+  {id:"t_log",name:"Logique & listes",sym:"¬∃ · lst",gens:G_T_LOG},
+  {id:"t_den",name:"Combinatoire & dénombrement",sym:"C(n,k) · n!",gens:G_T_DEN},
+  {id:"t_espace",name:"Espace & vecteurs 3D",sym:"u·v = 0",gens:G_T_ESP},
+  {id:"t_suites",name:"Suites & convergence",sym:"lim qⁿ",gens:G_T_SUIT},
+  {id:"t_exp",name:"Exponentielle & logarithme",sym:"eˣ · ln",gens:G_T_EXP},
+  {id:"t_trig",name:"Sinus & cosinus",sym:"(cos)′ = −sin",gens:G_T_TRIG},
+  {id:"t_derivee",name:"Dérivées, primitives & intégrales",sym:"∫₀¹ x·eˣ",gens:G_T_DER},
+  {id:"t_proba",name:"Probabilités (binomiale)",sym:"B(n;p)",gens:G_T_PROBA}
+  ],
+  /* 4ᵉ année, MATHS UNIQUEMENT : « Terminale (maths expertes) » — le programme
+     officiel « maths expertes » (Nombres complexes, Arithmétique, Graphes &
+     matrices). 2026-08-23 : plus une difficulté « Experte » mais une ANNÉE,
+     comme Seconde/Première/Terminale. Ids inchangés → zéro migration. */
+  experte:[
   {id:"t_complexes",name:"Complexes",sym:"z = a + bi",gens:G_T_CPLX},
-  {id:"t_espace",name:"Espace & vecteurs 3D",sym:"AB ∧ AC",gens:G_T_ESP}
+  {id:"t_arith",name:"Arithmétique",sym:"≡ mod n",gens:G_T_ARITH},
+  {id:"t_graphes",name:"Graphes & Markov",sym:"Mⁿ",gens:G_T_GRAPHES}
   ]
 };
+
 /* ---------- PC (newton) : mécanique & Newton ---------- */
 const G_NEWTON=[
  {lvl:"facile",make(){
@@ -3444,21 +3384,28 @@ const SUBJECTS_EN=[
    NB : le bloc précède THEME_BY_ID car celui-ci itère YEARS (const) —
    le déclarer après déclencherait un ReferenceError au chargement. */
 const YEARS=["seconde","premiere","terminale"];
+/* 4ᵉ année MATHS UNIQUEMENT : « Terminale (maths expertes) » (programme
+   officiel expertes — complexes, arithmétique, graphes & matrices).
+   PC/DE/EN n'ont que les 3 années classiques. 2026-08-23 : l'ancienne
+   difficulté « Experte » est devenue cette année. */
+const MATH_YEARS=YEARS.concat(["experte"]);
+const yearsFor=m=>m==="maths"?MATH_YEARS:YEARS;
 const YEAR_KEY={maths:"qz_year_math",pc:"qz_year_pc"};
 function readYear(m){
   const k=YEAR_KEY[m];if(!k)return null;
   const v=store.get(k,"premiere");
-  return YEARS.includes(v)?v:"premiere";
+  /* "experte" accepté par maths seul ; PC (valeur inconnue/corrompue) → "premiere" */
+  return yearsFor(m).includes(v)?v:"premiere";
 }
 function yearReady(m){
   if(m!=="maths"&&m!=="pc")return false;
   const R=(m==="pc")?SUBJECTS_PC:SUBJECTS_MATH;
-  return YEARS.every(y=>Array.isArray(R[y])&&R[y].length>0);
+  return yearsFor(m).every(y=>Array.isArray(R[y])&&R[y].length>0);
 }
 const activeSubjects=()=>state.matiere==="de"?SUBJECTS_DE:state.matiere==="en"?SUBJECTS_EN:state.matiere==="pc"?SUBJECTS_PC[state.annee]:SUBJECTS_MATH[state.annee];
 const THEME_BY_ID={};
 for(const R of[SUBJECTS_DE,SUBJECTS_EN])R.forEach(s=>THEME_BY_ID[s.id]=s);
-for(const y of YEARS){
+for(const y of MATH_YEARS){   /* MATH_YEARS ⊇ YEARS : couvre la 4ᵉ année maths ; PC n'a pas d'« experte » (||[]) */
   (SUBJECTS_MATH[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
   (SUBJECTS_PC[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
 }
@@ -3924,6 +3871,26 @@ function vzWork(spec,phase){
   }
   return vzWrap(s,"Bloc sur un plan"+(phase==="c"?" — force F et déplacement d":""));
 }
+/* ---------- Chaîne de Markov à deux états (Terminale exp.) ----------
+   spec JSON-sérialisable : {ab:[p,q], ba:[r,s]} — probabilités A→B et B→A
+   (réduites en fractions par fa() côté question). Phase "q" = neutre
+   (états + flèches, AUCUN nombre) ; phase "c" = probabilités affichées. */
+function vzMarkov(spec,phase){
+  const f=p=>p[0]+"/"+p[1];
+  let s=`<circle cx="120" cy="110" r="42" style="stroke:var(--ink)" stroke-width="2" fill="none"/>`;
+  s+=`<text x="120" y="117" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">A</text>`;
+  s+=`<circle cx="240" cy="110" r="42" style="stroke:var(--ink)" stroke-width="2" fill="none"/>`;
+  s+=`<text x="240" y="117" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">B</text>`;
+  s+=`<line x1="158" y1="80" x2="200" y2="80" style="stroke:var(--muted)" stroke-width="2"/>`;
+  s+=`<path d="M 210 80 L 198 74 L 198 86 Z" fill="var(--muted)"/>`;
+  s+=`<line x1="202" y1="140" x2="160" y2="140" style="stroke:var(--muted)" stroke-width="2"/>`;
+  s+=`<path d="M 150 140 L 162 134 L 162 146 Z" fill="var(--muted)"/>`;
+  if(phase==="c"){
+    s+=`<text x="180" y="68" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent)">${f(spec.ab)}</text>`;
+    s+=`<text x="180" y="162" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent)">${f(spec.ba)}</text>`;
+  }
+  return vzWrap(s,"Chaîne de Markov à deux états (A, B)"+(phase==="c"?" et probabilités de transition":""));
+}
 /* ---------- Point d'entrée unique ----------
    phase "q" (question) ou "c" (correction). Renvoie "" si pas de visuel
    ou si celui-ci ne doit pas s'afficher (ex : "var" en question).
@@ -3950,6 +3917,7 @@ function VIZdraw(spec,phase){
       case"circuit":return vzCircuit(spec,phase);
       case"charges":return vzCharges(spec,phase);
       case"work":return vzWork(spec,phase);
+      case"markov":return vzMarkov(spec,phase);
     }
   }catch(e){/* silencieux : le texte de la méthode reste l'essentiel */}
   return"";
@@ -4096,6 +4064,7 @@ function setMatiere(m){
   r.classList.add("theming");
   clearTimeout(setMatiere._t);
   setMatiere._t=setTimeout(function(){r.classList.remove("theming");},520);
+  syncYearButtons(); /* bouton « Terminale (maths expertes) » visible en maths, masqué PC/DE/EN */
   renderHome();
   /* Rejoue la cascade d'arrivée (html.boot) sur le DOM fraîchement rendu,
      en mode rapide (délais × .45) : le premier mouvement part quasi
@@ -4135,9 +4104,12 @@ const MAT_DATA={
 /* Niveaux des langues (allemand/anglais) : libellés CECRL — A2 / A2+ / B1.
    Les CLÉS internes restent facile/moyen/difficile (PTS_LVL, autoLevel, history,
    review, stats persistées) — seul le LIBELLÉ affiché change, et seulement pour
-   de/en : maths/PC gardent Facile/Moyen/Difficile. Les stats existantes restent
-   donc valides, aucun changement de clé. */
-const LVL_NAMES={facile:"Facile",moyen:"Moyen",difficile:"Difficile"};
+   de/en : maths/PC gardent Facile/Moyen/Difficile. « Experte » n'est PLUS un
+   niveau jouable (depuis le 2026-08-23 c'est la 4ᵉ ANNÉE maths, voir syncYearButtons)
+   — la clé "experte" subsiste UNIQUEMENT pour afficher les lignes history/review
+   héritées qui en portent l'index (aucune nouvelle question ne l'utilise).
+   Les stats existantes restent donc valides, aucun changement de clé. */
+const LVL_NAMES={facile:"Facile",moyen:"Moyen",difficile:"Difficile",experte:"Experte"};
 const LVL_NAMES_LANG={facile:"A2",moyen:"A2+",difficile:"B1"};
 function lvlNames(){return(state.matiere==="de"||state.matiere==="en")?LVL_NAMES_LANG:LVL_NAMES;}
 function lvlLabel(l){const n=lvlNames()[l];return n||l;}
@@ -4147,6 +4119,22 @@ function paintLvlButtons(){
     if(x.dataset.lvl!=="auto"&&n[x.dataset.lvl])x.textContent=n[x.dataset.lvl];
   });
 }
+/* ---------- 4ᵉ année maths « Terminale (maths expertes) » ----------
+   Le bouton de la ligne Année est masqué HORS maths (PC/DE/EN). C'est
+   l'inverse de l'ancienne difficulté « Experte » (bouton de NIVEAU visible
+   seulement maths×terminale) : depuis le 2026-08-23, « experte » est une
+   ANNÉE, pas un niveau — les boutons de niveau restent Facile/Moyen/
+   Difficile/Auto partout. */
+function syncYearButtons(){
+  const eb=document.querySelector('.seg-btn[data-year="experte"]');
+  if(eb)eb.hidden=state.matiere!=="maths";
+}
+function syncLvlButtons(){
+  document.querySelectorAll(".seg-btn[data-lvl]").forEach(x=>x.classList.toggle("on",x.dataset.lvl===state.level));
+}
+/* Tous les thèmes de l'année active sont jouables — plus de filtre de
+   niveau « experte » : c'est une année désormais, activeSubjects() gère. */
+function visibleSubjects(){return activeSubjects();}
 /* Carte de niveau du hero (spec §3.3) : « Niveau N » + barre + « x / y XP ».
    x = XP de la MATIÈRE ACTIVE (clé par matière — voir xpKey()) ; y = XP
    cumulée pour ATTEINDRE le niveau suivant. */
@@ -4170,12 +4158,14 @@ function renderHome(){
   $("#heroLede").innerHTML=M.lede;   /* phrase de base, identique quelle que soit l'année */
   $("#noteTop").innerHTML=M.noteTop;
   /* Sélecteur d'année : visible seulement si la matière a une année ET que
-     ses 3 registres sont livrés (yearReady) — DE/EN : jamais. */
+     tous ses registres sont livrés (yearReady : 3 en PC, 4 en maths) — DE/EN : jamais. */
   $("#yearRow").hidden=!(state.annee&&yearReady(state.matiere));
+  syncYearButtons(); /* bouton « Terminale (maths expertes) » masqué hors maths */
   document.querySelectorAll(".seg-btn[data-year]").forEach(x=>x.classList.toggle("on",x.dataset.year===state.annee));
   renderLvlCard();
   document.querySelectorAll(".seg-btn[data-mat]").forEach(x=>x.classList.toggle("on",x.dataset.mat===state.matiere));
   paintLvlButtons(); /* libellés des niveaux : A2/A2+/B1 en langues, Facile/Moyen/Difficile en maths/PC */
+  syncLvlButtons(); /* état « on » des boutons Facile/Moyen/Difficile/Auto */
   const acc=stats.ans?Math.round(100*stats.good/stats.ans):0;
   $("#statGrid").innerHTML=
     `<div class="stat"><div class="v">${stats.ans}</div><div class="k">questions répondues</div></div>`+
@@ -4184,7 +4174,7 @@ function renderHome(){
     `<div class="stat"><div class="v">${stats.bestStreak}</div><div class="k">meilleure série</div></div>`+
     `<div class="stat"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`;
   const grid=$("#subGrid");
-  grid.innerHTML=activeSubjects().map((s,i)=>{
+  grid.innerHTML=visibleSubjects().map((s,i)=>{
     const st=stats.bySub[s.id]||{ans:0,good:0};
     let pc=st.ans?Math.round(100*st.good/st.ans)+"% · "+st.ans+" q":"pas encore pratiqué";
     if(st.skips)pc+=" · "+st.skips+" passées";
@@ -4249,12 +4239,14 @@ function renderHome(){
     if(br)br.addEventListener("click",startReview);
   }
   /* « Par thème » : tableau des résultats par thème, en colonne principale
-     sous l'entraînement, en bas de colonne. Slot simple <div> :
-     vide = 0 hauteur, pas de vide parasite tant qu'aucune question n'a été
-     répondue. */
+     sous l'entraînement, en bas de colonne. 2026-08-23 (sur demande) :
+     TOUJOURS affiché — même zéro réponse (lignes « 0 · — · — ») : avant, le
+     panneau disparaissait dès que l'année active n'avait pas encore de stats
+     (les stats vivent par thème, et les ids de thèmes changent avec l'année —
+     d'où « ne s'affiche plus » après le chantier lycée). */
   const bySlot=$("#bySubSlot");
   if(bySlot){
-    bySlot.innerHTML=activeSubjects().some(s=>{const st=stats.bySub[s.id];return st&&st.ans>0;})?
+    bySlot.innerHTML=
       `<section class="panel bysub" aria-labelledby="hBySub" data-rv style="--d:1.52s">`+
         `<h2 id="hBySub">Par thème</h2>`+
         `<div class="substathead"><span>thème</span><span>q</span><span>précision</span><span>série</span></div>`+
@@ -4264,7 +4256,7 @@ function renderHome(){
           const stk=stats.streakBySub[s.id]||0;
           return `<div class="substatrow"><b>${s.name}</b><span>${st.ans||0}</span><span>${pct}</span><span>${stk>0?"🔥"+stk:"—"}</span></div>`;
         }).join("")+
-      `</section>`:"";
+      `</section>`;
   }
   /* Points faibles : dans la MARGE (slot #statsExtra dans .margewrap) —
      panneau standard (carton + h2 + trait de plume), comme les autres blocs
@@ -4331,11 +4323,15 @@ function goHome(){
   showPlay(false);
   renderHome();
 }
-/* S'entraîner sur un point faible : verrouille thème + niveau puis lance le mode libre. */
+/* S'entraîner sur un point faible : verrouille thème + niveau puis lance le mode libre.
+   Garde legacy : les cellules history héritées peuvent porter l'ancienne
+   difficulté "experte" (supprimée le 2026-08-23 au profit de la 4ᵉ année maths)
+   → on ramène sur "auto", jamais un niveau orphelin qui casserait pickQ. */
 function trainWeak(s,l){
-  state.level=l;
+  const lv=(l==="facile"||l==="moyen"||l==="difficile")?l:"auto";
+  state.level=lv;
   state.subject=s;
-  document.querySelectorAll(".seg-btn[data-lvl]").forEach(x=>x.classList.toggle("on",x.dataset.lvl===l));
+  document.querySelectorAll(".seg-btn[data-lvl]").forEach(x=>x.classList.toggle("on",x.dataset.lvl===lv));
   startFree();
 }
 
@@ -4358,8 +4354,8 @@ function pickQ(){
     if(!item)return null;
     return{q:item.q,sub:THEME_BY_ID[item.s],lvl:item.l};
   }
-  const act=activeSubjects();const subs=state.subject==="mix"?act:act.filter(s=>s.id===state.subject);
-  const sub=act.find(s=>s.id===state.subject)||pick(act);
+  const vis=visibleSubjects();
+  const sub=vis.find(s=>s.id===state.subject)||pick(vis);
   let gens=sub.gens;
   if(state.mode==="free"){
     const target=state.level==="auto"?autoLevel(sub.id):state.level;   /* Auto : niveau adapté au thème */
@@ -4487,17 +4483,24 @@ function levelOf(xp){return Math.max(1,Math.floor((-1+Math.sqrt(1+4*(xp+50)/25))
 function lvlInfo(x){const n=levelOf(x),lo=xpCum(n),hi=xpCum(n+1);return{n,pct:(x-lo)/(hi-lo)};}
 function xpKey(){return state.matiere==="maths"?"qz_xp":"qz_xp_"+state.matiere;}
 function getXP(){const v=store.get(xpKey(),0);return typeof v==="number"&&isFinite(v)&&v>=0?v:0;}
-function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+pts);renderLvlCard();paintChipNiv();if(levelOf(x+pts)>before)confetti();}
+function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+pts);renderLvlCard();paintChipNiv();if(levelOf(x+pts)>before)levelUp(before,levelOf(x+pts));}
 /* Puce « Niv. N » de la barre d'écran de question (2026-08-22, sur demande) :
    le niveau de la MATIÈRE (le « Niveau N » de la carte du hero) reste visible
    pendant la partie — les trois modes, et la puce suit les paliers franchis en
    cours de séance (gainXp). Garde-fou `if(el)` : l'écran de question n'est pas
    toujours dans le DOM rendu. */
-function paintChipNiv(){const el=$("#chipNiv");if(el)el.textContent="Niv. "+lvlInfo(getXP()).n;}
+/* 2026-08-23 (sur demande) : « Niv. N » + BARRE de progression vers le palier
+   suivant (même % que la carte du hero — lvlInfo.pct). Le barreur est un <span>
+   SANS texte : textContent reste « Niv. N » (lisible par test et lecteurs
+   d'écran), seule la barre est visuelle. */
+function paintChipNiv(){const el=$("#chipNiv");if(!el)return;const info=lvlInfo(getXP());el.innerHTML="Niv. "+info.n+'<span class="nlvlbar" aria-hidden="true"><i style="width:'+(info.pct*100).toFixed(1)+'%"></i></span>';}
 /* Points par bonne réponse selon la DIFFICULTÉ de la question : facile 5 ·
-   moyen 10 · difficile 15. On lit le niveau de la QUESTION (state.curLvl), pas
-   le réglage global. + bonus de série de 5 dès la 3ᵉ bonne d'affilée. */
-const PTS_LVL={facile:5,moyen:10,difficile:15};
+   moyen 10 · difficile 15. On lit le niveau de la QUESTION (state.curLvl),
+   pas le réglage global. + bonus de série de 5 dès la 3ᵉ bonne d'affilée.
+   La clé "experte" (20) est LEGACY : plus aucune question ne porte ce niveau
+   (supprimé le 2026-08-23 au profit de la 4ᵉ année maths) — elle sert
+   seulement au scoring des lignes history héritées. */
+const PTS_LVL={facile:5,moyen:10,difficile:15,experte:20};
 function afterAnswer(ok,q,extra){
   let pts=0;
   if(ok){state.streak++;const base=PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10;pts=base+(state.streak>=3?5:0);state.score+=pts;state.good++;stats.good++;gainXp(pts);}
@@ -4634,6 +4637,40 @@ function confetti(){
   document.body.appendChild(host);
   setTimeout(function(){host.remove();},3600);
 }
+/* ---------- Montée de niveau (2026-08-23, sur demande Cid) ----------
+   Remplace les confettis au palier franchi (gainXp) — les confettis restent
+   à la fin de la révision (endReview). Séquence : la carte apparaît au
+   centre avec le niveau quitté, la barre se remplit (le palier franchi),
+   puis le NOUVEAU niveau s'affiche grossi et la barre revient à la
+   progression réelle de la matière (lvlInfo(getXP()).pct). Pur DOM, hors
+   ligne, aria-hidden (décoratif), auto-nettoyage ~2,7 s. Ne plante JAMAIS
+   (mêmes garanties que VIZdraw) : en environnement sans querySelector (DOM
+   de test), seuls les garde-fous null bloquent le travail visuel. */
+function levelUp(oldN,newN){
+  if(typeof document==="undefined"||!document.body)return;
+  const host=document.createElement("div");
+  host.className="lvlup";
+  host.setAttribute("aria-hidden","true");
+  host.innerHTML='<div class="lvlup-card"><span class="lvlup-nm">Niveau '+oldN+'</span>'+
+    '<div class="lvlup-bar"><i></i></div><span class="lvlup-sub">palier franchi</span></div>';
+  document.body.appendChild(host);
+  const fill=host.querySelector?host.querySelector(".lvlup-bar i"):null;
+  const nm=host.querySelector?host.querySelector(".lvlup-nm"):null;
+  const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
+  raf(function(){raf(function(){host.classList.add("go");if(fill)fill.style.width="100%";});});
+  setTimeout(function(){
+    if(nm)nm.textContent="Niveau "+newN;
+    host.classList.add("done");
+    if(fill){
+      const pct=lvlInfo(getXP()).pct*100;   /* retour à la vraie progression */
+      fill.style.transition="none";
+      fill.style.width=Math.max(3,Math.min(100,pct))+"%";
+      void fill.offsetWidth;
+      fill.style.transition="";
+    }
+  },1150);
+  setTimeout(function(){if(host.remove)host.remove();},2700);
+}
 
 /* ---------- Câblage ---------- */
 /* Changement de niveau : PLUS d'animation sur les tuiles (l'ancienne .lvlswap
@@ -4655,7 +4692,7 @@ document.querySelectorAll(".seg-btn[data-lvl]").forEach(b=>b.addEventListener("c
    re-rend l'accueil. La réaction .yearpick est scopée à .seg-year (comme
    .lvlpick à .seg-lvl) — les boutons matière/niveau ne « pop » pas. */
 function setAnnee(a){
-  if(!YEARS.includes(a))return;
+  if(!yearsFor(state.matiere).includes(a))return;   /* "experte" acceptée en maths, rejetée en PC/DE/EN */
   if(a===state.annee)return;
   state.annee=a;
   store.set(YEAR_KEY[state.matiere],a);
@@ -4782,3 +4819,4 @@ function rearmBoot(fast){
 renderHome();
 rearmBoot();   /* première visite : chorégraphie complète, délais non compressés */
 </script>
+

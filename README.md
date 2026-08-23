@@ -12,7 +12,7 @@ Vos progrès, vos points faibles et vos records restent stockés sur votre machi
 
 ## Comment s'entraîner
 
-**Entraînement libre** — en mathématiques et en physique-chimie, choisissez d'abord votre **année** (Seconde, Première ou Terminale), puis un thème et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), et progressez à votre rythme. Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
+**Entraînement libre** — en mathématiques et en physique-chimie, choisissez d'abord votre **année** (Seconde, Première ou Terminale — en maths, une 4ᵉ année, **Terminale (maths expertes)**, est aussi proposée), puis un thème et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), et progressez à votre rythme. **Terminale (maths expertes)** suit le programme officiel des maths expertes (complexes, arithmétique, graphes & chaînes de Markov) et se choisit comme une année, au même titre que Seconde / Première / Terminale. Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
 
 **À réviser** — Quizey met en œuvre la méthode d'apprentissage par **répétition espacée** : chaque question ratée est replanifiée selon un intervalle croissant, une bonne réponse la repousse progressivement (demain, puis 3 jours, 7 jours, 2 semaines) tandis qu'une erreur la ramène rapidement. Après cinq réponses correctes consécutives, une question est considérée comme **acquise** et retirée de la liste de révision. La carte d'accueil indique le nombre de révisions **échéues pour la journée**.
 
@@ -26,7 +26,7 @@ Quizey identifie en outre vos **points faibles** (croisement thème × niveau, s
 
 ## Contenu
 
-- **Mathématiques** (spécialité) — par année : **Seconde** (6 thèmes : nombres & calcul, équations & inéquations, 2ᵉ degré, fonctions & variations, vecteurs, stats & proportions) · **Première** (10 : dérivées, suites, log & exp, 2ᵉ degré, trigonométrie, probabilités, vecteurs, droites & affines, limites, variations) · **Terminale** (8 : exponentielle, logarithme népérien, suites & convergence, probas conditionnelles, dérivées (exp/ln), intégrale, complexes, espace & vecteurs 3D)
+- **Mathématiques** (spécialité) — par année, d'après les programmes officiels (BO) : **Seconde** (6 thèmes : logique & ensembles, algorithmique, nombres & algèbre, fonctions & variations, vecteurs & droites, stats & probabilités) · **Première** (9 : logique & algorithmique, fonctions & variations, suites, équations & polynômes du 2ᵉ degré, dérivées, exponentielle, trigonométrie, vecteurs & produit scalaire, probabilités) · **Terminale** (8 : logique & listes, combinatoire & dénombrement, espace & vecteurs 3D, suites & convergence, exponentielle & logarithme, sinus & cosinus, dérivées/primitives/intégrales, probabilités binomiales) · **Terminale (maths expertes)** — 4ᵉ année (3 : nombres complexes, arithmétique, graphes & chaînes de Markov)
 - **Physique-chimie** — par année : **Seconde** (6 thèmes : quantité de matière, solutions & dilution, énergie, forces & mouvement, signaux & ondes, électricité) · **Première** (8 : mécanique & Newton, forces & champs, énergie, quantités de matière, stœchiométrie & état final, cinétique, ondes & lumière, électricité) · **Terminale** (6 : ondes & optique, transformations nucléaires, cinétique, énergie (bilan), circuit RC, thermodynamique)
 - **Allemand** — 6 thèmes, 100 % QCM : vocabulaire, conjugaison, articles, nombres · dates · heures, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
 - **Anglais** — 6 thèmes, 100 % QCM : vocabulaire, verbes & temps, articles & quantifieurs, questions, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
@@ -35,7 +35,7 @@ Quizey identifie en outre vos **points faibles** (croisement thème × niveau, s
 
 ## Niveau Quizey
 
-Chaque matière a **son propre niveau** : chaque bonne réponse rapporte de l'expérience (XP) — 5, 10 ou 15 points selon le niveau de la question, plus 5 dès que votre série atteint 3 bonnes réponses d'affilée. Votre niveau progresse sur une courbe croissante : chaque palier demande plus d'XP que le précédent, et vos progrès en maths n'affectent jamais l'allemand, ni inversement.
+Chaque matière a **son propre niveau** : chaque bonne réponse rapporte de l'expérience (XP) — 5, 10 ou 15 points selon le niveau de la question, plus 5 dès que votre série atteint 3 bonnes réponses d'affilée. À chaque palier franchi, une petite animation de montée de niveau vous félicite (les confettis, eux, vous attendent à la fin d'une session de révision). Votre niveau progresse sur une courbe croissante : chaque palier demande plus d'XP que le précédent, et vos progrès en maths n'affectent jamais l'allemand, ni inversement.
 
 C'est une motivation, pas un verrou : le niveau ne débloque aucun contenu, et comme le reste de vos progrès il reste stocké sur votre machine.
 

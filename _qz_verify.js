@@ -178,7 +178,9 @@ console.log("\n[7] Générateurs — forme des questions, visuels SVG, round-tri
   ok("SUBJECTS_MATH, SUBJECTS_PC, SUBJECTS_DE, SUBJECTS_EN, checkAnswer et VIZdraw accessibles",!!(probe.SUBJECTS_MATH&&probe.SUBJECTS_PC&&probe.SUBJECTS_DE&&probe.SUBJECTS_EN&&probe.checkAnswer&&probe.VIZdraw));
   let bad=0,vzbad=0,rtbad=0,qbad=0,checked=0,vizCount=0,qcmGens=0;
   const REGISTERS=[];
-  for(const y of["seconde","premiere","terminale"])REGISTERS.push(...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[]));
+  /* 2026-08-23 : la 4ᵉ année maths « experte » passe aussi par le contrat —
+     SUBJECTS_PC.experte est undefined → ||[] la saute proprement. */
+  for(const y of["seconde","premiere","terminale","experte"])REGISTERS.push(...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[]));
   REGISTERS.push(...(probe.SUBJECTS_DE||[]),...(probe.SUBJECTS_EN||[]));
   for(const sub of REGISTERS){
     for(let gi=0;gi<sub.gens.length;gi++){
@@ -883,7 +885,7 @@ console.log("\n[25] Courbe de niveau — xpCum / levelOf / lvlInfo");
 }
 
 /* ========================================================= */
-console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de / _en), 2 modes, palier → confetti");
+console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de / _en), 2 modes, palier → levelUp");
 {
   const exp=(ctx)=>vm.runInContext("(PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10)+((state.streak+1)>=3?5:0)",ctx);
   /* --- MODE LIBRE (maths) : ok → +pts exact ; ko → inchangé ; « Passer » → inchangé --- */
@@ -912,16 +914,30 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
     ok("révision : bonne réponse → qz_xp +pts exact",vm.runInContext("getXP()",ctx)===b+e);
   }
-  /* --- PALIER : franchissement → confetti() appelé UNE fois --- */
+  /* --- PALIER : franchissement → levelUp() appelé UNE fois (2026-08-23 :
+     l'animation de montée de niveau REMPLACE les confettis au palier — les
+     confettis restent à la fin de la révision, endReview) --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("window.__lvlup=0;levelUp=function(){window.__lvlup++;};",ctx);
+    vm.runInContext("startFree();store.set('qz_xp',95)",ctx);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 (moyen, série 1) → 105 ≥ 100 : palier 2 */
+    ok("franchissement 95→105 → levelUp() appelé une fois (remplace les confettis)",env.sandbox.__lvlup===1);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 → 115 : pas de palier */
+    ok("105→115 pas de palier → levelUp non rappelé",env.sandbox.__lvlup===1);
+  }
+  /* --- CONFETTIS : conservés à la fin de la révision (endReview — le clic
+     « Terminer la révision ») et PLUS au palier (remplacés par levelUp) --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("window.__confetti=0;confetti=function(){window.__confetti++;};",ctx);
-    vm.runInContext("startFree();store.set('qz_xp',95)",ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 (moyen, série 1) → 105 ≥ 100 : palier 2 */
-    ok("franchissement 95→105 → confetti() appelé une fois",env.sandbox.__confetti===1);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 → 115 : pas de palier */
-    ok("105→115 pas de palier → confetti non rappelé",env.sandbox.__confetti===1);
+    vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:4,due:0}]",ctx);
+    vm.runInContext("startReview()",ctx);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* réussite → item acquis (reps 5), plus aucune écheue */
+    vm.runInContext("endReview()",ctx);                   /* « Terminer la révision » */
+    ok("fin de révision → confetti() appelé (conserver à endReview)",env.sandbox.__confetti===1);
   }
   /* --- CARTE HERO : « Niveau N » + barre aria-hidden + « x / y XP » + pas de fuite maths→DE --- */
   lsData.clear();
@@ -940,6 +956,21 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     const cardDe=env.document.querySelector("#lvlSlot").innerHTML;
     ok("carte hero (DE) : propre XP (0 / 100), PAS la XP maths (105)",
        /Niveau 1/.test(cardDe)&&/0 \/ 100 XP/.test(cardDe)&&!/105/.test(cardDe));
+  }
+  /* --- « PAR THÈME » (2026-08-23, sur demande) : le panneau est TOUJOURS
+     affiché, même zéro réponse — régression « ne s'affiche plus » : les stats
+     vivent par thème et les ids changent avec l'année, le bloc disparaissait
+     dès que l'année active n'avait pas encore de stats. --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("renderHome()",ctx);
+    const by=env.document.querySelector("#bySubSlot").innerHTML;
+    ok("zéro réponse : le panneau « Par thème » s'affiche (tous les thèmes, « 0 · — · — »)",
+       /Par thème/.test(by)&&/substathead/.test(by)&&/—/.test(by));
+    vm.runInContext("store.set('qz_stats',JSON.stringify({ans:0,good:0,bySub:{}}));renderHome()",ctx);
+    ok("stats vides (bySub={}) : le panneau reste affiché",
+       /Par thème/.test(env.document.querySelector("#bySubSlot").innerHTML));
   }
   /* --- INDÉPENDANCE PAR MATIÈRE : maths / PC / DE n'écrivent JAMAIS la clé de l'autre --- */
   lsData.clear();
@@ -966,24 +997,33 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
 }
 
 /* ========================================================= */
-console.log("\n[24] Registres par année — structure, ids, stabilité Première");
+console.log("\n[24] Registres par année — structure, ids, volume (refonte 2026-08-23)");
 {
   lsData.clear();
   const env=buildEnv();const ctx=runApp(env);
   const probe=vm.runInContext("({SUBJECTS_MATH,SUBJECTS_PC,SUBJECTS_DE,SUBJECTS_EN,THEME_BY_ID})",ctx);
-  const oldM=["deriv","suites","logexp","equa2","trig","proba","vect","affine","lim","var"];
-  const oldP=["newton","forces","energie","moles","stoich","cinet","ondes","elec"];
-  ok("Première maths : les 10 ids historiques, ordre inchangé",
-     JSON.stringify(probe.SUBJECTS_MATH.premiere.map(s=>s.id))===JSON.stringify(oldM));
+  /* 2026-08-23 : refonte maths sur les programmes officiels (BO) — 1 thème ≈ 1
+     section officielle. Seconde 6 / Première 9 / Terminale 8 thèmes non-expertes,
+     + 3 expertes (complexes, arithmétique, graphes) passées en 4ᵉ ANNÉE maths.
+     Ids supprimés (s2_eq, s2_eq2, affine, lim…) purgés automatiquement par
+     loadStats (orphelines review/history/bySub). Première PC inchangée. */
+  ok("Première maths : 9 thèmes de la refonte, ordre livré",
+     JSON.stringify(probe.SUBJECTS_MATH.premiere.map(s=>s.id))===JSON.stringify(
+       ["p1_log","var","suites","equa2","deriv","logexp","trig","vect","proba"]));
   ok("Première PC : les 8 ids historiques, ordre inchangé",
-     JSON.stringify(probe.SUBJECTS_PC.premiere.map(s=>s.id))===JSON.stringify(oldP));
+     JSON.stringify(probe.SUBJECTS_PC.premiere.map(s=>s.id))===JSON.stringify(
+       ["newton","forces","energie","moles","stoich","cinet","ondes","elec"]));
+  /* Depuis la refonte AUCUN thème ne porte le niveau « experte » (il n'existe
+     plus) : chaque thème maths/PC, experte comprise, porte facile+moyen+difficile. */
   let lvls=true;
-  for(const y of["seconde","premiere","terminale"])
-    for(const s of [...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[])]){
-      const set=new Set(s.gens.map(g=>g.lvl));
-      if(!set.has("facile")||!set.has("moyen")||!set.has("difficile"))lvls=false;
-    }
-  ok("chaque thème maths/PC porte facile + moyen + difficile",lvls);
+  for(const reg of [probe.SUBJECTS_MATH,probe.SUBJECTS_PC])
+    for(const y of Object.keys(reg))
+      for(const s of reg[y]){
+        const set=new Set(s.gens.map(g=>g.lvl));
+        if(!set.has("facile")||!set.has("moyen")||!set.has("difficile"))lvls=false;
+        if(set.has("experte"))lvls=false;
+      }
+  ok("chaque thème maths/PC porte facile+moyen+difficile (aucun niveau « experte » restant)",lvls);
   let pre=true;
   for(const y of["seconde","terminale"])
     for(const s of [...(probe.SUBJECTS_MATH[y]||[]),...(probe.SUBJECTS_PC[y]||[])]){
@@ -992,13 +1032,27 @@ console.log("\n[24] Registres par année — structure, ids, stabilité Premièr
     }
   ok("ids Seconde préfixés s2_ / Terminale préfixés t_ (quand livrés)",pre);
   const T=Object.keys(probe.THEME_BY_ID);
-  ok("THEME_BY_ID couvre les 18 ids anciens maths/PC + DE + EN",
-     [...oldM,...oldP,"vocab","conj","art","date","phrasen","trad",
-      "en_vocab","en_verbes","en_art","en_q","en_phrases","en_trad"].every(id=>T.includes(id)));
+  /* THEME_BY_ID résout la fiche de CHAQUE thème de tous les registres
+     (maths/PC × année + DE + EN) — plus de liste d'ids en dur. */
+  let covers=true;
+  for(const reg of [probe.SUBJECTS_MATH,probe.SUBJECTS_PC])
+    for(const y of Object.keys(reg))
+      for(const s of reg[y]) if(!T.includes(s.id))covers=false;
+  for(const s of [...probe.SUBJECTS_DE,...probe.SUBJECTS_EN]) if(!T.includes(s.id))covers=false;
+  ok("THEME_BY_ID couvre tous les thèmes de tous les registres (maths/PC×année + DE + EN)",covers);
   ok("Seconde maths : 6 thèmes (contenu livré)",probe.SUBJECTS_MATH.seconde.length===6);
   ok("Seconde PC : 6 thèmes (contenu livré)",probe.SUBJECTS_PC.seconde.length===6);
+  ok("Première maths : 9 thèmes (contenu livré)",probe.SUBJECTS_MATH.premiere.length===9);
+  ok("Première PC : 8 thèmes (contenu livré)",probe.SUBJECTS_PC.premiere.length===8);
   ok("Terminale maths : 8 thèmes (contenu livré)",probe.SUBJECTS_MATH.terminale.length===8);
   ok("Terminale PC : 6 thèmes (contenu livré)",probe.SUBJECTS_PC.terminale.length===6);
+  /* 2026-08-23 : les 3 thèmes « expertes » forment la 4ᵉ ANNÉE maths (plus une
+     difficulté) ; PC n'a pas d'année experte. */
+  ok("Expert maths (4ᵉ année) : exactement 3 thèmes (complexes, arithmétique, graphes)",
+     JSON.stringify((probe.SUBJECTS_MATH.experte||[]).map(s=>s.id).sort())
+       ===JSON.stringify(["t_arith","t_complexes","t_graphes"]));
+  ok("PC : pas d'année « experte »",probe.SUBJECTS_PC.experte===undefined);
+  ok("« Limites » (lim) purgé de THEME_BY_ID",!T.includes("lim"));
   let purgeOk=true;
   {
     const env2=buildEnv();
@@ -1156,17 +1210,21 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
      révision, et suit les paliers franchis en cours de séance. (La DIFFICULTÉ de
      la question est déjà sur sa propre puce — « facile/moyen/difficile » ou
      « A2/A2+/B1 » — et reste inchangée.) */
-  const chip=ctx=>vm.runInContext("document.querySelector('#chipNiv')?document.querySelector('#chipNiv').textContent:null",ctx);
+  /* 2026-08-23 : la puce porte aussi sa BARRE de progression (span sans texte
+     « .nlvlbar ») — le DOM factice stocke innerHTML en chaîne brute, on teste
+     donc le préfixe « Niv. N » + la présence/largeur de la barre. */
+  const chip=ctx=>vm.runInContext("document.querySelector('#chipNiv')?document.querySelector('#chipNiv').innerHTML:null",ctx);
   /* --- Deux modes : la puce est présente et juste --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("store.set('qz_xp',120)",ctx); /* 100 ≤ 120 < 250 → Niv. 2 */
     vm.runInContext("startFree()",ctx);
-    ok("libre : la barre affiche « Niv. 2 »",chip(ctx)==="Niv. 2");
+    ok("libre : la barre affiche « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
+    ok("libre : la BARRE de progression est présente (120 XP = 13,3 % du palier)",/nlvlbar/.test(chip(ctx))&&/width:13\.3%/.test(chip(ctx)));
     vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:0,due:0}]",ctx);
     vm.runInContext("startReview()",ctx);
-    ok("révision : la barre affiche « Niv. 2 »",chip(ctx)==="Niv. 2");
+    ok("révision : la barre affiche « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
   }
   /* --- PALIER franchi en cours de séance : la puce suit l'XP gagnée --- */
   lsData.clear();
@@ -1174,9 +1232,9 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("store.set('qz_xp',245)",ctx); /* Niv. 2 ; +10 (bonne « moyen ») → 255 ≥ 250 → Niv. 3 */
     vm.runInContext("startFree()",ctx);
-    ok("avant réponse : « Niv. 2 »",chip(ctx)==="Niv. 2");
+    ok("avant réponse : « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
-    ok("bonne réponse franchit le palier → la puce passe à « Niv. 3 »",chip(ctx)==="Niv. 3");
+    ok("bonne réponse franchit le palier → la puce passe à « Niv. 3 »",/^Niv\. 3/.test(chip(ctx)));
   }
   /* --- INDÉPENDANCE : la puce suit la matière active --- */
   lsData.clear();
@@ -1184,9 +1242,119 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("store.set('qz_xp',120);store.set('qz_xp_de',260)",ctx); /* maths Niv. 2, DE Niv. 3 */
     vm.runInContext("startFree()",ctx);
-    ok("maths : « Niv. 2 »",chip(ctx)==="Niv. 2");
+    ok("maths : « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
     vm.runInContext("setMatiere('de');startFree()",ctx);
-    ok("bascule DE : « Niv. 3 » (la XP DE, pas la XP maths)",chip(ctx)==="Niv. 3");
+    ok("bascule DE : « Niv. 3 » (la XP DE, pas la XP maths)",/^Niv\. 3/.test(chip(ctx)));
+  }
+}
+
+/* ========================================================= */
+console.log("\n[31] Expertes — 4ᵉ ANNÉE maths (programme officiel expertes)");
+{
+  /* 2026-08-23 (sur demande) : l'ancienne difficulté « Experte » est devenue
+     une 4ᵉ ANNÉE de maths, « Terminale (maths expertes) » — le programme
+     officiel des maths expertes (complexes, arithmétique, graphes & Markov).
+     Règles :
+     - « experte » est une ANNÉE (state.annee), maths UNIQUEMENT ;
+       PC/DE/EN n'ont que Seconde / Première / Terminale ;
+     - les 12 questions expertes sont renivelées facile/moyen/difficile —
+       PLUS AUCUNE question ne porte le niveau « experte » ;
+     - PTS_LVL.experte (20) et LVL_NAMES.experte restent (légacy, scoring
+       des lignes history héritées) mais ne servent plus à aucun contenu neuf ;
+     - « experte » est refusée partout hors maths (readYear / setAnnee). */
+  /* --- A. structure statique : le registre existe, 3 thèmes, 3 niveaux réels --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    const P=vm.runInContext("({PTS_LVL,LVL_NAMES,SUBJECTS_MATH,SUBJECTS_PC})",ctx);
+    ok("legacy : PTS_LVL.experte = 20 (toujours lisible, au-dessus du 15)",P.PTS_LVL.experte===20&&P.PTS_LVL.difficile===15);
+    ok("legacy : LVL_NAMES.experte = « Experte » (affich. history héritée)",P.LVL_NAMES.experte==="Experte");
+    const exp=(P.SUBJECTS_MATH.experte||[]);
+    ok("SUBJECTS_MATH.experte : exactement 3 thèmes (complexes, arith, graphes)",
+       exp.length===3&&JSON.stringify(exp.map(s=>s.id).sort())===JSON.stringify(["t_arith","t_complexes","t_graphes"]));
+    ok("SUBJECTS_PC.experte est ABSENT (PC n'a pas de 4ᵉ année)",P.SUBJECTS_PC.experte===undefined);
+    const allLvls=[...new Set(exp.flatMap(s=>s.gens.map(g=>g.lvl)))].sort();
+    ok("chaque question experte est facile/moyen/difficile (aucun niveau « experte »)",
+       allLvls.length===3&&["facile","moyen","difficile"].every(l=>allLvls.includes(l)));
+  }
+  /* --- B. yearsFor : « experte » seulement en maths --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    const yf=vm.runInContext("({m:yearsFor('maths'),p:yearsFor('pc'),d:yearsFor('de'),e:yearsFor('en')})",ctx);
+    ok("maths : 4 années dont « experte »",yf.m.length===4&&yf.m.includes("experte"));
+    ok("pc : 3 années, pas d'« experte »",yf.p.length===3&&!yf.p.includes("experte"));
+    ok("de/en : 3 années, pas d'« experte »",yf.d.length===3&&!yf.d.includes("experte")&&yf.e.length===3&&!yf.e.includes("experte"));
+  }
+  /* --- C. readYear : « experte » acceptée maths, refusée PC, null DE/EN --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    ok("défaut maths → « premiere »",vm.runInContext("readYear('maths')",ctx)==="premiere");
+    vm.runInContext("store.set('qz_year_math','experte')",ctx);
+    ok("qz_year_math=« experte » → readYear('maths')=« experte »",vm.runInContext("readYear('maths')",ctx)==="experte");
+    vm.runInContext("store.set('qz_year_pc','experte')",ctx);
+    ok("qz_year_pc=« experte » (valeur inconnue) → readYear('pc')=« premiere »",vm.runInContext("readYear('pc')",ctx)==="premiere");
+    ok("DE → null (pas d'année)",vm.runInContext("readYear('de')",ctx)===null);
+    ok("EN → null (pas d'année)",vm.runInContext("readYear('en')",ctx)===null);
+    vm.runInContext("store.set('qz_year_math','nope')",ctx);
+    ok("valeur corrompue → readYear('maths')=« premiere »",vm.runInContext("readYear('maths')",ctx)==="premiere");
+  }
+  /* --- D. yearReady : maths/PC prêts, DE/EN jamais --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    ok("yearReady('maths') = true (4 registres livrés)",vm.runInContext("yearReady('maths')",ctx)===true);
+    ok("yearReady('pc') = true (3 registres livrés)",vm.runInContext("yearReady('pc')",ctx)===true);
+    ok("yearReady('de') = false",vm.runInContext("yearReady('de')",ctx)===false);
+    ok("yearReady('en') = false",vm.runInContext("yearReady('en')",ctx)===false);
+  }
+  /* --- E. setAnnee : « experte » acceptée maths, ignorée PC --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("setAnnee('experte')",ctx);
+    ok("maths : setAnnee('experte') → state.annee=« experte »",vm.runInContext("state.annee",ctx)==="experte");
+    vm.runInContext("setMatiere('pc')",ctx);
+    const ann=vm.runInContext("state.annee",ctx);
+    ok("PC : state.annee ≠ « experte »",ann!=="experte");
+    vm.runInContext("setAnnee('experte')",ctx);
+    ok("PC : setAnnee('experte') → ignoré (annee inchangée)",vm.runInContext("state.annee",ctx)===ann);
+  }
+  /* --- F. activeSubjects + pickQ : 90 tirages, 3 thèmes expertes, niveaux réels --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("setAnnee('experte');setNiveau('difficile');state.subject='mix'",ctx);
+    ok("activeSubjects() = les 3 thèmes expertes",
+       JSON.stringify(vm.runInContext("activeSubjects().map(s=>s.id).sort()",ctx))===JSON.stringify(["t_arith","t_complexes","t_graphes"]));
+    let allOk=true;const seen=new Set();
+    for(let i=0;i<90;i++){
+      const r=vm.runInContext("pickQ()",ctx);
+      if(!r||!["t_complexes","t_arith","t_graphes"].includes(r.sub.id))allOk=false;
+      if(!["facile","moyen","difficile"].includes(r.lvl))allOk=false;   /* jamais « experte » */
+      seen.add(r.sub.id);
+    }
+    ok("90 tirages : TOUS dans les 3 thèmes expertes, niveaux réels (jamais « experte »)",allOk);
+    ok("les 3 thèmes expertes sont servis sur 90 tirages (mélange)",seen.size===3);
+  }
+  /* --- G. Auto ne propose JAMAIS « experte » --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("stats.history=[{s:'t_complexes',o:1},{s:'t_complexes',o:1},{s:'t_complexes',o:1},{s:'t_complexes',o:1}]",ctx);
+    ok("100 % de réussite → « difficile » (Auto plafonne, jamais « experte »)",vm.runInContext("autoLevel('t_complexes')",ctx)==="difficile");
+  }
+  /* --- H. XP : bonne réponse experte = points du VRAI niveau (5/10/15), pas +20 --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("store.set('qz_xp',0)",ctx);
+    vm.runInContext("setAnnee('experte');setNiveau('facile');state.subject='mix';startFree()",ctx);
+    const curLvl=vm.runInContext("state.curLvl",ctx);
+    ok("la question servie est au niveau réel (pas « experte »)",["facile","moyen","difficile"].includes(curLvl)&&curLvl!=="experte");
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx);
+    ok("bonne réponse « facile » → +5 XP (pas 20)",JSON.parse(lsData.get("qz_xp"))===5);
   }
 }
 
