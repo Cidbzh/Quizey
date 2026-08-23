@@ -14,7 +14,7 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 - **Vos points faibles** — Quizey repère où vous réussissez le moins et vous propose de vous y entraîner.
 - **Un niveau par matière** — une progression motivante, qui ne bloque jamais.
 
-## Les matières
+## Contenu
 
 - **Mathématiques** (spécialité) — Seconde · Première · Terminale, avec en Terminale une option de chapitres avancés (« Maths expertes »).
 - **Physique-chimie** (spécialité) — Seconde · Première · Terminale.
@@ -22,7 +22,7 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 
 ![Une question, son visuel, puis le corrigé](img/question-correction.png)
 
-## Comment s'en servir
+## Utilisation
 
 1. Choisissez une **matière**, une **année** (ou un niveau pour les langues) et un **thème** ou laissez Quizey vous proposer un mélange.
 2. Répondez à votre rythme, l'algorithme s'occupe de tout.
