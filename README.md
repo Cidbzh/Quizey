@@ -24,8 +24,8 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 
 ## Comment s'en servir
 
-1. Choisissez une **matière**, une **année** (ou un niveau pour les langues) et un **thème** — ou laissez Quizey vous proposer un mélange.
-2. Répondez à votre rythme. L'algorithme s'occupe de tout.
+1. Choisissez une **matière**, une **année** (ou un niveau pour les langues) et un **thème** ou laissez Quizey vous proposer un mélange.
+2. Répondez à votre rythme, l'algorithme s'occupe de tout.
 3. Revenez quand vous voulez : votre liste « à réviser » est toujours là, avec un aperçu du temps qu'elle représente.
 
 Le bouton « Passer » n'est pas pénalisant : vous pourrez retrouver la question plus tard.
