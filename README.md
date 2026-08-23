@@ -32,7 +32,7 @@ Le bouton « Passer » n'est pas pénalisant : vous pourrez retrouver la questio
 
 ![Le mode allemand — questions à choix multiples](img/accueil-allemand.png)
 
-## Quizey est fait pour vous motivez
+## Quizey est fait pour vous motiver
 
 Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une petite animation vous félicite.
 
