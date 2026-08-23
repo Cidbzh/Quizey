@@ -4,38 +4,43 @@
 
 Quizey est un fichier `.html` autonome pour la révision de **tout le lycée** : mathématiques (spécialité) et physique-chimie par **année** (Seconde / Première / Terminale), allemand et anglais par niveau (A2 / A2+ / B1). Aucune installation, aucun compte, aucune connexion internet requise : vous l'ouvrez dans votre navigateur et vous vous entraînez.
 
-Chaque question est générée à l'affichage : vous ne voyez donc jamais deux fois les mêmes nombres, et la même question n'est pas resservie tant que le lot disponible (chapitres × niveau) n'est pas épuisé. Chaque réponse s'accompagne de la méthode de résolution, et non d'un simple indicatif.
-
-Vos progrès, vos points faibles et vos records restent stockés sur votre machine et ne sont jamais transmis. Hors ligne, l'application ne contacte aucun service et utilise les polices du système. En ligne, la seule requête extérieure possible est le chargement des polices d'écriture (Google Fonts), si le navigateur n'en a pas encore — aucune donnée n'y est envoyée.
-
 ![L'accueil — matière maths : la carte « À réviser », les stats, les points faibles](img/accueil-maths.png)
+
+## Particularité
+
+Ce qui distingue Quizey d'une simple banque de questions :
+
+- **D'après les programmes officiels (BO)** — chaque thème reprend le programme officiel de l'année concernée (maths spécialité, physique-chimie) ; les langues couvrent A2 · A2+ · B1.
+- **Révision par répétition espacée** — une question ratée revient à intervalle croissant (demain, puis 3 jours, 7 jours, 2 semaines) ; une bonne réponse la repousse. Après **cinq bonnes réponses d'affilée**, elle est **acquise** et sort de la liste.
+- **Questions générées à l'affichage** — vous ne voyez jamais deux fois les mêmes nombres, et la même question n'est pas resservie tant que le lot disponible (chapitres × niveau) n'est pas épuisé.
+- **100 % hors ligne, données locales** — vos progrès, points faibles et records restent sur votre machine et ne sont jamais transmis. En ligne, la seule requête extérieure possible est le chargement des polices (Google Fonts) — aucune donnée n'y est envoyée.
+- **Correction par la méthode** — chaque réponse s'accompagne de la **méthode de résolution**, pas d'un simple indicatif ; un visuel (courbe, schéma, graphique) accompagne la question quand elle s'y prête.
+- **Niveau XP par matière** — de l'expérience et des paliers, purement motivation : le niveau ne débloque aucun contenu.
 
 ## Comment s'entraîner
 
-**Entraînement libre** — en mathématiques et en physique-chimie, choisissez d'abord votre **année** (Seconde, Première ou Terminale), puis **un thème — ou plusieurs à la fois** : les tuiles sélectionnées s'empilent (un récapitulatif avec un bouton « Tous » permet de tout effacer d'un coup) pour un entraînement mixte — et un niveau (facile, moyen, difficile — affiché A2, A2+, B1 pour les langues), et progressez à votre rythme. En maths, l'option **« Maths expertes »** (case à cocher, visible uniquement sur l'année Terminale) ajoute les 3 chapitres du programme officiel des maths expertes — nombres complexes, arithmétique, graphes & chaînes de Markov — au pool de Terminale (8 → 11 chapitres). Le mode **Auto** (difficulté adaptative) ajuste automatiquement le niveau proposé en fonction de vos dernières réponses sur le chapitre, afin de vous servir un exercice exigeant sans être rédhibitoire.
+**Entraînement libre** — choisissez votre **année** (Seconde, Première ou Terminale) et **un thème — ou plusieurs à la fois** (les tuiles sélectionnées s'empilent), puis un **niveau** (facile / moyen / difficile ; A2 · A2+ · B1 pour les langues), et progressez à votre rythme. En maths, l'option **« Maths expertes »** (Terminale) ajoute les 3 chapitres officielles — nombres complexes, arithmétique, graphes & chaînes de Markov — au pool. Le mode **Auto** ajuste la difficulté en fonction de vos dernières réponses sur le chapitre.
 
-**À réviser** — Quizey met en œuvre la méthode d'apprentissage par **répétition espacée** : chaque question ratée est replanifiée selon un intervalle croissant, une bonne réponse la repousse progressivement (demain, puis 3 jours, 7 jours, 2 semaines) tandis qu'une erreur la ramène rapidement. Après cinq réponses correctes consécutives, une question est considérée comme **acquise** et retirée de la liste de révision. La carte d'accueil indique le nombre de révisions **échéues pour la journée**.
+**À réviser** — la liste des questions à refaire, planifiée par répétition espacée. La carte d'accueil indique le nombre de révisions **échéues pour la journée** et un **temps estimé « ≈ N min »**.
 
 Le bouton « Passer » n'est pas pénalisant : la question concernée est simplement remise en file d'attente.
 
 ![Une question de trigonométrie — son mini-visuel, puis la correction détaillée](img/question-correction.png)
 
-La correction présente la méthode de résolution, et non uniquement le résultat ; lorsque la question s'y prête, un visuel (courbe, schéma, graphique) accompagne le texte.
-
 Quizey identifie en outre vos **points faibles** (croisement thème × niveau, sur vos 100 dernières réponses) et propose un entraînement ciblé sur chacun.
 
 ## Contenu
 
-- **Mathématiques** (spécialité) — par année, d'après les programmes officiels (BO) : **Seconde** (6 thèmes : logique & ensembles, algorithmique, nombres & algèbre, fonctions & variations, vecteurs & droites, stats & probabilités) · **Première** (9 : logique & algorithmique, fonctions & variations, suites, équations & polynômes du 2ᵉ degré, dérivées, exponentielle, trigonométrie, vecteurs & produit scalaire, probabilités) · **Terminale** (8 : logique & listes, combinatoire & dénombrement, espace & vecteurs 3D, suites & convergence, exponentielle & logarithme, sinus & cosinus, dérivées/primitives/intégrales, probabilités binomiales) · option **« Maths expertes »** — case à cocher sur Terminale (3 : nombres complexes, arithmétique, graphes & chaînes de Markov)
-- **Physique-chimie** — par année, d'après les programmes officiels (BO) : **Seconde** (9 thèmes : corps purs & mélanges, solutions & dilution, quantité de matière, énergie & transformations, mouvement & vitesse, forces & poids, le son, la lumière, circuits électriques) · **Première** (13 : mécanique & Newton, forces & champs, énergie, quantités de matière, oxydo-réduction, stœchiométrie, liaisons chimiques, séparer les espèces, chimie organique, synthèse & rendement, ondes & lumière, couleurs & synthèse, électricité) · **Terminale** (13 : acide-base & pH, équilibres chimiques, cinétique chimique, suivi spectrophotométrique, transformations nucléaires, photon & quantum, piles & électro, synthèse organique, mouvements, fluides & portance, énergie thermique, oscillations & amortissement, circuit RC)
-- **Allemand** — 6 thèmes, 100 % QCM : vocabulaire, conjugaison, articles, nombres · dates · heures, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
-- **Anglais** — 6 thèmes, 100 % QCM : vocabulaire, verbes & temps, articles & quantifieurs, questions, phrases utiles, mini-traductions (niveaux A2 · A2+ · B1)
+- **Mathématiques** (spécialité) — par année, d'après les programmes officiels (BO) : **Seconde** (6 thèmes) · **Première** (9) · **Terminale** (8) · option **« Maths expertes »** (3 : complexes, arithmétique, graphes & chaînes de Markov)
+- **Physique-chimie** — par année, d'après les programmes officiels (BO) : **Seconde** (9 thèmes) · **Première** (13) · **Terminale** (13)
+- **Allemand** — 6 thèmes, 100 % QCM (niveaux A2 · A2+ · B1)
+- **Anglais** — 6 thèmes, 100 % QCM (niveaux A2 · A2+ · B1)
 
 ![Le mode allemand A2 — 100 % QCM](img/accueil-allemand.png)
 
 ## Niveau Quizey
 
-Chaque matière a **son propre niveau** : chaque bonne réponse rapporte de l'expérience (XP) — 5, 10 ou 15 points selon le niveau de la question, plus 5 dès que votre série atteint 3 bonnes réponses d'affilée. À chaque palier franchi, une animation de montée de niveau vous félicite : le numéro du niveau passe en avant-plan dans un anneau qui se remplit, avec une gerbe d'étincelles (les confettis, eux, vous attendent à la fin d'une session de révision). Votre niveau progresse sur une courbe croissante : chaque palier demande plus d'XP que le précédent, et vos progrès en maths n'affectent jamais l'allemand, ni inversement.
+Chaque matière a **son propre niveau** : chaque bonne réponse rapporte de l'expérience (XP) — 5, 10 ou 15 points selon le niveau de la question, plus 5 dès que votre série atteint 3 bonnes réponses d'affilée. À chaque palier franchi, une animation de montée de niveau vous félicite.
 
 C'est une motivation, pas un verrou : le niveau ne débloque aucun contenu, et comme le reste de vos progrès il reste stocké sur votre machine.
 
