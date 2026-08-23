@@ -2,7 +2,7 @@
 
 **Plus tu quiz, plus tu sais.**
 
-Quizey, c'est la révision du lycée dans votre navigateur : **mathématiques**, **physique-chimie**, **allemand** et **anglais**. Un seul fichier à ouvrir — pas de compte, pas d'installation, et rien de ce que vous faites ne quitte votre machine.
+Quizey, c'est la révision du lycée dans votre navigateur : **mathématiques**, **physique-chimie**, **allemand** et **anglais**. Un seul fichier à ouvrir, pas de compte, pas d'installation, et rien de ce que vous faites ne quitte votre machine.
 
 ![L'accueil, matière maths](img/accueil-maths.png)
 
