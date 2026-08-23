@@ -17,7 +17,7 @@ Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à o
 ## Les matières
 
 - **Mathématiques** (spécialité) — Seconde · Première · Terminale, avec en Terminale une option de chapitres avancés (« Maths expertes »).
-- **Physique-chimie** — Seconde · Première · Terminale.
+- **Physique-chimie** (spécialité) — Seconde · Première · Terminale.
 - **Allemand** et **Anglais** — trois niveaux (A2 · A2+ · B1), avec des questions à choix multiples.
 
 ![Une question, son visuel, puis le corrigé](img/question-correction.png)
