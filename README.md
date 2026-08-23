@@ -32,13 +32,13 @@ Le bouton « Passer » n'est pas pénalisant : vous pourrez retrouver la questio
 
 ![Le mode allemand — questions à choix multiples](img/accueil-allemand.png)
 
-## Niveau Quizey
+## Quizey est fait pour vous motivez
 
 Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une petite animation vous félicite.
 
-## L'obtenir
+## Installation
 
-**Sur ordinateur**
+**Dans la console / terminal**
 
 ```bash
 git clone https://github.com/Cidbzh/Quizey.git
