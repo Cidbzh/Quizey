@@ -46,7 +46,7 @@ git clone https://github.com/Cidbzh/Quizey.git
 
 puis ouvrez `Quizey/Quizey.html` (double-clic).
 
-**Plus simple**
+**Depuis les releases**
 
 Téléchargez le fichier depuis la page [Releases](https://github.com/Cidbzh/Quizey/releases), puis double-cliquez sur `Quizey.html`.
 
