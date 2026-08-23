@@ -49,7 +49,7 @@ puis ouvrez `Quizey/Quizey.html` (double-clic).
 
 Téléchargez le fichier depuis la page [Releases](https://github.com/Cidbzh/Quizey/releases), puis double-cliquez sur `Quizey.html`.
 
-Une fois en votre possession, le fichier vous appartient : clé USB, médiathèque, labo du lycée — où que vous soyez, avec ou sans internet.
+Une fois en votre possession, le fichier vous appartient : clé USB, médiathèque, labo du lycée (où que vous soyez, avec ou sans internet).
 
 ## Licence
 
