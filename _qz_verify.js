@@ -1400,20 +1400,24 @@ console.log("\n[31] Expertes — case à cocher de Terminale maths (programme of
     ok("les 3 thèmes expertes sont servis sur 99 tirages (mélange)",
        seen.has("t_complexes")&&seen.has("t_arith")&&seen.has("t_graphes"));
   }
-  /* --- F3. UI : ligne « Maths expertes » — ESPACE RÉSERVÉ en maths à toutes
-     les années (pas de saut de mise en page), visible UNIQUEMENT en
-     Terminale, absente en PC/DE/EN --- */
+  /* --- F3. UI : ligne « Maths expertes » — visible UNIQUEMENT maths ×
+     Terminale ; en Seconde/Première elle est TOTALEMENT ABSENTE (hidden,
+     plus d'espace réservé — 2026-08-24, 2ᵉ passe Cid : l'écart « niveaux →
+     chapitres » est alors le même qu'ailleurs), absente en PC/DE/EN --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
     const row=()=>env.document.querySelector("#xoptRow");
-    ok("maths/premiere : ligne présente (espace réservé) mais masquée (off)",
-       row().hidden===false&&row().classList.contains("off"));
+    ok("maths/premiere : ligne absente (hidden — plus d'espace réservé)",
+       row().hidden===true);
     vm.runInContext("setAnnee('terminale')",ctx);
-    ok("maths/terminale : ligne visible (ni hidden ni off)",
-       row().hidden===false&&!row().classList.contains("off"));
+    ok("maths/terminale : ligne visible (pas de hidden)",
+       row().hidden===false);
+    vm.runInContext("setAnnee('seconde')",ctx);
+    ok("maths/seconde : ligne absente (hidden)",
+       row().hidden===true);
     vm.runInContext("setMatiere('pc')",ctx);
-    ok("pc/terminale : ligne absente (hidden — maths uniquement)",row().hidden===true);
+    ok("pc : ligne absente (hidden — maths uniquement)",row().hidden===true);
     vm.runInContext("setMatiere('de')",ctx);
     ok("DE : ligne absente (hidden)",row().hidden===true);
   }

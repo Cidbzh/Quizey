@@ -346,10 +346,10 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    (2026-08-23, Cid). Même gabarit que les lignes Année/Niveau (13 px,
    padding 5×10, rayon 9) et ton DISCRET : le texte est en étalon, la case
    petite ; seule la sélection passe à l'accent — même langage que les
-   boutons .seg-btn.on (fond surface + accent + ombre). En maths, l'espace
-   de la ligne est RÉSERVÉ en permanence (syncXopt pose .off =
-   visibility:hidden, pas display:none) → le bloc ne change plus de taille
-   quand on sélectionne une autre année. Absente en PC/DE/EN (hidden). */
+   boutons .seg-btn.on (fond surface + accent + ombre). Visible UNIQUEMENT
+   maths × Terminale : en Seconde/Première et en PC/DE/EN elle est
+   totalement absente (hidden — 2026-08-24, 2ᵉ passe Cid : plus d'espace
+   réservé, l'écart « niveaux → chapitres » est le même qu'ailleurs). */
 .xopt{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
   font:500 13px/1.35 var(--f-body);color:var(--muted);
   background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;padding:5px 10px;
@@ -358,16 +358,17 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .xopt.on{color:var(--accent);border-color:var(--accent);background:var(--surface);box-shadow:0 1px 2px rgba(31,46,71,.14)}
 .xopt input{accent-color:var(--accent);width:14px;height:14px;flex:none;margin:0;cursor:pointer}
 .xopt[hidden]{display:none}
-.xopt.off{visibility:hidden}
-/* (2026-08-24, Cid) : en maths, l'écart visible « niveaux → chapitres »
-   contenait la ligne expertes RÉSERVÉE (~26 px, .off) + 2 gaps de 8 px + la
-   marge de tête de 24 px ≈ 58 px, contre ~24 px en PC/DE/EN — jugé légèrement
-   trop grand. On le resserre de ~10 px (gaps 8→6 px, marge 24→16 px) en maths
-   SEULE (la ligne expertes n'existe que là) : la réservation reste exactement
-   égale à la hauteur visible → aucun changement de taille au changement
-   d'année, comme avant. */
-:root:not([data-mat]) .picks{gap:6px}
-:root:not([data-mat]) .lead-head{margin-bottom:16px}
+/* (2026-08-24, Cid, 2 passe) : en maths, l'écart visible « niveaux →
+   chapitres » contenait la ligne expertes + 2 gaps de 8 px + la marge de tête
+   de 24 px ≈ 58 px, contre ~24 px en PC/DE/EN — jugé trop grand. En
+   SECONDE/PREMIÈRE la ligne est maintenant ABSENTE (syncXopt pose hidden) →
+   l'écart y est déjà le même qu'ailleurs (~24 px). Le resserrement
+   (gaps 8→6 px, marge 24→16 px ≈ 52 px) ne s'applique donc plus qu'en
+   TERMINALE, seule année où la ligne est visible — scopé via :has() sur le
+   bouton d'année actif. Vieil navigateur sans :has → règles ignorées → écart
+   par défaut (la ligne reste masquée par le JS, donc pas de régression). */
+:root:not([data-mat]):has(#yearRow [data-year="terminale"].on) .picks{gap:6px}
+:root:not([data-mat]):has(#yearRow [data-year="terminale"].on) .lead-head{margin-bottom:16px}
 /* (2026-08-24, Cid) Checkbox « Maths expertes » EN MODE SOMBRE : fini le
    carré natif blanc (et l'état coché #60A5FA, quasi-blanc sur le fond nuit)
    — la case est dessinée, en bleu de marque #2563EB (lisible sur le bleu
@@ -752,17 +753,17 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
 .lvlup.go{opacity:1}
 .lvlup.bye{opacity:0}
 .lvlup-glow{
-  position:absolute;left:50%;top:50%;width:min(440px,94vw);height:min(440px,94vw);border-radius:50%;
+  position:absolute;left:50%;top:50%;width:min(560px,96vw);height:min(560px,96vw);border-radius:50%;
   background:radial-gradient(closest-side,var(--accent-soft),transparent 72%);
   opacity:0;transform:translate(-50%,-50%) scale(.55);
   transition:opacity .55s var(--ease),transform .7s cubic-bezier(.2,1.3,.4,1);
 }
 .lvlup.go .lvlup-glow{opacity:.85;transform:translate(-50%,-50%) scale(1)}
 .lvlup.up .lvlup-glow{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
-.lvlup-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 36px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);transform:scale(.7);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.lvlup-card{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 44px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);transform:scale(.7);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
 .lvlup.go .lvlup-card{transform:scale(1)}
-.lvlup-kick{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
-.lvlup-numwrap{position:relative;width:124px;height:124px;display:grid;place-items:center}
+.lvlup-kick{font:600 13px var(--f-body);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.lvlup-numwrap{position:relative;width:160px;height:160px;display:grid;place-items:center}
 .lvlup-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .lvlup-ring circle{fill:none;stroke-width:4}
 .lvlup-ring .ring-bg{stroke:var(--accent-soft)}
@@ -770,10 +771,10 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
    rapide. COUPLÉ au setTimeout du swap de numéro dans levelUp() : ce
    dernier doit rester APRÈS la fin du remplissage (0,15 + 1,4 = 1,55 s). */
 .lvlup-ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.4s var(--ease) .15s}
-.lvlup-num{font:700 46px/1 var(--f-display);color:var(--muted);transition:color .3s var(--ease)}
+.lvlup-num{font:700 60px/1 var(--f-display);color:var(--muted);transition:color .3s var(--ease)}
 .lvlup.up .lvlup-num{color:var(--accent);animation:numPop .55s var(--ease);filter:drop-shadow(0 3px 10px var(--accent))}
 @keyframes numPop{0%{transform:scale(.45)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
-.lvlup-nm{font:600 14px var(--f-body);color:var(--muted)}
+.lvlup-nm{font:600 15px var(--f-body);color:var(--muted)}
 .lvlup-sparks{position:absolute;inset:0}
 .lvlup-sparks i{position:absolute;left:50%;top:50%;border-radius:50%;opacity:0}
 .lvlup.up .lvlup-sparks i{animation:sparkFly .95s var(--ease) forwards}
@@ -1029,6 +1030,11 @@ const F=(n,d)=>{const f=fr(n,d);if(f.d===1)return f.n<0?"−"+(-f.n):String(f.n)
 const fs=(n,d)=>F(n,d);   /* affichage d'une réponse fraction (fraction empilée) */
 const fa=(n,d)=>fr(n,d);   /* réponse "fraction" : {n,d} simplifiée */
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Ri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+/* Exposants Unicode (2026-08-24, Cid) : rend un entier en superscript typographique
+   (2 → «²», −12 → «⁻¹²») pour les énoncés maths — plus lisible que «^2».
+   Un caractère hors chiffres/minus se replie tel quel (jamais d'erreur). */
+const SUP={0:"⁰",1:"¹",2:"²",3:"³",4:"⁴",5:"⁵",6:"⁶",7:"⁷",8:"⁸",9:"⁹","-":"⁻"};
+const sup=(v)=>String(v).split("").map(c=>SUP[c]||c).join("");
 const qcm=(p,bonne,ds,explain,viz)=>{const o=shuf([bonne,...ds]);const r={prompt:p,type:"choice",options:o,correct:o.indexOf(bonne),explain};if(viz)r.viz=viz;return r;}; /* QCM : options mélangées, correct = index réel de la bonne option ; viz optionnel (mini-visuel) */
 /* ================= GENERATORS ================= */
 
@@ -1046,7 +1052,7 @@ const G_S2_LOG=[
    const bank=[
     {p:"Tout carré d'un entier est positif.",n:"Il existe un entier dont le carré n'est pas positif.",d:["Aucun carré d'entier n'est positif.","Tous les carrés d'entiers sont négatifs."]},
     {p:"Tout multiple de 4 est un multiple de 2.",n:"Il existe un multiple de 4 qui n'est pas un multiple de 2.",d:["Aucun multiple de 4 n'est un multiple de 2.","Tout multiple de 2 est un multiple de 4."]},
-    {p:"Il existe un nombre réel dont le carré vaut −1.",n:"Tout nombre réel a un carré différent de −1.",d:["Aucun nombre réel n'a de carré.","Tous les carrés de réels valent −1."]}
+    {p:"Il existe x ∈ ℝ tel que x² = −1.",n:"Pour tout x ∈ ℝ, x² ≠ −1.",d:["Aucun nombre réel n'a de carré.","Tous les carrés de réels valent −1."]}
    ];
    const b=pick(bank);
    return qcm(`Quelle est la négation de la proposition « ${b.p} » ?`,b.n,b.d,
@@ -1101,7 +1107,7 @@ let _s2flip=0; /* alternance PGCD / PPCM entre tirages consécutifs */
 const G_S2_NUM=[
  {lvl:"facile",make(){
    const a=Ri(2,7),b=Ri(0,4);
-   return{prompt:`Calcule 2^${a} × 2^${b} = 2^c. Quel est c ?`,
+   return{prompt:`Calcule 2${sup(a)} × 2${sup(b)} = 2ᶜ. Quel est c ?`,
     type:"number",answer:a+b,
     explain:`Même base : on additionne les exposants — ${a} + ${b} = <b>${a+b}</b>.`};
  }},
@@ -1158,9 +1164,9 @@ const G_S2_FONC=[
 const G_S2_VECT=[
  {lvl:"facile",make(){
    const u=[Ri(1,4),Ri(1,4)],k=Ri(2,6);
-   return{prompt:`u = (${u[0]} ; ${u[1]}) et v = (${k*u[0]} ; ${k*u[1]}). Sachant que v = k · u, calcule k.`,
+   return{prompt:`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${k*u[0]} ; ${k*u[1]}). Sachant que v⃗ = k · u⃗, calcule k.`,
     type:"number",answer:k,
-    explain:`v = k·u ⇒ k = v_x / u_x = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2ᵉ coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};
+    explain:`v⃗ = k·u⃗ ⇒ k = vₓ / uₓ = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2ᵉ coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};
  }},
  {lvl:"moyen",make(){
    const d=pick([[3,4,5],[5,12,13],[8,15,17],[9,12,15]]);
@@ -1282,7 +1288,7 @@ const G_SUITES=[
    const an=u0*Math.pow(q,n);
    return{prompt:`(uₙ) est géométrique de premier terme u₀ = ${u0} et de raison q = ${q}. Calcule u${sub(n)}.`,
     type:"number",answer:an,
-    explain:`uₙ = u₀ × qⁿ = ${u0} × ${q}^${n} = <b>${an}</b>.`};
+    explain:`uₙ = u₀ × q${sup(n)} = ${u0} × ${q}${sup(n)} = <b>${an}</b>.`};
  }},
  {lvl:"difficile",make(){
    const a=pick([2,3,-2]),b=pick([-4,-2,2,4]),u0=pick([-3,-2,-1,1,2,3]);
@@ -1312,7 +1318,7 @@ const G_EQ2=[
    const pt=p===0?"":(p>0?` + ${p}x`:` − ${-p}x`);
    const qt=q>0?` + ${q}`:` − ${-q}`;
    const somme=pick([1,0]);
-   return{prompt:`L'équation x²${pt}${qt} = 0 a deux racines réelles. Calcule ${somme?"la somme":"le produit"} des racines.`,
+   return{prompt:`L'équation x²${pt}${qt} = 0 admet deux racines dans ℝ. Calcule ${somme?"la somme":"le produit"} des racines.`,
     type:"number",answer:somme?a+b:a*b,
     explain:`Relations de Viète : pour x² + px + q = 0, la somme des racines vaut −p et le produit vaut q.<br>Ici ${somme?`la somme vaut −(${p}) = <b>${a+b}</b>`:`le produit vaut q = <b>${a*b}</b>`}.`};
  }},
@@ -1360,21 +1366,21 @@ const G_DERIV=[
 const G_LOGEXP=[
  {lvl:"facile",make(){
    const a=Ri(-5,5),b=Ri(-5,5);
-   return{prompt:`Sachant que e^${a} × e^${b} = e^c, calcule c.`,
+   return{prompt:`Sachant que e${sup(a)} × e${sup(b)} = eᶜ, calcule c.`,
     type:"number",answer:a+b,
     explain:`Propriété de l'exponentielle : e^a × e^b = e^(a+b).<br>Donc c = ${a} + ${b} = <b>${a+b}</b>.`};
  }},
  {lvl:"moyen",make(){
    const m=pick([2,3,-2]),x=Ri(-4,4),c=m*x;
-   return{prompt:`Résous l'équation e^(${m}x) = e^${c}.`,
+   return{prompt:`Résous l'équation e^(${m}x) = e${sup(c)}.`,
     type:"number",answer:x,
     explain:`La fonction exp est strictement croissante, donc injective : e^u = e^v ⇔ u = v.<br>Donc ${m}x = ${c} → x = <b>${x}</b>.`};
  }},
  {lvl:"difficile",make(){
    const n=pick([1,2,3]);
-   return qcm(`Quelle est la limite de e^x / x^${n} quand x → +∞ ?`,
+   return qcm(`Quelle est la limite de eˣ / x${sup(n)} quand x → +∞ ?`,
     `+∞`,[`0`,`−∞`,`La limite n'existe pas`],
-    `Croissance comparée : l'exponentielle l'emporte sur toute puissance de x.<br>e^x / x^${n} → <b>+∞</b> (et réciproquement x^${n} / e^x → 0).`);
+    `Croissance comparée : l'exponentielle l'emporte sur toute puissance de x.<br>eˣ / x${sup(n)} → <b>+∞</b> (et réciproquement x${sup(n)} / eˣ → 0).`);
  }}
 ];
 
@@ -1421,19 +1427,19 @@ const G_VECT=[
  {lvl:"facile",make(){
    const u=[Ri(-5,5)||2,Ri(-5,5)||1],v=[Ri(-5,5)||1,Ri(-5,5)||3];
    const p=u[0]*v[0]+u[1]*v[1];
-   return{prompt:`u = (${u[0]} ; ${u[1]}) et v = (${v[0]} ; ${v[1]}). Calcule le produit scalaire u·v.`,
+   return{prompt:`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${v[0]} ; ${v[1]}). Calcule le produit scalaire u⃗·v⃗.`,
     type:"number",answer:p,
-    explain:`u·v = ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} = <b>${p}</b>.`};
+    explain:`u⃗·v⃗ = ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} = <b>${p}</b>.`};
  }},
  {lvl:"moyen",make(){
    const u=pick([[1,2],[2,1],[1,3],[3,2]]);
    const v=[u[1],-u[0]];
    const bad=shuf([[1,1],[2,3],[1,-1],[3,1]].filter(w=>u[0]*w[0]+u[1]*w[1]!==0)).slice(0,2);
    const d1=bad[0],d2=bad[1];
-   return qcm(`Quel couple de vecteurs du plan est orthogonal ?`,
-    `u = (${u[0]} ; ${u[1]}) et v = (${v[0]} ; ${v[1]})`,
-    [`u = (${u[0]} ; ${u[1]}) et v = (${d1[0]} ; ${d1[1]})`,`u = (${u[0]} ; ${u[1]}) et v = (${d2[0]} ; ${d2[1]})`],
-    `Deux vecteurs sont orthogonaux si et seulement si u·v = 0 : ici ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = <b>0</b>.`);
+   return qcm(`Quel couple de vecteurs du plan est orthogonal (u⃗ ⊥ v⃗) ?`,
+    `u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${v[0]} ; ${v[1]})`,
+    [`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${d1[0]} ; ${d1[1]})`,`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${d2[0]} ; ${d2[1]})`],
+    `Deux vecteurs sont orthogonaux si et seulement si u⃗·v⃗ = 0 : ici ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = <b>0</b>.`);
  }},
  {lvl:"difficile",make(){
    const d=pick([[3,4,5],[5,12,13],[8,15,17],[9,12,15]]);
@@ -1449,7 +1455,7 @@ const G_PROBA=[
    const n=pick([2,3,4]);
    return{prompt:`On lance ${n} fois une pièce équilibrée. Quelle est la probabilité d'obtenir pile les ${n} fois ?`,
     type:"frac",answer:fa(1,Math.pow(2,n)),
-    explain:`Les lancers sont indépendants : P = (1/2)^${n} = 1/${Math.pow(2,n)} = <b>${F(1,Math.pow(2,n))}</b>.`};
+    explain:`Les lancers sont indépendants : P = (1/2)${sup(n)} = 1/${Math.pow(2,n)} = <b>${F(1,Math.pow(2,n))}</b>.`};
  }},
  {lvl:"moyen",make(){
    const bank=[
@@ -1478,10 +1484,10 @@ const G_PROBA=[
 /* ---------- TERMINALE — Logique & listes (nouveau — BO 2026) ---------- */
 const G_T_LOG=[
  {lvl:"facile",make(){
-   return qcm(`Quelle est la négation de « il existe un réel x tel que x² = 2 » ?`,
-    `tout réel x vérifie x² ≠ 2`,
-    [`il existe un réel x tel que x² ≠ 2`,`tout réel x vérifie x² = 2`,`il n'existe aucun réel`],
-    `Négation de « ∃ x, P(x) » = « ∀ x, non P(x) ».<br>→ « tout réel a un carré différent de 2 ».`);
+   return qcm(`Quelle est la négation de « il existe x ∈ ℝ tel que x² = 2 » ?`,
+    `pour tout x ∈ ℝ, x² ≠ 2`,
+    [`il existe x ∈ ℝ tel que x² ≠ 2`,`pour tout x ∈ ℝ, x² = 2`,`il n'existe aucun réel`],
+    `Négation de « ∃ x, P(x) » = « ∀ x, non P(x) ».<br>→ « pour tout x ∈ ℝ, x² ≠ 2 ».`);
  }},
  {lvl:"moyen",make(){
    const a=Ri(1,6),b=Ri(1,6);
@@ -1503,7 +1509,7 @@ const G_T_DEN=[
    const n=Ri(4,9),k=pick([2,3]),an=Math.pow(n,k);
    return{prompt:`Combien de mots de ${k} lettres peut-on former avec un alphabet de ${n} lettres (répétition autorisée) ?`,
     type:"number",answer:an,
-    explain:`Principe multiplicatif : ${n} choix pour la 1ʳᵉ lettre, ${n} pour la 2ᵉ, etc.<br>Nombre de k-uplets = ${n}^${k} = <b>${an}</b>.`};
+    explain:`Principe multiplicatif : ${n} choix pour la 1ʳᵉ lettre, ${n} pour la 2ᵉ, etc.<br>Nombre de k-uplets = ${n}${sup(k)} = <b>${an}</b>.`};
  }},
  {lvl:"moyen",make(){
    const n=Ri(3,7);
@@ -1528,19 +1534,19 @@ const G_T_ESP=[
  {lvl:"facile",make(){
    const u=[Ri(1,4),Ri(1,4),Ri(1,3)],k=Ri(2,4);
    const v=[k*u[0],k*u[1],k*u[2]];
-   return qcm(`u = (${u[0]} ; ${u[1]} ; ${u[2]}) et v = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
+   return qcm(`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
     `colinéaires`,
     [`orthogonaux`,`ni colinéaires ni orthogonaux`,`égaux`],
-    `Les trois composantes de v sont égales à ${k} fois celles de u : v = ${k}·u, donc <b>colinéaires</b>.`);
+    `Les trois composantes de v⃗ sont égales à ${k} fois celles de u⃗ : v⃗ = ${k}·u⃗, donc <b>colinéaires</b>.`);
  }},
  {lvl:"moyen",make(){
    const u=[Ri(1,5),Ri(1,5),Ri(1,4)];
    const ortho=pick([1,0]);
    const v=ortho?[u[1],-u[0],0]:[Ri(1,4),Ri(1,4),Ri(1,4)];
    const p=u[0]*v[0]+u[1]*v[1]+u[2]*v[2];
-   return{prompt:`u = (${u[0]} ; ${u[1]} ; ${u[2]}) et v = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u·v.`,
+   return{prompt:`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u⃗·v⃗.`,
     type:"number",answer:p,
-    explain:`u·v = ${u[0]} × ${v[0]} + (${u[1]} × ${v[1]}) + (${u[2]} × ${v[2]}) = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} ${u[2]*v[2]<0?"− "+(-u[2]*v[2]):"+ "+u[2]*v[2]} = <b>${p}</b>${ortho?" (donc u et v sont orthogonaux).":""}`};
+    explain:`u⃗·v⃗ = ${u[0]} × ${v[0]} + (${u[1]} × ${v[1]}) + (${u[2]} × ${v[2]}) = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} ${u[2]*v[2]<0?"− "+(-u[2]*v[2]):"+ "+u[2]*v[2]} = <b>${p}</b>${ortho?" (donc u⃗ et v⃗ sont orthogonaux).":""}`};
  }},
  {lvl:"difficile",make(){
    const [a,b,c]=shuf([1,2,3,4,5,6]).slice(0,3);
@@ -1587,9 +1593,9 @@ const G_T_SUIT=[
 const G_T_EXP=[
  {lvl:"facile",make(){
    const a=Ri(-5,5);
-   return{prompt:`Calcule ln(e^${a}).`,
+   return{prompt:`Calcule ln(e${sup(a)}).`,
     type:"number",answer:a,
-    explain:`ln est la fonction réciproque de exp : ln(e^x) = x pour tout réel x.<br>Donc ln(e^${a}) = <b>${a}</b>.`};
+    explain:`ln est la fonction réciproque de exp : ln(eˣ) = x pour tout réel x.<br>Donc ln(e${sup(a)}) = <b>${a}</b>.`};
  }},
  {lvl:"moyen",make(){
    const a=Ri(2,12);
@@ -1643,9 +1649,9 @@ const G_T_DER=[
     {a:4,n:3,ans:[16,1]},
     {a:1,n:2,ans:[1,3]}
    ]);
-   return{prompt:`Calcule ∫₀^${d.a} x^${d.n} dx.`,
+   return{prompt:`Calcule ∫₀${sup(d.a)} x${sup(d.n)} dx.`,
     type:"frac",answer:fa(d.ans[0],d.ans[1]),
-    explain:`Une primitive de x^${d.n} est F(x) = x^${d.n+1} / ${d.n+1}.<br>∫₀^${d.a} x^${d.n} dx = F(${d.a}) − F(0) = <b>${F(d.ans[0],d.ans[1])}</b>.`};
+    explain:`Une primitive de x${sup(d.n)} est F(x) = x${sup(d.n+1)} / ${d.n+1}.<br>∫₀${sup(d.a)} x${sup(d.n)} dx = F(${d.a}) − F(0) = <b>${F(d.ans[0],d.ans[1])}</b>.`};
  }},
  {lvl:"difficile",make(){
    return{prompt:`Calcule ∫₀¹ x · eˣ dx (intégration par parties).`,
@@ -1662,7 +1668,7 @@ const G_T_PROBA=[
    const num=C(n,k),den=Math.pow(2,n);
    return{prompt:`X suit la loi binomiale B(${n} ; 1/2). Calcule P(X = ${k}).`,
     type:"frac",answer:fa(num,den),
-    explain:`P(X = k) = C(${n},${k}) × (1/2)^${n} = ${num}/${den} = <b>${F(num,den)}</b>.`};
+    explain:`P(X = k) = C(${n},${k}) × (1/2)${sup(n)} = ${num}/${den} = <b>${F(num,den)}</b>.`};
  }},
  {lvl:"moyen",make(){
    const bank=[
@@ -4415,17 +4421,17 @@ function paintLvlButtons(){
    uniquement en maths × Terminale : elle ajoute les 3 thèmes du programme
    officiel expertes (complexes, arithmétique, graphes & Markov) au pool de
    Terminale — 8 → 11 thèmes. Plus une 4ᵉ année ni un niveau : les boutons
-   de niveau restent Facile/Moyen/Difficile/Auto partout. En maths hors
-   Terminale, la ligne est masquée mais son ESPACE EST RÉSERVÉ (.off =
-   visibility:hidden) → le bloc ne change pas de taille quand on change
-   d'année ; en PC/DE/EN elle est absente (hidden). Persistance
-   qz_experte_math. */
+   de niveau restent Facile/Moyen/Difficile/Auto partout. 2026-08-24, 2ᵉ
+   passe Cid : en maths hors Terminale (Seconde/Première) la ligne est
+   maintenant TOTALEMENT ABSENTE (hidden — plus d'espace réservé .off) →
+   l'écart « niveaux → chapitres » y est le même qu'en PC/DE/EN. En
+   Terminale elle reste visible. Persistance qz_experte_math. */
 function syncXopt(){
   const row=$("#xoptRow"),chk=$("#xoptChk");
   if(!row||!chk)return;
-  const maths=state.matiere==="maths";
-  row.hidden=!maths;   /* absente (display:none) en PC/DE/EN */
-  row.classList.toggle("off",maths&&state.annee!=="terminale"); /* maths : espace réservé, ligne masquée hors Terminale */
+  /* Visible UNIQUEMENT maths × Terminale : ailleurs (Seconde/Première/PC/DE/EN)
+     hidden = display:none, l'écart « niveaux → chapitres » est le même qu'ailleurs. */
+  row.hidden=!(state.matiere==="maths"&&state.annee==="terminale");
   row.classList.toggle("on",!!state.experte);
   chk.checked=!!state.experte;
 }
@@ -5037,9 +5043,9 @@ function levelUp(oldN,newN){
   if(box){
     let h="";
     for(let i=0;i<14;i++){
-      const a=Math.random()*Math.PI*2, d=78+Math.random()*95;
+      const a=Math.random()*Math.PI*2, d=105+Math.random()*115;
       const dx=Math.round(Math.cos(a)*d), dy=Math.round(Math.sin(a)*d);
-      const s=Math.round(4+Math.random()*4);
+      const s=Math.round(5+Math.random()*5);
       const col=Math.random()<.6?"var(--accent)":"#FBBF24";
       h+='<i style="width:'+s+'px;height:'+s+'px;background:'+col+';--dx:'+dx+'px;--dy:'+dy+'px;animation-delay:'+Math.round(Math.random()*140)+'ms"></i>';
     }
