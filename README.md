@@ -4,7 +4,7 @@
 
 _Élève en Terminale, j’avais à l’origine conçu cette application pour mes propres besoins. J’ai ensuite réalisé qu’elle pourrait également servir à d’autres élèves soucieux de progresser..._
 
-Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à ouvrir, pas de compte, pas d'installation, et rien de ce que vous faites ne quitte votre machine.
+Quizey, c'est réviser le lycée dans votre navigateur. Un seul fichier à ouvrir, pas de compte, pas d'installation, et rien de ce que vous faites ne quitte votre machine.
 
 ![L'accueil, matière maths](img/accueil-maths.png)
 
@@ -35,7 +35,7 @@ Le bouton « Passer » n'est pas pénalisant : il vous permet de retrouver la qu
 
 ## Quizey est fait pour vous motiver
 
-Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une animation témoigne de votre progression .
+Chaque matière a son propre système de niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une animation témoigne de votre progression .
 
 ![La montée de niveau — l'anneau se remplit et le nouveau niveau apparaît](img/monte-niveau.png)
 
