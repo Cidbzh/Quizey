@@ -1001,6 +1001,10 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
     <div class="row playhead wrap-row">
       <button class="btn btn-ghost small" id="btnBack">← Quitter</button>
       <span class="chip" id="chipSub"></span>
+      <!-- 2026-08-24 (Cid) : L'ANNÉE du thème, à côté du chapitre —
+           Seconde/Première/Terminale en maths & PC ; masquée en DE/EN
+           (pas d'année en langues). Posée par renderQ() via THEME_YEAR. -->
+      <span class="chip" id="chipYear" hidden></span>
       <span class="chip" id="chipLvl"></span>
       <span class="grow"></span>
       <!-- 2026-08-22 (sur demande) : le NIVEAU de la matière (le « Niveau N » de
@@ -1319,7 +1323,7 @@ const G_P1_LOG=[
  }},
  {lvl:"difficile",make(){
    const a=Ri(2,9),b=Ri(2,9),c=Ri(2,9);
-   return{prompt:`lst = [${a}, ${b}, ${c}] ; lst.append(a + b). Quelle est la valeur de lst[1] + lst[−1] ?`,
+   return{prompt:`lst = [${a}, ${b}, ${c}] ; lst.append(${a+b}). Quelle est la valeur de lst[1] + lst[−1] ?`,
     type:"number",answer:b+(a+b),
     explain:`lst devient [${a}, ${b}, ${c}, ${a+b}]. lst[1] = ${b} et lst[−1] = ${a+b} (le dernier élément).<br>${b} + ${a+b} = <b>${2*b+a}</b>.`};
  }}
@@ -1382,7 +1386,7 @@ const G_EQ2=[
  {lvl:"facile",make(){
    const b=Ri(-8,8),c=Ri(-6,6);
    const D=b*b-4*c;
-   const bt=b===0?"":(b>0?` + ${b}x`:` − ${-b}x`);
+   const bt=b===0?"":(b===1?" + x":(b===-1?" − x":(b>0?` + ${b}x`:` − ${-b}x`)));
    const ct=c===0?"":(c>0?` + ${c}`:` − ${-c}`);
    const q4=-4*c;
    return{prompt:`Calcule le discriminant Δ de l'équation x²${bt}${ct} = 0.`,
@@ -1392,7 +1396,7 @@ const G_EQ2=[
  {lvl:"moyen",make(){
    const a=Ri(1,6)*pick([1,-1]),b=Ri(1,6)*pick([1,-1]);
    const p=-(a+b),q=a*b;
-   const pt=p===0?"":(p>0?` + ${p}x`:` − ${-p}x`);
+   const pt=p===0?"":(p===1?" + x":(p===-1?" − x":(p>0?` + ${p}x`:` − ${-p}x`)));
    const qt=q>0?` + ${q}`:` − ${-q}`;
    const somme=pick([1,0]);
    return{prompt:`L'équation x²${pt}${qt} = 0 admet deux racines dans ℝ. Calcule ${somme?"la somme":"le produit"} des racines.`,
@@ -1629,7 +1633,8 @@ const G_T_ESP=[
    const [a,b,c]=shuf([1,2,3,4,5,6]).slice(0,3);
    const d=pick([-6,-3,-1,0,8,9].filter(x=>x!==c));
    const dt=d===0?"":(d>0?` + ${d}`:` − ${-d}`);
-   return qcm(`Le plan P a pour équation cartésienne ${a}x + ${b}y + ${c}z${dt} = 0. Un vecteur normal à P est :`,
+   const ax=a===1?"":a,bx=b===1?"":b,cx=c===1?"":c;   /* « x », pas « 1x » */
+   return qcm(`Le plan P a pour équation cartésienne ${ax}x + ${bx}y + ${cx}z${dt} = 0. Un vecteur normal à P est :`,
     `(${a} ; ${b} ; ${c})`,
     [`(${b} ; ${a} ; ${c})`,`(${a} ; ${b} ; ${d})`,`(${a+b} ; ${b+c} ; ${c+a})`],
     `Équation cartésienne ax + by + cz + d = 0 : le vecteur normal est (a ; b ; c).<br>Le terme constant ne fait pas partie du vecteur normal.`);
@@ -1658,9 +1663,12 @@ const G_T_SUIT=[
    const ans=a/b;
    /* Terme signé : m/k2/l2 sont NEGATIFS par moitié des tirages — écrire
       « + -2n » serait illisible, donc « + 2n » / « − 2n » (0 → terme absent).
-      Corrigé 2026-08-23 : le prompt donnait « (9n² + -2n + 3) / … » par exemple. */
-   const t=(v,s)=>v===0?"":(v>0?` + ${v}${s}`:` − ${-v}${s}`);
-   return{prompt:`Calcule la limite quand n → +∞ de (${a}n²${t(m,"n")}${t(k2,"")}) / (${b}n²${t(l2,"n")} + 2).`,
+      Corrigé 2026-08-23 : le prompt donnait « (9n² + -2n + 3) / … » par exemple.
+      Corrigé 2026-08-24 : le coefficient 1 ne s'affiche PAS devant « n »
+      (« + n », pas « + 1n » ; « n² », pas « 1n² »). */
+   const t=(v,s)=>v===0?"":(v>0?(v===1&&s==="n"?" + n":` + ${v}${s}`):(v===-1&&s==="n"?" − n":` − ${-v}${s}`));
+   const bn=b===1?"n²":`${b}n²`;
+   return{prompt:`Calcule la limite quand n → +∞ de (${a}n²${t(m,"n")}${t(k2,"")}) / (${bn}${t(l2,"n")} + 2).`,
     type:"number",answer:ans,
     explain:`On divise numérateur et dénominateur par n² (le plus haut degré) : les termes n/n² et 1/n² tendent vers 0.<br>La limite est le rapport des coefficients de n² : ${a}/${b} = <b>${ans}</b>.`};
  }}
@@ -1938,19 +1946,19 @@ const G_S2_CORPS=[
 const G_S2_DILU=[
  {lvl:"facile",make(){
    const m=pick([5,10,20,40]),V=pick([0.5,1,2,4]),C=m/V;
-   const ms=String(m).replace(".",","),Cs=String(C).replace(".",",");
-   return{prompt:`On dissout ${ms} g d'une espèce dans ${V} L de solution. Quelle est la concentration massique de cette solution ? (en g/L)`,
+   const ms=String(m).replace(".",","),Vs=String(V).replace(".",","),Cs=String(C).replace(".",",");
+   return{prompt:`On dissout ${ms} g d'une espèce dans ${Vs} L de solution. Quelle est la concentration massique de cette solution ? (en g/L)`,
      type:"number",answer:C,tol:0.01,
      viz:{kind:"soln",n:m,c:C},
-     explain:`C = m/V = ${ms} / ${V} = <b>${Cs} g/L</b>.`};
+     explain:`C = m/V = ${ms} / ${Vs} = <b>${Cs} g/L</b>.`};
  }},
  {lvl:"moyen",make(){
    const C=pick([2,4,5,8]),V=pick([0.5,1,2,3]),m=C*V;
-   const Cs=String(C).replace(".",","),ms=String(m).replace(".",",");
-   return{prompt:`Une solution a une concentration massique de ${Cs} g/L. Dans ${V} L de cette solution, quelle masse d'espèce est dissoute ? (en g)`,
+   const Cs=String(C).replace(".",","),Vs=String(V).replace(".",","),ms=String(m).replace(".",",");
+   return{prompt:`Une solution a une concentration massique de ${Cs} g/L. Dans ${Vs} L de cette solution, quelle masse d'espèce est dissoute ? (en g)`,
      type:"number",answer:m,tol:0.01,
      viz:{kind:"soln",n:m,c:C},
-     explain:`m = C × V = ${Cs} × ${V} = <b>${ms} g</b>.`};
+     explain:`m = C × V = ${Cs} × ${Vs} = <b>${ms} g</b>.`};
  }},
  {lvl:"difficile",make(){
    const C=pick([10,20,40]),V=pick([20,40,50,100]),m=C*V;
@@ -2082,8 +2090,12 @@ const G_S2_FORCE=[
  }}
 ];
 
-/* ---------- Seconde PC : son & fréquences ---------- */
-const G_S2_SON=[
+/* ---------- Première PC : son & fréquences ----------
+   2026-08-24 (Cid) : le son est une matière de PREMIÈRE, pas de Seconde —
+   déplacé d'ici (ex-id s2_son) dans SUBJECTS_PC.première (id p1_son).
+   Les stats orphelines « s2_son » des utilisateurs existants sont purgées
+   par loadStats (même mécanisme que l'ex-s2_react → p1_stoich). */
+const G_P1_SON=[
  {lvl:"facile",make(){
    const c=340,f=pick([170,340,850]),lam=Math.round(c/f*100)/100;
    const ls=String(lam).replace(".",",");
@@ -2179,10 +2191,11 @@ const G_NEWTON=[
      explain:`v = v₀ + a·t = ${v0} + ${a} × ${t} = <b>${v} m/s</b>.`};
  }},
  {lvl:"difficile",make(){
-   const m=pick([1,2,3]),F=pick([6,10,12]),a=F/m;
-   return{prompt:`Deux forces de ${F} N et ${F/m} N s'exercent dans des sens opposés sur un objet de ${m} kg. Quelle est l'accélération (dans le sens de la plus grande) ? (en m/s²)`,
-     type:"number",answer:(F-F/m)/m,tol:0.01,
-     explain:`Résultante = ${F} − ${F/m} = ${F-F/m} N. a = (${F-F/m}) / ${m} = <b>${String((F-F/m)/m).replace(".",",")} m/s²</b>.`};
+   /* Forces entières par construction : la grande = m·a + la petite → résultat toujours entier. */
+   const m=pick([2,3,4]),a=pick([1,2,3]),F2=pick([2,4,6]),F1=a*m+F2;
+   return{prompt:`Deux forces de ${F1} N et ${F2} N s'exercent dans des sens opposés sur un objet de ${m} kg. Quelle est l'accélération (dans le sens de la plus grande) ? (en m/s²)`,
+     type:"number",answer:a,
+     explain:`Résultante = ${F1} − ${F2} = ${F1-F2} N. a = (${F1-F2}) / ${m} = <b>${a} m/s²</b>.`};
  }},
  {lvl:"difficile",make(){
    return qcm("Un objet décrit un mouvement circulaire uniforme. La force résultante sur lui…",
@@ -2208,20 +2221,21 @@ const G_T_ACIDEBASE=[
      explain:`[H₃O⁺] = 10^(−${pH}) = <b>${String(c).replace(".",",")} mol/L</b>.`};
  }},
  {lvl:"difficile",make(){
-   const Ka=pick([1e-5,1e-6]),C=pick([0.1,0.5,1]),h=Math.sqrt(Ka*C);
-   return{prompt:`Acide faible : Ka = ${Ka} mol/L, C₀ = ${C} mol/L. Quelle est la concentration [H₃O⁺] à l'équilibre ? (en mol/L)`,
+   const k=pick([5,6]),Ka=Math.pow(10,-k),C=pick([0.1,0.5,1]),h=Math.sqrt(Ka*C);
+   const fs=x=>String(x).replace(".",",");
+   return{prompt:`Acide faible : Ka = 1 × 10⁻${k} mol/L, C₀ = ${fs(C)} mol/L. Quelle est la concentration [H₃O⁺] à l'équilibre ? (en mol/L)`,
      type:"number",answer:h,tol:0.01,
-     explain:`[H₃O⁺] ≈ √(Ka·C₀) = √(${Ka} × ${C}) = <b>${String(h).replace(".",",")} mol/L</b>. L'hypothèse de dilution s'applique car C₀ ≫ Ka.`};
+     explain:`[H₃O⁺] ≈ √(Ka·C₀) = √(1 × 10⁻${k} × ${fs(C)}) = <b>${fs(h)} mol/L</b>. L'hypothèse de dilution s'applique car C₀ ≫ Ka.`};
  }}
 ];
 
 /* ---------- Terminale PC : analyse chimique ---------- */
 const G_T_ANALYSE=[
  {lvl:"facile",make(){
-   const A=pick([0.4,0.8,1.2,1.6]),a=1,l=1,C=A/a/l;
-   return{prompt:`Une solution d'absorbance A = ${A} est mesurée avec un trajet optique ℓ = ${l} cm (coefficient d'absorption a = 1). Quelle est sa concentration ? (en mol/L)`,
+   const A=pick([0.4,0.8,1.2,1.6]),a=1,l=1,C=A/a/l,fs=x=>String(x).replace(".",",");
+   return{prompt:`Une solution d'absorbance A = ${fs(A)} est mesurée avec un trajet optique ℓ = ${l} cm (coefficient d'absorption a = 1). Quelle est sa concentration ? (en mol/L)`,
      type:"number",answer:Math.round(C*10000)/10000,tol:0.01,
-     explain:`C = A/(a·ℓ) = ${A}/(1 × ${l}) = <b>${String(C).replace(".",",")} mol/L</b>.`};
+     explain:`C = A/(a·ℓ) = ${fs(A)}/(1 × ${l}) = <b>${fs(C)} mol/L</b>.`};
  }},
  {lvl:"moyen",make(){
    const C1=pick([2,4,6]),C2=pick([3,5,8]),Vtot=100;
@@ -2240,11 +2254,10 @@ const G_T_ANALYSE=[
 /* ---------- Terminale PC : cinétique chimique ---------- */
 const G_T_CINET=[
  {lvl:"facile",make(){
-   const t1=100,t2=200,t3=400;
-   const n1=pick([1,2]),n2=n1/2,n3=n1/4;
-   return{prompt:`À t = 100 s : n = ${n1} mol. À t = 200 s : n = ${n2} mol. À t = 400 s : n = ${n3} mol. Quelle est la vitesse de la réaction entre 0 et 100 s (mol/s) ?`,
+   const n1=pick([1,2]),n2=n1/2,n3=n1/4,fs=x=>String(x).replace(".",",");
+   return{prompt:`La réaction démarre à t = 0 s (n = 0 mol). À t = 100 s : n = ${n1} mol. À t = 200 s : n = ${fs(n2)} mol. À t = 400 s : n = ${fs(n3)} mol. Quelle est la vitesse moyenne de disparition entre 0 et 100 s ? (en mol/s)`,
      type:"number",answer:n1/100,tol:0.01,
-     explain:`v = Δn/Δt = ${n1}/100 = <b>${String(n1/100).replace(".",",")} mol/s</b>.`};
+     explain:`v = Δn/Δt = ${n1}/100 = <b>${fs(n1/100)} mol/s</b>.`};
  }},
  {lvl:"moyen",make(){
    const k=pick([1,2,3]),t=pick([5,10]),n0=pick([1,2]),n=n0*Math.exp(-k*t/10);
@@ -2262,8 +2275,9 @@ const G_T_CINET=[
 /* ---------- Terminale PC : physique nucléaire ---------- */
 const G_T_NUCLEAIRE=[
  {lvl:"facile",make(){
-   const Z=pick([1,2,6,8,92]),A=pick([2,4,12,16,238]),N=A-Z;
-   return{prompt:`Noyau ^{A}_{Z}X avec A = ${A} et Z = ${Z}. Combien ce noyau contient-il de neutrons ?`,
+   /* Paires (Z, A) d'isotopes réels : A > Z toujours → N positif. */
+   const iz=pick([[1,2],[2,4],[6,12],[8,16],[92,238]]),Z=iz[0],A=iz[1],N=A-Z;
+   return{prompt:`Un noyau a pour nombre de masse A = ${A} et nombre atomique Z = ${Z}. Combien ce noyau contient-il de neutrons ?`,
      type:"number",answer:N,
      explain:`N = A − Z = ${A} − ${Z} = <b>${N} neutrons</b>.`};
  }},
@@ -2283,15 +2297,15 @@ const G_T_NUCLEAIRE=[
 /* ---------- Terminale PC : équilibre chimique ---------- */
 const G_T_EQUIL=[
  {lvl:"facile",make(){
-   const Ka=pick([1e-4,1e-5,1e-6]),C=pick([0.1,0.5,1]);
-   const x=Math.sqrt(Ka*C);
-   return{prompt:`Acide faible HB : Ka = ${Ka} mol/L, concentration initiale C₀ = ${C} mol/L. À l'équilibre, quelle est [B] ? (en mol/L)`,
+   const k=pick([4,5,6]),Ka=Math.pow(10,-k),C=pick([0.1,0.5,1]);
+   const x=Math.sqrt(Ka*C),fs=v=>String(v).replace(".",",");
+   return{prompt:`Acide faible HB : Ka = 1 × 10⁻${k} mol/L, concentration initiale C₀ = ${fs(C)} mol/L. À l'équilibre, quelle est [B] ? (en mol/L)`,
      type:"number",answer:Math.round(x*10000)/10000,tol:0.02,
-     explain:`x ≈ √(${Ka} × ${C}) = <b>${String(Math.round(x*10000)/10000).replace(".",",")} mol/L</b>.`};
+     explain:`x ≈ √(Ka × C₀) = √(1 × 10⁻${k} × ${fs(C)}) = <b>${fs(Math.round(x*10000)/10000)} mol/L</b>.`};
  }},
  {lvl:"moyen",make(){
    const Q=1e-5,Ka=1e-4;
-   return qcm(`Le quotient de réaction Q = ${Q}, la constante K = ${Ka}. Q < K donc…`,
+   return qcm(`Le quotient de réaction Q = 1 × 10⁻⁵, la constante K = 1 × 10⁻⁴. Q < K donc…`,
         "la réaction évolue vers les produits",["la réaction évolue vers les réactifs","la réaction est à l'équilibre","la réaction est irréversible"],
         `Q < K → le mélange contient trop de réactifs → la réaction <b>évolue vers les produits</b> jusqu'à Q = K.`)
  }},
@@ -2305,18 +2319,18 @@ const G_T_EQUIL=[
 /* ---------- Terminale PC : piles ---------- */
 const G_T_PILE=[
  {lvl:"facile",make(){
-   const E=pick([1.1,1.2,1.5,1.6]),I=pick([0.5,1,2]),P=E*I;
-   return{prompt:`Une pile de f.é.m. E = ${E} V délivre un courant I = ${I} A. Quelle est la puissance qu'elle délivre ? (en W)`,
+   const E=pick([1.1,1.2,1.5,1.6]),I=pick([0.5,1,2]),P=E*I,fs=x=>String(x).replace(".",",");
+   return{prompt:`Une pile de f.é.m. E = ${fs(E)} V délivre un courant I = ${fs(I)} A. Quelle est la puissance qu'elle délivre ? (en W)`,
      type:"number",answer:Math.round(P*100)/100,tol:0.01,
      viz:{kind:"circuit"},
-     explain:`P = E × I = ${E} × ${I} = <b>${String(P).replace(".",",")} W</b>.`};
+     explain:`P = E × I = ${fs(E)} × ${fs(I)} = <b>${fs(P)} W</b>.`};
  }},
  {lvl:"moyen",make(){
-   const E=pick([1.2,1.5]),r=pick([0.1,0.2,0.5]),R=pick([2,4,6]);
+   const E=pick([1.2,1.5]),r=pick([0.1,0.2,0.5]),R=pick([2,4,6]),fs=x=>String(x).replace(".",",");
    const I=Math.round(E/(R+r)*100)/100;
-   return{prompt:`Une pile de f.é.m. E = ${E} V, de résistance interne r = ${r} Ω, alimente un circuit avec une résistance R = ${R} Ω. Quelle est l'intensité du courant qui circule ? (en A)`,
+   return{prompt:`Une pile de f.é.m. E = ${fs(E)} V, de résistance interne r = ${fs(r)} Ω, alimente un circuit avec une résistance R = ${R} Ω. Quelle est l'intensité du courant qui circule ? (en A)`,
      type:"number",answer:I,tol:0.01,
-     explain:`I = ${E}/(${R} + ${r}) = ${E}/${R+r} = <b>${String(I).replace(".",",")} A</b>.`};
+     explain:`I = ${fs(E)}/(${R} + ${fs(r)}) = ${fs(E)}/${fs(R+r)} = <b>${fs(I)} A</b>.`};
  }},
  {lvl:"difficile",make(){
    return qcm("Dans une pile, la réaction spontanée qui produit le courant est…",
@@ -2349,10 +2363,10 @@ const G_T_SYNTH=[
 /* ---------- Terminale PC : mouvement ---------- */
 const G_T_MOUV=[
  {lvl:"facile",make(){
-   const v0=pick([0,5,10]),a=10,t=pick([1,2,3]),v=v0+a*t;
-   return{prompt:`Un objet est lancé verticalement vers le haut à v₀ = ${v0} m/s (g = 10 m/s²). Quelle est sa vitesse après t = ${t} s ? (en m/s)`,
-     type:"number",answer:v,
-     explain:`v = ${v0} − 10 × ${t} = <b>${v} m/s</b>.`};
+   const t=pick([1,2,3]);
+   return{prompt:`Un objet est lâché depuis le repos (g = 10 m/s²). Quelle est sa vitesse après t = ${t} s ? (en m/s)`,
+     type:"number",answer:10*t,
+     explain:`v = g × t = 10 × ${t} = <b>${10*t} m/s</b>.`};
  }},
  {lvl:"moyen",make(){
    const v0=pick([10,15,20]),h=Math.round(v0*v0/20*100)/100;
@@ -2411,10 +2425,10 @@ const G_T_THERMO=[
 /* ---------- Terminale PC : phénomènes de propagation ---------- */
 const G_T_PHENOM=[
  {lvl:"facile",make(){
-   const A=pick([2,3,5]),T=pick([0.5,1,2]);
-   return{prompt:`Oscillation libre amortie : amplitude A₀ = ${A} cm, constante de temps τ = ${T} s. Quelle est l'amplitude au bout de t = ${T} s ?`,
+   const A=pick([2,3,5]),T=pick([0.5,1,2]),fs=x=>String(x).replace(".",",");
+   return{prompt:`Oscillation libre amortie : amplitude A₀ = ${A} cm, constante de temps τ = ${fs(T)} s. Quelle est l'amplitude au bout de t = ${fs(T)} s ?`,
      type:"number",answer:Math.round(A*Math.exp(-1)*100)/100,tol:0.02,
-     explain:`A = ${A} × e^(−1) ≈ ${A} × 0,368 = <b>${String(Math.round(A*Math.exp(-1)*100)/100).replace(".",",")} cm</b>.`};
+     explain:`A = ${A} × e^(−1) ≈ ${A} × 0,368 = <b>${fs(Math.round(A*Math.exp(-1)*100)/100)} cm</b>.`};
  }},
  {lvl:"moyen",make(){
    return qcm("Le régime d'un circuit oscillant est dit AMORTI quand…",
@@ -2454,12 +2468,13 @@ const G_T_PHOTON=[
 /* ---------- Terminale PC : circuit RC ---------- */
 const G_T_RC=[
  {lvl:"facile",make(){
-   const R=pick([10,20,50]),C=pick([10,20,50])*1e-6,tau=R*C;
+   /* C en μF entier (jamais 50×1e-6×1e6 = 49.999… en prompt). */
+   const R=pick([10,20,50]),C=pick([10,20,50]),tau=R*C*1e-6;
    const taus=String(Math.round(tau*1e6)/1e6).replace(".",",");
-   return{prompt:`Circuit RC : R = ${R} Ω, C = ${C*1e6} μF. Quelle est la constante de temps τ ? (en s)`,
+   return{prompt:`Circuit RC : R = ${R} Ω, C = ${C} μF. Quelle est la constante de temps τ ? (en s)`,
      type:"number",answer:Math.round(tau*1e6)/1e6,tol:0.01,
      viz:{kind:"circuit"},
-     explain:`τ = R × C = ${R} × ${C*1e6} × 10⁻⁶ = <b>${taus} s</b>.`};
+     explain:`τ = R × C = ${R} × ${C} × 10⁻⁶ = <b>${taus} s</b>.`};
  }},
  {lvl:"moyen",make(){
    const V=pick([5,9,12]),t=3,tau=1;
@@ -2573,11 +2588,11 @@ const G_MOLES=[
  }},
  {lvl:"moyen",make(){
    const n=pick([1,2,3]),V=pick([0.5,1,2]),C=n/V;
-   const Cs=String(C).replace(".",",");
-   return{prompt:`${n} mol d'une espèce sont dissous dans ${V} L de solution. Quelle est la concentration molaire ? (en mol/L)`,
+   const Vs=String(V).replace(".",","),Cs=String(C).replace(".",",");
+   return{prompt:`${n} mol d'une espèce sont dissous dans ${Vs} L de solution. Quelle est la concentration molaire ? (en mol/L)`,
      type:"number",answer:C,tol:0.01,
      viz:{kind:"soln",n:n,c:C},
-     explain:`C = n/V = ${n} / ${V} = <b>${Cs} mol/L</b>.`};
+     explain:`C = n/V = ${n} / ${Vs} = <b>${Cs} mol/L</b>.`};
  }},
  {lvl:"moyen",make(){
    return qcm("La loi de Beer-Lambert relie l'absorbance A à…",
@@ -2703,11 +2718,11 @@ const G_P1_OXIDO=[
         `Le <b>réducteur</b> est l'espèce capable de <b>céder des électrons</b>. Dans le couple, il est à droite de la demi-équation.`)
  }},
  {lvl:"moyen",make(){
-   const x=pick([0.5,1,1.5]),n=2*x;
-   return{prompt:`Réaction : 2 A + 3 B → produit. L'avancement maximal vaut τ = ${x} mol. Quelle quantité de B est consommée ? (en mol)`,
+   const x=pick([0.5,1,1.5]),n=2*x,fs=v=>String(v).replace(".",",");
+   return{prompt:`Réaction : 2 A + 3 B → produit. L'avancement maximal vaut τ = ${fs(x)} mol. Quelle quantité de B est consommée ? (en mol)`,
      type:"number",answer:n,tol:0.01,
      viz:{kind:"stoich",a:2,b:3,c:1,nA:x*2,nB:x*3,limitant:""},
-     explain:`n(B) consommé = 3 × τ = 3 × ${x} = <b>${n} mol</b>.`};
+     explain:`n(B) consommé = 3 × τ = 3 × ${fs(x)} = <b>${fs(n)} mol</b>.`};
  }},
  {lvl:"difficile",make(){
    return qcm("Le point d'équivalence d'un titrage correspond à…",
@@ -2716,10 +2731,10 @@ const G_P1_OXIDO=[
  }},
  {lvl:"difficile",make(){
    const c=pick([0.1,0.2,0.25]),V=pick([10,20,25]),n=Math.round(c*V*1000)/1000;
-   const ns=String(n).replace(".",",");
-   return{prompt:`Au point d'équivalence, on a utilisé V = ${V} mL de titrant à C = ${c} mol/L. Quelle quantité de matière a-t-on ajoutée ? (en mol)`,
+   const fs=v=>String(v).replace(".",","),ns=fs(n);
+   return{prompt:`Au point d'équivalence, on a utilisé V = ${V} mL de titrant à C = ${fs(c)} mol/L. Quelle quantité de matière a-t-on ajoutée ? (en mol)`,
      type:"number",answer:n,tol:0.01,
-     explain:`n = C × V = ${c} × ${V/1000} = <b>${ns} mol</b>. C'est la quantité de réactif limitant dosée.`};}}
+     explain:`n = C × V = ${fs(c)} × ${fs(V/1000)} = <b>${ns} mol</b>. C'est la quantité de réactif limitant dosée.`};}}
 ];
 
 /* ---------- Première PC : liaisons & géométrie ---------- */
@@ -2776,7 +2791,7 @@ const G_P1_SEP=[
      explain:`m max = C × V = ${c} × ${V/1000} = <b>${ms} g</b>.`};
  }},
  {lvl:"moyen",make(){
-   return qcm("L'extraction-évacuation (extraction-évacuation) permet de…",
+   return qcm("L'extraction permet de…",
         "séparer un soluté entre deux solvants non miscibles",["échauffer un soluté","ioniser un soluté","mesurer un pH"],
         `L'<b>extraction</b> exploite la différence de solubilité d'une espèce entre <b>deux solvants non miscibles</b> — on récupère l'espèce dans le solvant où elle est le plus soluble.`)
  }},
@@ -2848,9 +2863,9 @@ const G_P1_SYNTH=[
  }},
  {lvl:"moyen",make(){
    const m=pick([1,2]),E=pick([100,200,300]),q=E/m;
-   return{prompt:`La combustion de m = ${m} g d'une espèce dégage E = ${E} J. Quelle est l'énergie molaire de combustion (en J/g) ?`,
+   return{prompt:`La combustion de m = ${m} g d'une espèce dégage E = ${E} J. Quelle est l'énergie massique de combustion (en J/g) ?`,
      type:"number",answer:q,
-     explain:`Energia par gramme = E/m = ${E}/${m} = <b>${q} J/g</b> (pouvoir calorifique massique).`};
+     explain:`Énergie par gramme = E/m = ${E}/${m} = <b>${q} J/g</b> (pouvoir calorifique massique).`};
  }},
  {lvl:"difficile",make(){
    return qcm("L'énergie de liaison est l'énergie…",
@@ -3815,13 +3830,14 @@ const G_EN_COND=[
  }}
 ];
 /* ---------- REGISTRE PC — refondue le 2026-08-23 sur les programmes officiels (BO) ----------
-   Seconde 9 / Première 13 / Terminale 13 thèmes (35 au total, 1 thème ≈ 1 section
+   Seconde 8 / Première 14 / Terminale 13 thèmes (35 au total, 1 thème ≈ 1 section
    du programme de l'année). Ids uniques sur les 4 matières : préfixes s2_ / t_,
    Première = 6 ids historiques (newton, forces, energie, moles, ondes, elec)
-   conservés + 7 nouveaux p1_* — dont p1_stoich : la stœchiométrie est une
-   matière de PREMIÈRE, pas de Seconde (Cid, 2026-08-23, ex-s2_react).
-   Ids supprimés (s2_signaux, stoich, cinet, s2_react, t_ondes,
-   t_energie) → orphelines purgées par loadStats. */
+   conservés + 8 nouveaux p1_* — dont p1_stoich : la stœchiométrie est une
+   matière de PREMIÈRE, pas de Seconde (Cid, 2026-08-23, ex-s2_react) et
+   p1_son : le son est en PREMIÈRE, pas en Seconde (Cid, 2026-08-24, ex-s2_son).
+   Ids supprimés (s2_signaux, stoich, cinet, s2_react, t_ondes, t_energie,
+   s2_son) → orphelines purgées par loadStats. */
 const SUBJECTS_PC={
   seconde:[
   {id:"s2_corps",name:"Corps purs & mélanges",sym:"espèces",gens:G_S2_CORPS},
@@ -3830,7 +3846,6 @@ const SUBJECTS_PC={
   {id:"s2_energie",name:"Énergie & transformations",sym:"E (J)",gens:G_S2_ENER},
   {id:"s2_mouv",name:"Mouvement & vitesse",sym:"v = d/t",gens:G_S2_MOUV},
   {id:"s2_forces",name:"Forces & poids",sym:"P = m·g",gens:G_S2_FORCE},
-  {id:"s2_son",name:"Le son",sym:"λ = c/f",gens:G_S2_SON},
   {id:"s2_lum",name:"La lumière",sym:"c = 3·10⁸ m/s",gens:G_S2_LUM},
   {id:"s2_circuit",name:"Circuits électriques",sym:"U = R·I",gens:G_S2_CIRC}
   ],
@@ -3846,6 +3861,7 @@ const SUBJECTS_PC={
   {id:"p1_orga",name:"Chimie organique",sym:"–OH · C=O",gens:G_P1_ORGA},
   {id:"p1_synth",name:"Synthèse & rendement",sym:"r = n/n₀",gens:G_P1_SYNTH},
   {id:"ondes",name:"Ondes & lumière",sym:"λ",gens:G_ONDES},
+  {id:"p1_son",name:"Le son",sym:"λ = c/f",gens:G_P1_SON},
   {id:"p1_lum",name:"Couleurs & synthèse",sym:"additive",gens:G_P1_LUM},
   {id:"elec",name:"Électricité",sym:"U = R·I",gens:G_ELEC}
   ],
@@ -3931,10 +3947,15 @@ const activeSubjects=()=>{
   return (state.annee==="terminale"&&state.experte)?base.concat(SUBJECTS_MATH.experte||[]):base;
 };
 const THEME_BY_ID={};
+const THEME_YEAR={};   /* 2026-08-24 (Cid) : VRAIE année d'un thème → puce
+                          d'année de l'en-tête d'entraînement (Seconde/Première/
+                          Terminale). Absent pour DE/EN (pas d'année en langues)
+                          → puce masquée. Le pool « experte » n'est servi qu'en
+                          Terminale maths → étiqueté « terminale ». */
 for(const R of[SUBJECTS_DE,SUBJECTS_EN])R.forEach(s=>THEME_BY_ID[s.id]=s);
 for(const y of MATH_YEARS){   /* MATH_YEARS ⊇ YEARS : couvre aussi la clé « experte » = le POOL « Maths expertes » (case à cocher, maths × Terminale) ; PC n'a pas de pool expertes (||[]) */
-  (SUBJECTS_MATH[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
-  (SUBJECTS_PC[y]||[]).forEach(s=>THEME_BY_ID[s.id]=s);
+  (SUBJECTS_MATH[y]||[]).forEach(s=>{THEME_BY_ID[s.id]=s;THEME_YEAR[s.id]=(y==="experte"?"terminale":y);});
+  (SUBJECTS_PC[y]||[]).forEach(s=>{THEME_BY_ID[s.id]=s;THEME_YEAR[s.id]=y;});
 }
 /*GEN2C*/
 /* ================= GRAPH (mini-visuels SVG) =================
@@ -4552,14 +4573,13 @@ function reviewReset(q){
   it.reps=0;it.due=Date.now()+REVIEW_LADDER[1];
 }
 /* Points faibles : top 5 cellules thème×niveau les moins précises,
-   calculées sur les 10 DERNIÈRES réponses (fenêtre resserrée 2026-08-24, Cid :
-   le bilan des 100 dernières était trop « historique » — le panneau doit
-   refléter le moment présent), min. 3 réponses/cellule (fenêtre courte →
-   le minimum passe de 5 à 3). `history` garde ses 100 entrées ; seul le
-   calcul regarde les 10 dernières. */
+   calculées sur les 50 DERNIÈRES réponses (2026-08-24, Cid : fenêtre élargie
+   des 10 aux 50 dernières — le moment présent, avec un peu plus de matière),
+   min. 3 réponses/cellule. `history` garde ses 100 entrées ; seul le calcul
+   regarde les 50 dernières. */
 function weakPoints(){
   const agg={};
-  for(const h of (stats.history||[]).slice(-10)){const k=h.s+":"+h.l;(agg[k]=agg[k]||{ans:0,good:0}).ans++;if(h.o)agg[k].good++;}
+  for(const h of (stats.history||[]).slice(-50)){const k=h.s+":"+h.l;(agg[k]=agg[k]||{ans:0,good:0}).ans++;if(h.o)agg[k].good++;}
   const out=[];
   for(const k in agg){if(agg[k].ans>=3){const i=k.indexOf(":");out.push({s:k.slice(0,i),l:k.slice(i+1),ans:agg[k].ans,acc:agg[k].good/agg[k].ans});}}
   out.sort((a,b)=>a.acc-b.acc||b.ans-a.ans);
@@ -4828,7 +4848,7 @@ function renderHome(){
     if(weak.length){
       html+=`<section class="panel" aria-labelledby="hWeak" data-rv style="--d:1.42s">`+
         `<h2 id="hWeak">Tes points faibles</h2>`+
-        `<p class="muted" style="margin:0 0 6px">Les thèmes qui résistent le plus, sur tes 10 dernières réponses.</p>`+
+        `<p class="muted" style="margin:0 0 6px">Les thèmes qui résistent le plus, sur tes 50 dernières réponses.</p>`+
         weak.map(w=>{
           const nm=THEME_BY_ID[w.s];const pct=Math.round(100*w.acc);
           return `<div class="weakrow">`+
@@ -4965,6 +4985,13 @@ function renderQ(){
   state.q=r.q;state.sub=r.sub;state.curLvl=r.lvl||state.level;
   const q=state.q;
   $("#chipSub").textContent=r.sub.name;
+  /* 2026-08-24 (Cid) : l'ANNÉE, en plus du chapitre et de la difficulté.
+     Année du thème (THEME_YEAR) — pas l'année sélectionnée sur l'accueil —
+     pour rester juste en révision (question d'une autre année). DE/EN :
+     pas d'entrée → puce masquée. */
+  const yv=THEME_YEAR[r.sub.id];
+  if(yv){const cy=$("#chipYear");cy.textContent={seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[yv];cy.hidden=false;}
+  else $("#chipYear").hidden=true;
   $("#chipLvl").textContent=lvlLabel(state.curLvl||state.level);
   paintChipNiv();   /* le niveau de la matière, en libre comme en révision */
   /* 2026-08-22 : en révision, le compteur = questions ÉCHUES (reviewDue()) —
@@ -5067,10 +5094,28 @@ function submit(){
    DÉDUIT de l'XP (jamais stocké) ; seule l'XP persiste — UNE CLÉ PAR MATIÈRE,
    même convention que les stats : qz_xp (maths) / qz_xp_pc / qz_xp_de /
    qz_xp_en (défaut 0, aucun plafond, aucun déblocage de contenu). La carte est
-   re-rendue à chaque bascule de matière (renderHome). Courbe croissante :
-   coûts de palier 50·n → xpCum(n) = 25·n·(n+1) − 50 (n ≥ 2), xpCum(1) = 0. */
-function xpCum(n){return n<=1?0:25*n*(n+1)-50;}                       /* XP pour ATTEINDRE le niveau n */
-function levelOf(xp){return Math.max(1,Math.floor((-1+Math.sqrt(1+4*(xp+50)/25))/2));}
+   re-rendue à chaque bascule de matière (renderHome). Courbe (2026-08-24,
+   Cid : l'ancien coût 50·n par niveau ralentissait trop vite — il voulait
+   « une petite différence tous les 10 niveaux seulement ») : coût CONSTANT
+   de 100 XP par palier dans chaque bloc de 10 niveaux, +25 XP à chaque
+   palier de 10 — xpCum(1)=0, xpCum(2)=100, xpCum(11)=1000, xpCum(12)=1125,
+   xpCum(21)=2250, xpCum(22)=2400, xpCum(31)=3750, xpCum(51)=7500. */
+function xpCum(n){   /* XP pour ATTEINDRE le niveau n — forme close : m=n−1,
+   q=blocs de 10 terminés (coût 100,125,150…), r=reste du bloc courant. */
+  if(n<=1)return 0;
+  const m=n-1,q=Math.floor(m/10),r=m%10;
+  return 1000*q+125*q*(q-1)+r*(100+25*q);
+}
+function levelOf(xp){   /* inverse de xpCum — le coût étant constant par bloc,
+   on parcourt les blocs de 10 au lieu d'isoler une racine. */
+  if(xp<=0)return 1;
+  let left=xp,n=1;
+  for(let q=0;;q++){
+    const per=100+25*q,block=10*per;
+    if(left>=block){left-=block;n+=10;continue;}
+    return n+Math.floor(left/per);
+  }
+}
 function lvlInfo(x){const n=levelOf(x),lo=xpCum(n),hi=xpCum(n+1);return{n,pct:(x-lo)/(hi-lo)};}
 function xpKey(){return state.matiere==="maths"?"qz_xp":"qz_xp_"+state.matiere;}
 function getXP(){const v=store.get(xpKey(),0);return typeof v==="number"&&isFinite(v)&&v>=0?v:0;}

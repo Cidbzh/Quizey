@@ -800,26 +800,26 @@ console.log("\n[21] Dédup QCM — même question mélangée = UNE seule entrée
 }
 
 /* ========================================================= */
-console.log("\n[22] Points faibles — fenêtre des 10 dernières + ex æquo");
+console.log("\n[22] Points faibles — fenêtre des 50 dernières + ex æquo");
 {
-  /* 2026-08-24, Cid : le panneau passe du bilan des 100 dernières réponses
-     aux 10 DERNIÈRES (le moment présent), minimum 3 réponses/cellule.
-     [22a] « cc » (5 réponses, 20 %) est la moins précise de TOUTES les 15 —
-     mais elle est sortie de la fenêtre → elle ne doit PAS apparaître.
-     « aa » porte EXACTEMENT 3 réponses (le nouveau minimum) → retenue.
+  /* 2026-08-24, Cid : le panneau se base sur les 50 DERNIÈRES réponses
+     (élargi des 10 aux 50 — le moment présent, plus de matière), minimum
+     3 réponses/cellule.
+     [22a] « xx » (51 réponses, ≈ 2 %) est la moins précise de TOUTES les 101 —
+     mais elle est sortie de la fenêtre des 50 → elle ne doit PAS apparaître.
+     « aa » (40 %) devant « bb » (48 %), toutes deux dans la fenêtre.
      [22b] (régression 2026-08-22) ex æquo : la cellule la plus entraînée
      gagne — le tiebreaker doit rester actif (pas un comparateur NaN mort). */
   lsData.clear();
   const env=buildEnv();const ctx=runApp(env);
   const hist=[];
-  for(let i=0;i<5;i++)hist.push({s:"cc",l:"moyen",o:i<1?1:0});   /* 20 % — avant la fenêtre */
-  for(let i=0;i<3;i++)hist.push({s:"aa",l:"facile",o:i<1?1:0});   /* 33,3 % — pile 3 (min) */
-  for(let i=0;i<7;i++)hist.push({s:"bb",l:"moyen",o:i<3?1:0});    /* 42,9 % */
+  for(let i=0;i<51;i++)hist.push({s:"xx",l:"moyen",o:i===0?1:0}); /* ≈ 2 % — avant la fenêtre */
+  for(let i=0;i<25;i++)hist.push({s:"bb",l:"moyen",o:i<12?1:0});  /* 48 % — dans la fenêtre */
+  for(let i=0;i<25;i++)hist.push({s:"aa",l:"facile",o:i<10?1:0}); /* 40 % — dans la fenêtre */
   vm.runInContext("stats.history="+JSON.stringify(hist),ctx);
   let W=vm.runInContext("weakPoints()",ctx);
-  ok("fenêtre 10 : « cc » (hors fenêtre) ABSENTE du panneau",W.every(x=>x.s!=="cc"));
-  ok("« aa » pile 3 réponses (minimum) retenue et devant « bb »",
-     W.length===2&&W[0].s==="aa"&&W[0].ans===3&&W[1].s==="bb");
+  ok("fenêtre 50 : « xx » (hors fenêtre) ABSENTE du panneau",W.every(x=>x.s!=="xx"));
+  ok("« aa » (40 %) devant « bb » (48 %)",W.length===2&&W[0].s==="aa"&&W[1].s==="bb");
   /* [22b] ex æquo 50 % : « bb » (6 réponses) devant « aa » (4 réponses) */
   const hist2=[];
   for(let i=0;i<4;i++)hist2.push({s:"aa",l:"facile",o:i<2?1:0});
@@ -876,16 +876,21 @@ console.log("\n[25] Courbe de niveau — xpCum / levelOf / lvlInfo");
 {
   lsData.clear();
   const env=buildEnv();const ctx=runApp(env);
+  /* 2026-08-24 (Cid) : l'ancien coût 50·n par niveau ralentissait trop vite —
+     nouvelle courbe : coût CONSTANT de 100 XP par palier dans chaque bloc de
+     10 niveaux, +25 XP à chaque palier de 10 (xpCum(1)=0, xpCum(2)=100,
+     xpCum(11)=1000, xpCum(12)=1125, xpCum(21)=2250, xpCum(22)=2400). */
   const L=x=>vm.runInContext("levelOf("+x+")",ctx);
-  ok("0→1, 99→1, 100→2, 249→2, 250→3",L(0)===1&&L(99)===1&&L(100)===2&&L(249)===2&&L(250)===3);
-  ok("449→3, 450→4, 699→4, 700→5, 999→5",L(449)===3&&L(450)===4&&L(699)===4&&L(700)===5&&L(999)===5);
-  ok("1000→6, 1350→7, 1750→8",L(1000)===6&&L(1350)===7&&L(1750)===8);
+  ok("0→1, 99→1, 100→2, 199→2, 200→3",L(0)===1&&L(99)===1&&L(100)===2&&L(199)===2&&L(200)===3);
+  ok("400→5, 500→6, 899→9, 900→10, 999→10",L(400)===5&&L(500)===6&&L(899)===9&&L(900)===10&&L(999)===10);
+  ok("1000→11 (bloc 2), 1124→11, 1125→12, 2249→20, 2250→21, 2399→21, 2400→22",
+     L(1000)===11&&L(1124)===11&&L(1125)===12&&L(2249)===20&&L(2250)===21&&L(2399)===21&&L(2400)===22);
   let round=true;
-  for(let n=1;n<=50;n++)if(L(vm.runInContext("xpCum("+n+")",ctx))!==n)round=false;
-  ok("levelOf(xpCum(n)) = n pour n = 1…50 (allers-retours)",round);
+  for(let n=1;n<=100;n++)if(L(vm.runInContext("xpCum("+n+")",ctx))!==n)round=false;
+  ok("levelOf(xpCum(n)) = n pour n = 1…100 (allers-retours)",round);
   let mono=true;
-  for(let x=0;x<2000;x+=7)if(L(x)>L(x+7))mono=false;
-  ok("monotone (0…2000 par pas de 7)",mono);
+  for(let x=0;x<10000;x+=13)if(L(x)>L(x+13))mono=false;
+  ok("monotone (0…10000 par pas de 13)",mono);
   let pctOk=true;
   for(let i=0;i<1000;i++){
     const v=vm.runInContext("lvlInfo("+(i*2)+")",ctx);
@@ -937,7 +942,7 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     vm.runInContext("startFree();store.set('qz_xp',95)",ctx);
     vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 (moyen × 1.5 maths) → 110 ≥ 100 : palier 2 */
     ok("franchissement 95→110 → levelUp() appelé une fois",env.sandbox.__lvlup===1);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 → 125 : pas de palier (niveau 3 = 250) */
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 → 125 : pas de palier (niveau 3 = 200) */
     ok("110→125 pas de palier → levelUp non rappelé",env.sandbox.__lvlup===1);
   }
   /* --- CONFETTIS : à la fin de la révision (endReview — le clic « Terminer
@@ -989,8 +994,8 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     vm.runInContext("store.set('qz_xp',95);renderHome()",ctx);
     vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* 95+15 = 110 → niveau 2 */
     const card2=env.document.querySelector("#lvlSlot").innerHTML;
-    ok("carte hero (maths) : « Niveau 2 » après palier, « 110 / 250 XP »",
-       /Niveau 2/.test(card2)&&/110 \/ 250 XP/.test(card2));
+    ok("carte hero (maths) : « Niveau 2 » après palier, « 110 / 200 XP » (palier 3 = 200)",
+       /Niveau 2/.test(card2)&&/110 \/ 200 XP/.test(card2));
     vm.runInContext("setMatiere('de')",ctx);
     const cardDe=env.document.querySelector("#lvlSlot").innerHTML;
     ok("carte hero (DE) : propre XP (0 / 100), PAS la XP maths (110)",
@@ -1045,17 +1050,18 @@ console.log("\n[24] Registres par année — structure, ids, volume (refonte 202
      section officielle. Maths : Seconde 8 / Première 9 / Terminale 8 thèmes,
      + 3 expertes (complexes, arithmétique, graphes) en POOL activable par
      case à cocher en Terminale (8 → 11 thèmes, plus une 4ᵉ année).
-     PC : Seconde 9 / Première 13 / Terminale 13 — la stœchiométrie est en
-     PREMIÈRE (p1_stoich), pas en Seconde (Cid, 2026-08-23, ex-s2_react).
-     Ids supprimés (maths : s2_eq, s2_eq2, affine, lim… ; PC : s2_signaux,
-     stoich, cinet, s2_react, t_ondes, t_energie) purgés automatiquement par
-     loadStats (orphelines review/history/bySub). */
+     PC : Seconde 8 / Première 14 / Terminale 13 — la stœchiométrie est en
+     PREMIÈRE (p1_stoich), pas en Seconde (Cid, 2026-08-23, ex-s2_react), et
+     le son est en PREMIÈRE (p1_son), pas en Seconde (Cid, 2026-08-24,
+     ex-s2_son). Ids supprimés (maths : s2_eq, s2_eq2, affine, lim… ; PC :
+     s2_signaux, stoich, cinet, s2_react, t_ondes, t_energie, s2_son) purgés
+     automatiquement par loadStats (orphelines review/history/bySub). */
   ok("Première maths : 9 thèmes de la refonte, ordre livré",
      JSON.stringify(probe.SUBJECTS_MATH.premiere.map(s=>s.id))===JSON.stringify(
        ["p1_log","var","suites","equa2","deriv","logexp","trig","vect","proba"]));
-  ok("Première PC : 13 ids de la refonte (6 historiques conservés + 7 p1_* — dont p1_stoich)",
+  ok("Première PC : 14 ids de la refonte (6 historiques conservés + 8 p1_* — dont p1_stoich et p1_son)",
      JSON.stringify(probe.SUBJECTS_PC.premiere.map(s=>s.id))===JSON.stringify(
-       ["newton","forces","energie","moles","p1_oxido","p1_stoich","p1_liaison","p1_sep","p1_orga","p1_synth","ondes","p1_lum","elec"]));
+       ["newton","forces","energie","moles","p1_oxido","p1_stoich","p1_liaison","p1_sep","p1_orga","p1_synth","ondes","p1_son","p1_lum","elec"]));
   /* Depuis la refonte AUCUN thème ne porte le niveau « experte » (il n'existe
      plus) : chaque thème maths/PC, experte comprise, porte facile+moyen+difficile. */
   let lvls=true;
@@ -1084,9 +1090,9 @@ console.log("\n[24] Registres par année — structure, ids, volume (refonte 202
   for(const s of [...probe.SUBJECTS_DE,...probe.SUBJECTS_EN]) if(!T.includes(s.id))covers=false;
   ok("THEME_BY_ID couvre tous les thèmes de tous les registres (maths/PC×année + DE + EN)",covers);
   ok("Seconde maths : 8 thèmes (contenu livré — + trigonométrie & espace, BO 2020)",probe.SUBJECTS_MATH.seconde.length===8);
-  ok("Seconde PC : 9 thèmes (contenu livré)",probe.SUBJECTS_PC.seconde.length===9);
+  ok("Seconde PC : 8 thèmes (contenu livré — le son est passé en Première)",probe.SUBJECTS_PC.seconde.length===8);
   ok("Première maths : 9 thèmes (contenu livré)",probe.SUBJECTS_MATH.premiere.length===9);
-  ok("Première PC : 13 thèmes (contenu livré)",probe.SUBJECTS_PC.premiere.length===13);
+  ok("Première PC : 14 thèmes (contenu livré — dont le son, ex-Seconde)",probe.SUBJECTS_PC.premiere.length===14);
   ok("Terminale maths : 8 thèmes (contenu livré)",probe.SUBJECTS_MATH.terminale.length===8);
   ok("Terminale PC : 13 thèmes (contenu livré)",probe.SUBJECTS_PC.terminale.length===13);
   /* 2026-08-23 : les 3 thèmes « expertes » forment un POOL maths (plus une
@@ -1261,10 +1267,10 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("store.set('qz_xp',120)",ctx); /* 100 ≤ 120 < 250 → Niv. 2 */
+    vm.runInContext("store.set('qz_xp',120)",ctx); /* 100 ≤ 120 < 200 → Niv. 2 (courbe 2026-08-24) */
     vm.runInContext("startFree()",ctx);
     ok("libre : la barre affiche « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
-    ok("libre : la BARRE de progression est présente (120 XP = 13,3 % du palier)",/nlvlbar/.test(chip(ctx))&&/width:13\.3%/.test(chip(ctx)));
+    ok("libre : la BARRE de progression est présente (120 XP = 20,0 % du palier 100→200)",/nlvlbar/.test(chip(ctx))&&/width:20\.0%/.test(chip(ctx)));
     vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:0,due:0}]",ctx);
     vm.runInContext("startReview()",ctx);
     ok("révision : la barre affiche « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
@@ -1273,7 +1279,7 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("store.set('qz_xp',245)",ctx); /* Niv. 2 ; +15 (bonne « moyen » × 1.5 maths) → 260 ≥ 250 → Niv. 3 */
+    vm.runInContext("store.set('qz_xp',190)",ctx); /* Niv. 2 (100 ≤ 190 < 200) ; +15 (bonne « moyen » × 1.5 maths) → 205 ≥ 200 → Niv. 3 */
     vm.runInContext("startFree()",ctx);
     ok("avant réponse : « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
