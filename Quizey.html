@@ -202,6 +202,11 @@ body{
    largeur. */
 @media (min-width:1025px){
   body:has(#home:not([hidden])) .topbar .wrap{padding-right:336px}
+  /* Marge vide (première visite, « Points faibles » absent) → colonne
+     pleine largeur : les sélecteurs reprennent le bord droit réel de la
+     page (20 px = padding horizontal de .wrap). Mêmes règles que le repli
+     #home ci-dessous — 2026-08-24, Cid. */
+  body:has(#home:not([hidden]):has(#statsExtra:empty)) .topbar .wrap{padding-right:20px}
 }
 .brand{display:inline-flex;align-items:center;font:700 21px var(--f-display);letter-spacing:.01em}
 /* Pas de gap sur le conteneur : « Quiz » et « ey » seraient deux items flex
@@ -575,6 +580,22 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    rangée 1). ≥1025 px seulement — en dessous #home est display:block et
    l'ordre du DOM suffit. */
 @media (min-width:1025px){.margewrap{margin-top:calc(-1 * var(--revlift,0px))}}
+/* PREMIÈRE VISITE (2026-08-24, Cid) : « Tes points faibles » n'apparaît que
+   après les premiers entraînements — en attendant la colonne de 320 px est
+   VIDE et tout le contenu semble collé à gauche. → #home replié en UNE
+   colonne pleine largeur (comme en ≤1024 px) : blocs du hero à 100 %, marge
+   masquée, sélecteurs de la topbar réalignés (règle ci-dessus).
+   :has(#statsExtra:empty) suit le DOM — dès que le panneau apparaît, retour
+   automatique aux 2 colonnes : zéro JS, zéro écouteur. Vieil navigateur
+   sans :has → règles ignorées → ancien comportement (même repli que la
+   règle topbar ci-dessus). */
+@media (min-width:1025px){
+  #home:has(#statsExtra:empty){grid-template-areas:"hero" "main";grid-template-columns:1fr}
+  #home:has(#statsExtra:empty) .marge{display:none}
+  #home:has(#statsExtra:empty) .hero .statgrid,
+  #home:has(#statsExtra:empty) #revSlot,
+  #home:has(#statsExtra:empty) #lvlSlot{width:100%}
+}
 .margewrap .margin-note{margin:0;margin-left:auto}
 #noteTop{display:none}
 /* La marge porte « Points faibles » (#statsExtra) en PANNEAU STANDARD —
@@ -736,7 +757,10 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
 .lvlup-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .lvlup-ring circle{fill:none;stroke-width:4}
 .lvlup-ring .ring-bg{stroke:var(--accent-soft)}
-.lvlup-ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease) .15s}
+/* 1,4 s (et non 1 s) — 2026-08-24, Cid : le remplissage était jugé trop
+   rapide. COUPLÉ au setTimeout du swap de numéro dans levelUp() : ce
+   dernier doit rester APRÈS la fin du remplissage (0,15 + 1,4 = 1,55 s). */
+.lvlup-ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.4s var(--ease) .15s}
 .lvlup-num{font:700 46px/1 var(--f-display);color:var(--muted);transition:color .3s var(--ease)}
 .lvlup.up .lvlup-num{color:var(--accent);animation:numPop .55s var(--ease);filter:drop-shadow(0 3px 10px var(--accent))}
 @keyframes numPop{0%{transform:scale(.45)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
@@ -4970,7 +4994,7 @@ function confetti(){
    centre avec le niveau quitté, la barre se remplit (le palier franchi),
    puis le NOUVEAU niveau s'affiche grossi et la barre revient à la
    progression réelle de la matière (lvlInfo(getXP()).pct). Pur DOM, hors
-   ligne, aria-hidden (décoratif), auto-nettoyage ~2,7 s. Ne plante JAMAIS
+   ligne, aria-hidden (décoratif), auto-nettoyage ~3,4 s. Ne plante JAMAIS
    (mêmes garanties que VIZdraw) : en environnement sans querySelector (DOM
    de test), seuls les garde-fous null bloquent le travail visuel. */
 function levelUp(oldN,newN){
@@ -5011,16 +5035,16 @@ function levelUp(oldN,newN){
   const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
   raf(function(){raf(function(){host.classList.add("go");if(fg)fg.style.strokeDashoffset="0";});});
   /* Anneau plein → tick du niveau : le grand numéro passe de oldN à newN
-     (pop + halo via .up .lvlup-num) + gerbe d'étincelles. SANS ce swap, la
+     (pop + halo via .up .lvlup-num) + gerbe d'étincelles. Le swap est calé APRÈS la fin du remplissage de l'anneau (CSS .ring-fg : 0,15 + 1,4 s = 1,55 s) — durées COUPLÉES : changer l'une ⇒ changer l'autre (ralenti 2026-08-24, Cid : le 1 s / 1150 ms était jugé trop rapide). SANS ce swap, la
      carte s'achevait sur le niveau quitté (le label « N → N+1 » était le seul
      indice du nouveau — corrigé 2026-08-23, sur demande Cid). */
   setTimeout(function(){
     if(host.classList)host.classList.add("up");
     const num=host.querySelector?host.querySelector(".lvlup-num"):null;
     if(num)num.textContent=newN;
-  },1150);
-  setTimeout(function(){if(host.classList)host.classList.add("bye");},2350);
-  setTimeout(function(){if(host.remove)host.remove();},2750);
+  },1700);
+  setTimeout(function(){if(host.classList)host.classList.add("bye");},3000);
+  setTimeout(function(){if(host.remove)host.remove();},3400);
 }
 
 /* ---------- Câblage ---------- */
