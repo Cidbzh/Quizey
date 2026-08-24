@@ -887,7 +887,10 @@ console.log("\n[25] Courbe de niveau — xpCum / levelOf / lvlInfo");
 /* ========================================================= */
 console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de / _en), 2 modes, palier → levelUp");
 {
-  const exp=(ctx)=>vm.runInContext("(PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10)+((state.streak+1)>=3?5:0)",ctx);
+  /* (2026-08-24, Cid) gainXp() applique le coefficient matière XP_MULT
+     (maths/PC ×1.5, DE/EN ×1.2) à TOUS les gains → la valeur créditée est
+     Math.round(pts bruts × coefficient). Le SCORE de séance reste brut. */
+  const exp=(ctx)=>vm.runInContext("Math.round(((PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10)+((state.streak+1)>=3?5:0))*(XP_MULT[state.matiere]||1))",ctx);
   /* --- MODE LIBRE (maths) : ok → +pts exact ; ko → inchangé ; « Passer » → inchangé --- */
   lsData.clear();
   {
@@ -915,47 +918,73 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     ok("révision : bonne réponse → qz_xp +pts exact",vm.runInContext("getXP()",ctx)===b+e);
   }
   /* --- PALIER : franchissement → levelUp() appelé UNE fois (2026-08-23 :
-     l'animation de montée de niveau REMPLACE les confettis au palier — les
-     confettis restent à la fin de la révision, endReview) --- */
+     l'animation de montée de niveau ; 2026-08-24, Cid : les confettis y sont
+     LANCÉS AUSSI — vérifiés dans le bloc suivant, avec le levelUp réel) --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("window.__lvlup=0;levelUp=function(){window.__lvlup++;};",ctx);
     vm.runInContext("startFree();store.set('qz_xp',95)",ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 (moyen, série 1) → 105 ≥ 100 : palier 2 */
-    ok("franchissement 95→105 → levelUp() appelé une fois (remplace les confettis)",env.sandbox.__lvlup===1);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +10 → 115 : pas de palier */
-    ok("105→115 pas de palier → levelUp non rappelé",env.sandbox.__lvlup===1);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 (moyen × 1.5 maths) → 110 ≥ 100 : palier 2 */
+    ok("franchissement 95→110 → levelUp() appelé une fois",env.sandbox.__lvlup===1);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 → 125 : pas de palier (niveau 3 = 250) */
+    ok("110→125 pas de palier → levelUp non rappelé",env.sandbox.__lvlup===1);
   }
-  /* --- CONFETTIS : conservés à la fin de la révision (endReview — le clic
-     « Terminer la révision ») et PLUS au palier (remplacés par levelUp) --- */
+  /* --- CONFETTIS : à la fin de la révision (endReview — le clic « Terminer
+     la révision ») — et depuis 2026-08-24 (Cid) AUSSI au palier franchi
+     (levelUp) : ici +15 (15<100) puis +45 (60<100) → aucun palier, 1 confetti */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
     vm.runInContext("window.__confetti=0;confetti=function(){window.__confetti++;};",ctx);
     vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:4,due:0}]",ctx);
     vm.runInContext("startReview()",ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* réussite → item acquis (reps 5), plus aucune écheue */
-    vm.runInContext("endReview()",ctx);                   /* « Terminer la révision » */
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* réussite → item acquis (reps 5), +15 XP */
+    vm.runInContext("endReview()",ctx);                   /* « Terminer la révision » : +45 (bonus), confetti */
     ok("fin de révision → confetti() appelé (conserver à endReview)",env.sandbox.__confetti===1);
+  }
+  /* --- CONFETTIS AU PALIER (2026-08-24, Cid) : la montée de niveau lance
+     confetti() EN PLUS de la carte — levelUp réel, non stubbé, confetti compté */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("window.__confetti=0;confetti=function(){window.__confetti++;};",ctx);
+    vm.runInContext("startFree();store.set('qz_xp',95)",ctx);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 → 110 ≥ 100 : palier 2 → levelUp → confetti */
+    ok("montée de niveau → confetti() appelé (en plus de la carte)",env.sandbox.__confetti>=1);
+  }
+  /* --- BONUS DE FIN DE RÉVISION (2026-08-24, Cid) : endReview crédite
+     REVIEW_BONUS × coefficient matière en une seule fois, affiché sur la
+     carte de fin ; le 🎯 a été retiré de cette carte le même jour. --- */
+  lsData.clear();
+  {
+    const env=buildEnv();const ctx=runApp(env);
+    vm.runInContext("stats.review=[{s:'deriv',l:'moyen',q:{prompt:'rv',type:'number',answer:7},reps:4,due:0}]",ctx);
+    vm.runInContext("startReview()",ctx);
+    const b=vm.runInContext("getXP()",ctx);
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 (moyen × 1.5) → 15 */
+    vm.runInContext("endReview()",ctx);                   /* +45 (bonus 30 × 1.5) → 60 */
+    ok("fin de révision → bonus REVIEW_BONUS × 1.5 (maths) = +45 XP",vm.runInContext("getXP()",ctx)===b+15+45);
+    ok("carte de fin : « bonus révision : +45 XP »",env.document.querySelector("#qbox").innerHTML.includes("bonus révision : +45 XP"));
+    ok("carte de fin : plus de 🎯 (retiré 2026-08-24)",!env.document.querySelector("#qbox").innerHTML.includes("🎯"));
   }
   /* --- CARTE HERO : « Niveau N » + barre aria-hidden + « x / y XP » + pas de fuite maths→DE --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("startFree();afterAnswer(true,state.q,'')",ctx); /* +10 XP maths */
+    vm.runInContext("startFree();afterAnswer(true,state.q,'')",ctx); /* +15 XP maths (10 × 1.5) */
     const card=env.document.querySelector("#lvlSlot").innerHTML;
-    ok("carte hero (maths) : « Niveau 1 », barre aria-hidden, « 10 / 100 XP »",
-       /Niveau 1/.test(card)&&card.includes('aria-hidden="true"')&&/10 \/ 100 XP/.test(card));
+    ok("carte hero (maths) : « Niveau 1 », barre aria-hidden, « 15 / 100 XP »",
+       /Niveau 1/.test(card)&&card.includes('aria-hidden="true"')&&/15 \/ 100 XP/.test(card));
     vm.runInContext("store.set('qz_xp',95);renderHome()",ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* 95+10 = 105 → niveau 2 */
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* 95+15 = 110 → niveau 2 */
     const card2=env.document.querySelector("#lvlSlot").innerHTML;
-    ok("carte hero (maths) : « Niveau 2 » après palier, « 105 / 250 XP »",
-       /Niveau 2/.test(card2)&&/105 \/ 250 XP/.test(card2));
+    ok("carte hero (maths) : « Niveau 2 » après palier, « 110 / 250 XP »",
+       /Niveau 2/.test(card2)&&/110 \/ 250 XP/.test(card2));
     vm.runInContext("setMatiere('de')",ctx);
     const cardDe=env.document.querySelector("#lvlSlot").innerHTML;
-    ok("carte hero (DE) : propre XP (0 / 100), PAS la XP maths (105)",
-       /Niveau 1/.test(cardDe)&&/0 \/ 100 XP/.test(cardDe)&&!/105/.test(cardDe));
+    ok("carte hero (DE) : propre XP (0 / 100), PAS la XP maths (110)",
+       /Niveau 1/.test(cardDe)&&/0 \/ 100 XP/.test(cardDe)&&!/110/.test(cardDe));
   }
   /* --- « PAR THÈME » (2026-08-23, sur demande) : le panneau est TOUJOURS
      affiché, même zéro réponse — régression « ne s'affiche plus » : les stats
@@ -976,7 +1005,7 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("startFree();afterAnswer(true,state.q,'')",ctx); /* maths : +10 → qz_xp=10 */
+    vm.runInContext("startFree();afterAnswer(true,state.q,'')",ctx); /* maths : +15 (10 × 1.5) → qz_xp=15 */
     vm.runInContext("setMatiere('pc')",ctx);
     ok("PC à zéro : getXP() = 0 (clé qz_xp_pc absente), carte « 0 / 100 XP »",
        vm.runInContext("getXP()",ctx)===0&&/0 \/ 100 XP/.test(env.document.querySelector("#lvlSlot").innerHTML));
@@ -985,14 +1014,14 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
     ok("PC : bonne réponse → qz_xp_pc +pts exact ("+e+")",vm.runInContext("getXP()",ctx)===b+e);
     ok("clé PC = qz_xp_pc dans le storage",JSON.parse(lsData.get("qz_xp_pc"))===b+e);
-    ok("clé maths (qz_xp) intacte après la réponse PC",JSON.parse(lsData.get("qz_xp"))===10);
+    ok("clé maths (qz_xp) intacte après la réponse PC",JSON.parse(lsData.get("qz_xp"))===15);
     vm.runInContext("setMatiere('maths')",ctx);
-    ok("retour maths : la XP maths est restaurée (« 10 / 100 XP »)",
-       /10 \/ 100 XP/.test(env.document.querySelector("#lvlSlot").innerHTML));
+    ok("retour maths : la XP maths est restaurée (« 15 / 100 XP »)",
+       /15 \/ 100 XP/.test(env.document.querySelector("#lvlSlot").innerHTML));
     vm.runInContext("setMatiere('de');startFree()",ctx);
-    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* DE gagne sa propre XP */
+    vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* DE gagne sa propre XP (10 × 1.2 = 12) */
     ok("DE : sa XP (qz_xp_de) augmente sans toucher maths ni PC",
-       JSON.parse(lsData.get("qz_xp_de"))>0&&JSON.parse(lsData.get("qz_xp"))===10);
+       JSON.parse(lsData.get("qz_xp_de"))>0&&JSON.parse(lsData.get("qz_xp"))===15);
   }
 }
 
@@ -1234,7 +1263,7 @@ console.log("\n[30] Niveau du joueur pendant les questions — puce dans la barr
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
-    vm.runInContext("store.set('qz_xp',245)",ctx); /* Niv. 2 ; +10 (bonne « moyen ») → 255 ≥ 250 → Niv. 3 */
+    vm.runInContext("store.set('qz_xp',245)",ctx); /* Niv. 2 ; +15 (bonne « moyen » × 1.5 maths) → 260 ≥ 250 → Niv. 3 */
     vm.runInContext("startFree()",ctx);
     ok("avant réponse : « Niv. 2 »",/^Niv\. 2/.test(chip(ctx)));
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
@@ -1413,7 +1442,8 @@ console.log("\n[31] Expertes — case à cocher de Terminale maths (programme of
     vm.runInContext("stats.history=[{s:'t_complexes',o:1},{s:'t_complexes',o:1},{s:'t_complexes',o:1},{s:'t_complexes',o:1}]",ctx);
     ok("100 % de réussite → « difficile » (Auto plafonne, jamais « experte »)",vm.runInContext("autoLevel('t_complexes')",ctx)==="difficile");
   }
-  /* --- H. XP : bonne réponse experte = points du VRAI niveau (5/10/15), pas +20 --- */
+  /* --- H. XP : bonne réponse « expertes » = points du VRAI niveau (5/10/15),
+     pas le +20 legacy — × le coefficient matière (2026-08-24) --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
@@ -1422,7 +1452,7 @@ console.log("\n[31] Expertes — case à cocher de Terminale maths (programme of
     const curLvl=vm.runInContext("state.curLvl",ctx);
     ok("la question servie est au niveau réel (pas « experte »)",["facile","moyen","difficile"].includes(curLvl)&&curLvl!=="experte");
     vm.runInContext("afterAnswer(true,state.q,'')",ctx);
-    ok("bonne réponse « facile » → +5 XP (pas 20)",JSON.parse(lsData.get("qz_xp"))===5);
+    ok("bonne réponse « facile » → +8 XP (5 × 1.5 maths — pas le 20 legacy)",JSON.parse(lsData.get("qz_xp"))===8);
   }
 }
 

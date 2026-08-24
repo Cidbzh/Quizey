@@ -354,6 +354,35 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .xopt input{accent-color:var(--accent);width:14px;height:14px;flex:none;margin:0;cursor:pointer}
 .xopt[hidden]{display:none}
 .xopt.off{visibility:hidden}
+/* (2026-08-24, Cid) Checkbox « Maths expertes » EN MODE SOMBRE : fini le
+   carré natif blanc (et l'état coché #60A5FA, quasi-blanc sur le fond nuit)
+   — la case est dessinée, en bleu de marque #2563EB (lisible sur le bleu
+   nuit #16213A) avec coche blanche ; non-cochée : fond doux bleu + bordure
+   sombre. Thème clair inchangé (case native + accent-color). Deux scopes
+   sombres (auto + « Sombre » explicite) = même gabarit que les variables
+   couleurs du haut du fichier. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .xopt input{
+    -webkit-appearance:none;appearance:none;
+    background:rgba(96,165,250,.14);border:1.5px solid #2C3B5C;border-radius:4px;
+    display:inline-grid;place-content:center;
+  }
+  :root:not([data-theme="light"]) .xopt input:checked{background:#2563EB;border-color:#2563EB}
+  :root:not([data-theme="light"]) .xopt input:checked::after{
+    content:"";width:7px;height:3px;margin-top:1px;
+    border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg);
+  }
+}
+:root[data-theme="dark"] .xopt input{
+  -webkit-appearance:none;appearance:none;
+  background:rgba(96,165,250,.14);border:1.5px solid #2C3B5C;border-radius:4px;
+  display:inline-grid;place-content:center;
+}
+:root[data-theme="dark"] .xopt input:checked{background:#2563EB;border-color:#2563EB}
+:root[data-theme="dark"] .xopt input:checked::after{
+  content:"";width:7px;height:3px;margin-top:1px;
+  border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg);
+}
 .lead-head ~ .subgrid{margin-top:0}
 /* Multi-sélection : ligne « N chapitre(s) sélectionné(s) + Tous » — visible
    seulement si au moins un chapitre est sélectionné (display posé dans renderHome).
@@ -4745,8 +4774,11 @@ function submit(){
   afterAnswer(res,state.q,res?"":"La bonne réponse était : <b>"+fmtAns(state.q)+"</b>. ");
 }
 /* ================= NIVEAU QUIZEY — XP PAR MATIÈRE (demande Cid 2026-08-22) =================
-   Chaque matière a SON niveau : XP = les points déjà gagnés sur bonne réponse
-   (hook dans afterAnswer), comptée dans les trois modes. Pas d'XP sur « Passer »
+   Chaque matière a SON niveau : XP = les points gagnés sur bonne réponse
+   (hook dans afterAnswer), comptée dans les trois modes, × le coefficient
+   matière XP_MULT (2026-08-24, Cid : maths/PC — questions plus longues à
+   répondre — → ×1.5, langues ×1.2) + bonus REVIEW_BONUS à la fin d'une
+   session « À réviser » (endReview). Pas d'XP sur « Passer »
    (passQ ne passe PAS par afterAnswer) ni sur mauvaise réponse. Le NIVEAU est
    DÉDUIT de l'XP (jamais stocké) ; seule l'XP persiste — UNE CLÉ PAR MATIÈRE,
    même convention que les stats : qz_xp (maths) / qz_xp_pc / qz_xp_de /
@@ -4758,7 +4790,20 @@ function levelOf(xp){return Math.max(1,Math.floor((-1+Math.sqrt(1+4*(xp+50)/25))
 function lvlInfo(x){const n=levelOf(x),lo=xpCum(n),hi=xpCum(n+1);return{n,pct:(x-lo)/(hi-lo)};}
 function xpKey(){return state.matiere==="maths"?"qz_xp":"qz_xp_"+state.matiere;}
 function getXP(){const v=store.get(xpKey(),0);return typeof v==="number"&&isFinite(v)&&v>=0?v:0;}
-function gainXp(pts){const k=xpKey(),x=getXP(),before=levelOf(x);store.set(k,x+pts);renderLvlCard();paintChipNiv();if(levelOf(x+pts)>before)levelUp(before,levelOf(x+pts));}
+/* (2026-08-24, Cid) Coefficient XP PAR MATIÈRE : maths et physique-chimie
+   portent des questions plus longues à répondre → elles rapportent PLUS d'XP
+   par bonne réponse que les langues (qui elles aussi progressent un peu plus
+   vite qu'avant). Appliqué à TOUS les gains — bonne réponse (2 modes) et
+   bonus de fin de révision — au même endroit, dans gainXp(). Le SCORE de
+   séance (state.score, chip « score ») reste les points bruts 5/10/15 + série. */
+const XP_MULT={maths:1.5,pc:1.5,de:1.2,en:1.2};
+function gainXp(pts){
+  pts=Math.max(1,Math.round(pts*(XP_MULT[state.matiere]||1)));
+  const k=xpKey(),x=getXP(),before=levelOf(x);
+  store.set(k,x+pts);renderLvlCard();paintChipNiv();
+  if(levelOf(x+pts)>before)levelUp(before,levelOf(x+pts));
+  return pts;   /* valeur RÉELLEMENT créditée (après coefficient) — sert à l'affichage */
+}
 /* Puce « Niv. N » de la barre d'écran de question (2026-08-22, sur demande) :
    le niveau de la MATIÈRE (le « Niveau N » de la carte du hero) reste visible
    pendant la partie — les trois modes, et la puce suit les paliers franchis en
@@ -4777,6 +4822,11 @@ function paintChipNiv(){const el=$("#chipNiv");if(!el)return;const info=lvlInfo(
    Terminale maths, pas un niveau) — elle sert seulement au scoring des
    lignes history héritées. */
 const PTS_LVL={facile:5,moyen:10,difficile:15,experte:20};
+/* (2026-08-24, Cid) Bonus de FIN DE SESSION « À réviser » (endReview) :
+   base fixe créditée en une seule fois, multipliée par le coefficient
+   matière dans gainXp (maths/PC → +45, DE/EN → +36). La carte de fin
+   affiche la valeur réellement créditée. */
+const REVIEW_BONUS=30;
 function afterAnswer(ok,q,extra){
   let pts=0;
   if(ok){state.streak++;const base=PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10;pts=base+(state.streak>=3?5:0);state.score+=pts;state.good++;stats.good++;gainXp(pts);}
@@ -4877,11 +4927,11 @@ function startReview(){
 function endReview(){
   state.mode="done";
   const acc=state.n?Math.round(100*state.good/state.n):0;
+  const bonus=gainXp(REVIEW_BONUS);   /* (2026-08-24, Cid) bonus de fin de révision — valeur réelle après coefficient matière */
   qbox.innerHTML=`<div class="qcard result">
     <p class="qeyebrow">Révision terminée</p>
-    <div class="big" style="font-size:64px">🎯</div>
     <h3>Tout est repris !</h3>
-    <p class="muted">${state.n} question(s) repassée(s) · ${state.good} juste(s) · ${acc}% de précision${state.skips?` · ${state.skips} passée(s)`:""}</p>
+    <p class="muted">${state.n} question(s) repassée(s) · ${state.good} juste(s) · ${acc}% de précision${state.skips?` · ${state.skips} passée(s)`:""} · <b>bonus révision : +${bonus} XP</b></p>
     <div class="nextrow" style="justify-content:center;margin-top:22px;gap:10px">
       <button type="button" class="btn btn-primary" id="home3">Retour à l'accueil</button>
     </div></div>`;
@@ -4914,8 +4964,9 @@ function confetti(){
   setTimeout(function(){host.remove();},3600);
 }
 /* ---------- Montée de niveau (2026-08-23, sur demande Cid) ----------
-   Remplace les confettis au palier franchi (gainXp) — les confettis restent
-   à la fin de la révision (endReview). Séquence : la carte apparaît au
+   Les confettis sont lancés AU PALIER FRANCHI aussi (2026-08-24, Cid — en
+   plus de la carte, et toujours à la fin de la révision, endReview).
+   Séquence : la carte apparaît au
    centre avec le niveau quitté, la barre se remplit (le palier franchi),
    puis le NOUVEAU niveau s'affiche grossi et la barre revient à la
    progression réelle de la matière (lvlInfo(getXP()).pct). Pur DOM, hors
@@ -4924,6 +4975,7 @@ function confetti(){
    de test), seuls les garde-fous null bloquent le travail visuel. */
 function levelUp(oldN,newN){
   if(typeof document==="undefined"||!document.body)return;
+  if(typeof confetti==="function")confetti();   /* (2026-08-24, Cid) : confettis AUSSI au palier franchi (déjà désactivé sous prefers-reduced-motion) */
   const host=document.createElement("div");
   host.className="lvlup";
   host.setAttribute("aria-hidden","true");
