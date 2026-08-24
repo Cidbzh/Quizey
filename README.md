@@ -35,7 +35,7 @@ Le bouton « Passer » n'est pas pénalisant : il vous permet de retrouver la qu
 
 ## Quizey est fait pour vous motiver
 
-Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une petite animation vous félicite.
+Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une animation témoigne de votre progression .
 
 ![La montée de niveau — l'anneau se remplit et le nouveau niveau apparaît](img/monte-niveau.png)
 
