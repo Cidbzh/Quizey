@@ -1939,7 +1939,7 @@ const G_S2_DILU=[
  {lvl:"facile",make(){
    const m=pick([5,10,20,40]),V=pick([0.5,1,2,4]),C=m/V;
    const ms=String(m).replace(".",","),Cs=String(C).replace(".",",");
-   return{prompt:`On dissout ${ms} g d'une espèce dans ${V} L de solution. Quelle est la concentration massique C = m/V ? (en g/L)`,
+   return{prompt:`On dissout ${ms} g d'une espèce dans ${V} L de solution. Quelle est la concentration massique de cette solution ? (en g/L)`,
      type:"number",answer:C,tol:0.01,
      viz:{kind:"soln",n:m,c:C},
      explain:`C = m/V = ${ms} / ${V} = <b>${Cs} g/L</b>.`};
@@ -1947,7 +1947,7 @@ const G_S2_DILU=[
  {lvl:"moyen",make(){
    const C=pick([2,4,5,8]),V=pick([0.5,1,2,3]),m=C*V;
    const Cs=String(C).replace(".",","),ms=String(m).replace(".",",");
-   return{prompt:`Une solution a une concentration massique C = ${Cs} g/L. Pour V = ${V} L, quelle masse d'espèce m = C × V est dissoute ? (en g)`,
+   return{prompt:`Une solution a une concentration massique de ${Cs} g/L. Dans ${V} L de cette solution, quelle masse d'espèce est dissoute ? (en g)`,
      type:"number",answer:m,tol:0.01,
      viz:{kind:"soln",n:m,c:C},
      explain:`m = C × V = ${Cs} × ${V} = <b>${ms} g</b>.`};
@@ -1965,7 +1965,7 @@ const G_S2_MOLES=[
  {lvl:"facile",make(){
    const n=pick([1,2,3,4,5]),N=Math.round(n*6.02*10)/10;
    const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
-   return{prompt:`Le nombre de particules vaut N = n × N<sub>a</sub> avec N<sub>a</sub> ≈ 6,02 × 10²³. Pour n = ${ns} mol, N = … × 10²³ ?`,
+   return{prompt:`Le nombre d'Avogadro vaut N<sub>a</sub> ≈ 6,02 × 10²³ particules par mole. Pour n = ${ns} mol d'une espèce, combien de particules contient-elle ? (en 10²³)`,
      type:"number",answer:N,tol:0.01,
      explain:`N = n × 6,02 = ${ns} × 6,02 = <b>${Ns}</b> (en 10²³ particules).`};
  }},
@@ -1976,7 +1976,7 @@ const G_S2_MOLES=[
  }},
  {lvl:"difficile",make(){
    const n=pick([1,2,3]),M=pick([12,16,18,44]),m=n*M;
-   return{prompt:`La masse molaire d'une espèce vaut M = ${M} g/mol. Pour n = ${n} mol, quelle masse m = n × M ? (en g)`,
+   return{prompt:`La masse molaire d'une espèce vaut ${M} g/mol. Quelle est la masse de ${n} mol de cette espèce ? (en g)`,
      type:"number",answer:m,
      explain:`m = n × M = ${n} × ${M} = <b>${m} g</b>.`};
  }}
@@ -2038,19 +2038,19 @@ const G_S2_MOUV=[
  {lvl:"facile",make(){
    const d=pick([10,20,40,60]),t=pick([2,4,5,10]),v=d/t;
    const vs=String(v).replace(".",",");
-   return{prompt:`Un véhicule parcourt d = ${d} m en t = ${t} s. Quelle est sa vitesse moyenne v = d/t ? (en m/s)`,
+   return{prompt:`Un véhicule parcourt ${d} m en ${t} s. Quelle est sa vitesse moyenne ? (en m/s)`,
      type:"number",answer:v,tol:0.01,
      explain:`v = d/t = ${d} / ${t} = <b>${vs} m/s</b>.`};
  }},
  {lvl:"moyen",make(){
    const v=pick([5,8,10,12]),t=pick([2,3,4,5,10]),d=v*t;
-   return{prompt:`En mouvement rectiligne uniforme à v = ${v} m/s, quelle distance d = v × t est parcourue en t = ${t} s ? (en m)`,
+   return{prompt:`Un véhicule roule en ligne droite à vitesse constante de ${v} m/s. Quelle distance parcourt-il en ${t} s ? (en m)`,
      type:"number",answer:d,
      explain:`En MRU la vitesse est constante : d = v × t = ${v} × ${t} = <b>${d} m</b>.`};
  }},
  {lvl:"difficile",make(){
    const t=pick([1,2,3,4,5]),v=10*t;
-   return{prompt:`Un objet tombe en chute libre (sans frottement, g ≈ 10 m/s²) depuis le repos. Quelle est sa vitesse v = g × t après t = ${t} s ? (en m/s)`,
+   return{prompt:`Un objet tombe en chute libre depuis le repos (sans frottement, g ≈ 10 m/s²). Quelle est sa vitesse après ${t} s ? (en m/s)`,
      type:"number",answer:v,
      explain:`En chute libre, la vitesse augmente linéairement : v = g × t = 10 × ${t} = <b>${v} m/s</b>.`};
  }}
@@ -2061,7 +2061,7 @@ const G_S2_FORCE=[
  {lvl:"facile",make(){
    const m=pick([1,2,3,5,10]),g=9.8,P=m*g;
    const Ps=String(P).replace(".",",");
-   return{prompt:`Quelle est le poids P = m × g d'un objet de masse ${m} kg, avec g = 9,8 N/kg ? (en N)`,
+   return{prompt:`Quel est le poids d'un objet de masse ${m} kg, avec g = 9,8 N/kg ? (en N)`,
      type:"number",answer:P,tol:0.01,
      viz:{kind:"force",P:P,T:0},
      explain:`P = m × g = ${m} × 9,8 = <b>${Ps} N</b>.`};
@@ -2076,7 +2076,7 @@ const G_S2_FORCE=[
    const Gc=1; /* coefficient « de Gravitation » arrondi pour la question */
    const F=Gc*M*m/(r*r);
    const Fs=String(Math.round(F*100)/100).replace(".",",");
-   return{prompt:`Force gravitationnelle F = G·M·m/r². Avec G·M = ${M}, m = ${m} kg et r = ${r} (unités d'étude), F ≈ ? (unités d'étude)`,
+   return{prompt:`Le produit G·M vaut ${M} (unités d'étude). Avec une masse m = ${m} kg placée à r = ${r} (unités d'étude), quelle est l'intensité de la force d'attraction ?`,
      type:"number",answer:Math.round(F*100)/100,tol:0.02,
      explain:`F = ${M} × ${m} / ${r}² = ${M*m} / ${r*r} = <b>${Fs}</b> (unités d'étude). La force décroît en 1/r².`};
  }}
@@ -2087,7 +2087,7 @@ const G_S2_SON=[
  {lvl:"facile",make(){
    const c=340,f=pick([170,340,850]),lam=Math.round(c/f*100)/100;
    const ls=String(lam).replace(".",",");
-   return{prompt:`Le son se propage dans l'air à c ≈ 340 m/s. Quelle est la longueur d'onde λ = c/f d'un son de fréquence f = ${f} Hz ? (en m)`,
+   return{prompt:`Le son se propage dans l'air à c ≈ 340 m/s. Quelle est la longueur d'onde d'un son de fréquence f = ${f} Hz ? (en m)`,
      type:"number",answer:lam,tol:0.01,
      viz:{kind:"onde",n:2},
      explain:`λ = c/f = 340 / ${f} = <b>${ls} m</b>.`};
@@ -2095,7 +2095,7 @@ const G_S2_SON=[
  {lvl:"moyen",make(){
    const f=pick([100,200,250,500]),T=Math.round(1/f*10000)/10000;
    const Ts=String(T).replace(".",",");
-   return{prompt:`Un son a une fréquence f = ${f} Hz. Quelle est sa période T = 1/f ? (en s)`,
+   return{prompt:`Un son a une fréquence f = ${f} Hz. Quelle est sa période ? (en s)`,
      type:"number",answer:T,tol:0.01,
      explain:`T = 1/f = 1/${f} = <b>${Ts} s</b>. La période est l'inverse de la fréquence.`};
  }},
@@ -2116,7 +2116,7 @@ const G_S2_LUM=[
  {lvl:"moyen",make(){
    const f=pick([10,20,25]),u=pick([2*f,3*f,4*f]),v=f*u/(u-f);
    const vs=String(Math.round(v*100)/100).replace(".",",");
-   return{prompt:`Une lentille mince (f = ${f} cm) forme une image d'un objet placé à u = ${u} cm (formule de conjugaison 1/f = 1/u + 1/v). Où se forme l'image (v, en cm) ?`,
+   return{prompt:`Une lentille mince de foyer image f = ${f} cm forme l'image d'un objet placé à u = ${u} cm. Où se forme l'image ? (v, en cm)`,
      type:"number",answer:Math.round(v*100)/100,tol:0.01,
      viz:{kind:"lentille",f:f,u:u},
      explain:`1/v = 1/f − 1/u = 1/${f} − 1/${u}. On trouve v = <b>${vs} cm</b>.`};
@@ -2132,14 +2132,14 @@ const G_S2_LUM=[
 const G_S2_CIRC=[
  {lvl:"facile",make(){
    const R=pick([2,4,5,10]),I=pick([1,2,3,4]),U=R*I;
-   return{prompt:`Dans un dipôle, U = R × I. Avec R = ${R} Ω et I = ${I} A, quelle est la tension U ? (en V)`,
+   return{prompt:`Une résistance de R = ${R} Ω est traversée par un courant I = ${I} A. Quelle est la tension aux bornes ? (en V)`,
      type:"number",answer:U,
      viz:{kind:"circuit"},
      explain:`Loi d'Ohm : U = R × I = ${R} × ${I} = <b>${U} V</b>.`};
  }},
  {lvl:"moyen",make(){
    const U=pick([4,6,9,12]),I=pick([1,2,3,4]),P=U*I;
-   return{prompt:`Un appareil consomme un courant I = ${I} A sous une tension U = ${U} V. Quelle est la puissance P = U × I ? (en W)`,
+   return{prompt:`Un appareil consomme un courant I = ${I} A sous une tension U = ${U} V. Quelle est la puissance consommée ? (en W)`,
      type:"number",answer:P,
      explain:`P = U × I = ${U} × ${I} = <b>${P} W</b>.`};
  }},
@@ -2156,13 +2156,13 @@ const G_S2_CIRC=[
 const G_NEWTON=[
  {lvl:"facile",make(){
    const m=pick([2,4,5,10]),F=m*pick([2,3,4,5,6,8,10]);
-   return{prompt:`Une force résultante de ${F} N s'exerce sur un objet de masse ${m} kg. Quelle est l'accélération a = F/m ? (en m/s²)`,
+   return{prompt:`Une force résultante de ${F} N s'exerce sur un objet de masse ${m} kg. Quelle est son accélération ? (en m/s²)`,
      type:"number",answer:F/m,
      explain:`2<sup>e</sup> loi de Newton : a = F/m = ${F} / ${m} = <b>${F/m} m/s²</b>.`};
  }},
  {lvl:"facile",make(){
    const m=pick([2,3,5]),a=pick([2,4,5,8]);
-   return{prompt:`Un objet de masse ${m} kg accélère à ${a} m/s². Quelle est la force résultante F = m × a ? (en N)`,
+   return{prompt:`Un objet de masse ${m} kg accélère à ${a} m/s². Quelle est la force résultante qui s'exerce sur lui ? (en N)`,
      type:"number",answer:m*a,
      explain:`F = m × a = ${m} × ${a} = <b>${m*a} N</b>.`};
  }},
@@ -2174,7 +2174,7 @@ const G_NEWTON=[
  {lvl:"moyen",make(){
    const v0=pick([5,10,15]),a=pick([2,4,5]),t=pick([2,3,4]);
    const v=v0+a*t;
-   return{prompt:`Un objet part à v₀ = ${v0} m/s et accélère uniformément à a = ${a} m/s². Quelle est sa vitesse après t = ${t} s (v = v₀ + a·t) ? (en m/s)`,
+   return{prompt:`Un objet part à v₀ = ${v0} m/s et accélère uniformément à a = ${a} m/s². Quelle est sa vitesse après t = ${t} s ? (en m/s)`,
      type:"number",answer:v,
      explain:`v = v₀ + a·t = ${v0} + ${a} × ${t} = <b>${v} m/s</b>.`};
  }},
@@ -2197,19 +2197,19 @@ const G_NEWTON=[
 const G_T_ACIDEBASE=[
  {lvl:"facile",make(){
    const c=pick([1,2,5,10]),pH=14+Math.log10(1/c);
-   return{prompt:`Solution d'acide fort à C = ${c} mol/L (25 °C). pH = −log₁₀(C) = ?`,
+   return{prompt:`Solution d'acide fort à C = ${c} mol/L (25 °C). Quel est le pH ?`,
      type:"number",answer:Math.round((14+Math.log10(1/c))*100)/100,tol:0.01,
      explain:`[H₃O⁺] = C = ${c}. pH = −log₁₀(${c}) = <b>${String(14+Math.log10(1/c)).replace(".",",").slice(0,4)}</b>.`};
  }},
  {lvl:"moyen",make(){
    const pH=pick([2,3,4,5]),c=10*(-pH);
-   return{prompt:`Une solution a un pH = ${pH}. Quelle est [H₃O⁺] = 10^(−pH) (en mol/L) ?`,
+   return{prompt:`Une solution a un pH = ${pH}. Quelle est sa concentration en ions H₃O⁺ ? (en mol/L)`,
      type:"number",answer:c,tol:0.01,
      explain:`[H₃O⁺] = 10^(−${pH}) = <b>${String(c).replace(".",",")} mol/L</b>.`};
  }},
  {lvl:"difficile",make(){
    const Ka=pick([1e-5,1e-6]),C=pick([0.1,0.5,1]),h=Math.sqrt(Ka*C);
-   return{prompt:`Acide faible : Ka = ${Ka} mol/L, C₀ = ${C} mol/L. [H₃O⁺] ≈ √(Ka·C₀) = ? (en mol/L)`,
+   return{prompt:`Acide faible : Ka = ${Ka} mol/L, C₀ = ${C} mol/L. Quelle est la concentration [H₃O⁺] à l'équilibre ? (en mol/L)`,
      type:"number",answer:h,tol:0.01,
      explain:`[H₃O⁺] ≈ √(Ka·C₀) = √(${Ka} × ${C}) = <b>${String(h).replace(".",",")} mol/L</b>. L'hypothèse de dilution s'applique car C₀ ≫ Ka.`};
  }}
@@ -2219,7 +2219,7 @@ const G_T_ACIDEBASE=[
 const G_T_ANALYSE=[
  {lvl:"facile",make(){
    const A=pick([0.4,0.8,1.2,1.6]),a=1,l=1,C=A/a/l;
-   return{prompt:`Beer-Lambert : A = a·C·ℓ. Avec A = ${A}, a = 1, ℓ = ${l} cm, C = ? (en mol/L)`,
+   return{prompt:`Une solution d'absorbance A = ${A} est mesurée avec un trajet optique ℓ = ${l} cm (coefficient d'absorption a = 1). Quelle est sa concentration ? (en mol/L)`,
      type:"number",answer:Math.round(C*10000)/10000,tol:0.01,
      explain:`C = A/(a·ℓ) = ${A}/(1 × ${l}) = <b>${String(C).replace(".",",")} mol/L</b>.`};
  }},
@@ -2248,7 +2248,7 @@ const G_T_CINET=[
  }},
  {lvl:"moyen",make(){
    const k=pick([1,2,3]),t=pick([5,10]),n0=pick([1,2]),n=n0*Math.exp(-k*t/10);
-   return{prompt:`Décroissance exponentielle : n(t) = n₀·e^(−k·t). Avec n₀ = ${n0} mol, k = ${k} × 10⁻¹ s⁻¹ et t = ${t} s, n ≈ ? (en mol)`,
+   return{prompt:`Décroissance d'un réactif : quantité initiale n₀ = ${n0} mol, constante de vitesse k = ${k} × 10⁻¹ s⁻¹. Quelle est la quantité n au bout de t = ${t} s ? (en mol)`,
      type:"number",answer:Math.round(n*100)/100,tol:0.02,
      explain:`n = ${n0} × e^(−${k/10} × ${t}) = <b>${String(Math.round(n*100)/100).replace(".",",")} mol</b>.`};
  }},
@@ -2263,7 +2263,7 @@ const G_T_CINET=[
 const G_T_NUCLEAIRE=[
  {lvl:"facile",make(){
    const Z=pick([1,2,6,8,92]),A=pick([2,4,12,16,238]),N=A-Z;
-   return{prompt:`Noyau ^{A}_{Z}X avec A = ${A} et Z = ${Z}. Combien de neutrons N = A − Z ?`,
+   return{prompt:`Noyau ^{A}_{Z}X avec A = ${A} et Z = ${Z}. Combien ce noyau contient-il de neutrons ?`,
      type:"number",answer:N,
      explain:`N = A − Z = ${A} − ${Z} = <b>${N} neutrons</b>.`};
  }},
@@ -2285,7 +2285,7 @@ const G_T_EQUIL=[
  {lvl:"facile",make(){
    const Ka=pick([1e-4,1e-5,1e-6]),C=pick([0.1,0.5,1]);
    const x=Math.sqrt(Ka*C);
-   return{prompt:`À l'équilibre : Ka = [B]²/[HB]. Si [B] = x, alors [HB] ≈ C₀. Avec Ka = ${Ka}, C₀ = ${C}, x ≈ √(Ka·C₀) = ? (en mol/L)`,
+   return{prompt:`Acide faible HB : Ka = ${Ka} mol/L, concentration initiale C₀ = ${C} mol/L. À l'équilibre, quelle est [B] ? (en mol/L)`,
      type:"number",answer:Math.round(x*10000)/10000,tol:0.02,
      explain:`x ≈ √(${Ka} × ${C}) = <b>${String(Math.round(x*10000)/10000).replace(".",",")} mol/L</b>.`};
  }},
@@ -2306,7 +2306,7 @@ const G_T_EQUIL=[
 const G_T_PILE=[
  {lvl:"facile",make(){
    const E=pick([1.1,1.2,1.5,1.6]),I=pick([0.5,1,2]),P=E*I;
-   return{prompt:`Une pile de f.é.m. E = ${E} V délivre I = ${I} A. Quelle puissance P = E × I ? (en W)`,
+   return{prompt:`Une pile de f.é.m. E = ${E} V délivre un courant I = ${I} A. Quelle est la puissance qu'elle délivre ? (en W)`,
      type:"number",answer:Math.round(P*100)/100,tol:0.01,
      viz:{kind:"circuit"},
      explain:`P = E × I = ${E} × ${I} = <b>${String(P).replace(".",",")} W</b>.`};
@@ -2314,7 +2314,7 @@ const G_T_PILE=[
  {lvl:"moyen",make(){
    const E=pick([1.2,1.5]),r=pick([0.1,0.2,0.5]),R=pick([2,4,6]);
    const I=Math.round(E/(R+r)*100)/100;
-   return{prompt:`Pile E = ${E} V, résistance interne r = ${r} Ω, résistance externe R = ${R} Ω. Courant I = E/(R + r) = ? (en A)`,
+   return{prompt:`Une pile de f.é.m. E = ${E} V, de résistance interne r = ${r} Ω, alimente un circuit avec une résistance R = ${R} Ω. Quelle est l'intensité du courant qui circule ? (en A)`,
      type:"number",answer:I,tol:0.01,
      explain:`I = ${E}/(${R} + ${r}) = ${E}/${R+r} = <b>${String(I).replace(".",",")} A</b>.`};
  }},
@@ -2329,13 +2329,13 @@ const G_T_PILE=[
 const G_T_SYNTH=[
  {lvl:"facile",make(){
    const I=pick([1,2,3,5]),t=pick([60,120,300]),Q=I*t;
-   return{prompt:`Charge Q = I × t. Avec I = ${I} A et t = ${t} s, Q = ? (en C)`,
+   return{prompt:`Un courant I = ${I} A circule pendant t = ${t} s. Quelle charge traverse le circuit ? (en C)`,
      type:"number",answer:Q,
      explain:`Q = ${I} × ${t} = <b>${Q} C</b>.`};
  }},
  {lvl:"moyen",make(){
    const n=pick([1,2,3]),F=96500,Q=n*F;
-   return{prompt:`n = ${n} mol d'électrons transférés. Q = n × F (F = 96 500 C/mol) = ? (en C)`,
+   return{prompt:`n = ${n} mol d'électrons sont transférés (constante de Faraday F = 96 500 C/mol). Quelle est la charge totale échangée ? (en C)`,
      type:"number",answer:Q,
      explain:`Q = ${n} × 96 500 = <b>${Q} C</b>.`};
  }},
@@ -2350,13 +2350,13 @@ const G_T_SYNTH=[
 const G_T_MOUV=[
  {lvl:"facile",make(){
    const v0=pick([0,5,10]),a=10,t=pick([1,2,3]),v=v0+a*t;
-   return{prompt:`Lancer vertical : v₀ = ${v0} m/s, a = −g = −10 m/s². Quelle est v après t = ${t} s (v = v₀ − g·t) ? (en m/s)`,
+   return{prompt:`Un objet est lancé verticalement vers le haut à v₀ = ${v0} m/s (g = 10 m/s²). Quelle est sa vitesse après t = ${t} s ? (en m/s)`,
      type:"number",answer:v,
      explain:`v = ${v0} − 10 × ${t} = <b>${v} m/s</b>.`};
  }},
  {lvl:"moyen",make(){
    const v0=pick([10,15,20]),h=Math.round(v0*v0/20*100)/100;
-   return{prompt:`Lancer vertical vers le haut : v₀ = ${v0} m/s (g = 10). Quelle hauteur max h = v₀²/(2g) atteint-il ? (en m)`,
+   return{prompt:`Un objet est lancé verticalement vers le haut à v₀ = ${v0} m/s (g = 10 m/s²). Quelle est la hauteur maximale atteinte ? (en m)`,
      type:"number",answer:h,tol:0.01,
      explain:`h = v₀²/(2g) = ${v0}²/20 = ${v0*v0}/20 = <b>${String(h).replace(".",",")} m</b>.`};
  }},
@@ -2371,7 +2371,7 @@ const G_T_MOUV=[
 const G_T_FLUIDES=[
  {lvl:"facile",make(){
    const rho=1000,v=pick([1,2,3]),P=Math.round(0.5*rho*v*v*100)/100;
-   return{prompt:`Pression dynamique q = ½·ρ·v² (ρ = 1000 kg/m³, v = ${v} m/s). q = ? (en Pa)`,
+   return{prompt:`Un fluide de masse volumique ρ = 1000 kg/m³ s'écoule à v = ${v} m/s. Quelle est la pression dynamique ? (en Pa)`,
      type:"number",answer:P,tol:0.01,
      explain:`q = ½ × 1000 × ${v}² = <b>${P} Pa</b>.`};
  }},
@@ -2391,13 +2391,13 @@ const G_T_FLUIDES=[
 const G_T_THERMO=[
  {lvl:"facile",make(){
    const m=pick([10,20,50]),c=4.18,dt=pick([10,20,50]),Q=m*c*dt;
-   return{prompt:`Chaleur Q = m·c·ΔT. Avec m = ${m} g, c = 4,18 J/(g·K), ΔT = ${dt} K, Q = ? (en J)`,
+   return{prompt:`${m} g d'eau (c = 4,18 J/(g·K)) voient leur température augmenter de ${dt} K. Quelle est la chaleur échangée ? (en J)`,
      type:"number",answer:Math.round(Q),tol:0.01,
      explain:`Q = ${m} × 4,18 × ${dt} = <b>${Math.round(Q)} J</b>.`};
  }},
  {lvl:"moyen",make(){
    const E=pick([500,1000,2000]),t=pick([10,20,30]),P=Math.round(E/t*100)/100;
-   return{prompt:`Puissance P = E/t. Avec E = ${E} J et t = ${t} s, P = ? (en W)`,
+   return{prompt:`Un appareil consomme E = ${E} J en t = ${t} s. Quelle est sa puissance ? (en W)`,
      type:"number",answer:P,tol:0.01,
      explain:`P = ${E}/${t} = <b>${P} W</b>.`};
  }},
@@ -2412,7 +2412,7 @@ const G_T_THERMO=[
 const G_T_PHENOM=[
  {lvl:"facile",make(){
    const A=pick([2,3,5]),T=pick([0.5,1,2]);
-   return{prompt:`Oscillation libre amortie : amplitude A₀ = ${A} cm, constante de temps τ = ${T} s. Quelle est l'amplitude au bout de t = ${T} s (A = A₀·e^(−t/τ)) ?`,
+   return{prompt:`Oscillation libre amortie : amplitude A₀ = ${A} cm, constante de temps τ = ${T} s. Quelle est l'amplitude au bout de t = ${T} s ?`,
      type:"number",answer:Math.round(A*Math.exp(-1)*100)/100,tol:0.02,
      explain:`A = ${A} × e^(−1) ≈ ${A} × 0,368 = <b>${String(Math.round(A*Math.exp(-1)*100)/100).replace(".",",")} cm</b>.`};
  }},
@@ -2434,7 +2434,7 @@ const G_T_PHOTON=[
    const fp=pick([4,5,6,7,8]);
    const E=6.63e-34*fp*1e14;
    const E19=Math.round(E*1e19*100)/100;
-   return{prompt:`Énergie d'un photon E = h·f (h = 6,63 × 10⁻³⁴ J·s). Avec f = ${fp} × 10¹⁴ Hz, E ≈ ? (en 10⁻¹⁹ J)`,
+   return{prompt:`Un photon de fréquence f = ${fp} × 10¹⁴ Hz (h = 6,63 × 10⁻³⁴ J·s). Quelle est son énergie ? (en 10⁻¹⁹ J)`,
      type:"number",answer:E19,tol:0.05,
      explain:`E = 6,63 × 10⁻³⁴ × ${fp} × 10¹⁴ = ${Math.round(6.63*fp*100)/100} × 10⁻²⁰ J = <b>${E19} × 10⁻¹⁹ J</b>.`};
  }},
@@ -2456,7 +2456,7 @@ const G_T_RC=[
  {lvl:"facile",make(){
    const R=pick([10,20,50]),C=pick([10,20,50])*1e-6,tau=R*C;
    const taus=String(Math.round(tau*1e6)/1e6).replace(".",",");
-   return{prompt:`Circuit RC : R = ${R} Ω, C = ${C*1e6} μF. Constante de temps τ = R × C = ? (en s)`,
+   return{prompt:`Circuit RC : R = ${R} Ω, C = ${C*1e6} μF. Quelle est la constante de temps τ ? (en s)`,
      type:"number",answer:Math.round(tau*1e6)/1e6,tol:0.01,
      viz:{kind:"circuit"},
      explain:`τ = R × C = ${R} × ${C*1e6} × 10⁻⁶ = <b>${taus} s</b>.`};
@@ -2464,7 +2464,7 @@ const G_T_RC=[
  {lvl:"moyen",make(){
    const V=pick([5,9,12]),t=3,tau=1;
    const Vc=V*(1-Math.exp(-3));
-   return{prompt:`Chargement d'un condensateur : V(t) = V₀·(1 − e^(−t/τ)). Avec V₀ = ${V} V, t = ${t}τ, V(t) = ? (en V)`,
+   return{prompt:`Chargement d'un condensateur vers une tension finale V₀ = ${V} V. Au bout de t = ${t}τ, quelle tension est atteinte ? (en V)`,
      type:"number",answer:Math.round(Vc*100)/100,tol:0.01,
      explain:`V = ${V} × (1 − e^(−3)) = ${V} × 0,95 = <b>${String(Math.round(Vc*100)/100).replace(".",",")} V</b>.`};
  }},
@@ -2481,7 +2481,7 @@ const G_FORCES=[
    const q1=pick([2,3,4]),q2=pick([3,4,5]),r=pick([2,3]);
    const F=q1*q2/(r*r);
    const Fs=String(Math.round(F*100)/100).replace(".",",");
-   return{prompt:`Force de Coulomb F = k·q₁·q₂/r² (k = 1 en unités d'étude). Avec q₁ = ${q1}, q₂ = ${q2}, r = ${r}, F ≈ ? (unités d'étude)`,
+   return{prompt:`Deux charges q₁ = ${q1} et q₂ = ${q2} (unités d'étude) sont séparées de r = ${r} (k = 1 en unités d'étude). Quelle est l'intensité de la force de Coulomb ?`,
      type:"number",answer:Math.round(F*100)/100,tol:0.02,
      explain:`F = ${q1} × ${q2} / ${r}² = ${q1*q2}/${r*r} = <b>${Fs}</b>. La force est en 1/r² et dépend du produit des charges.`};
  }},
@@ -2493,7 +2493,7 @@ const G_FORCES=[
  {lvl:"moyen",make(){
    const F=pick([10,20,40]),S=pick([2,4,5]),P=F/S;
    const Ps=String(P).replace(".",",");
-   return{prompt:`Une force F = ${F} N s'exerce sur une surface S = ${S} m². Quelle est la pression P = F/S ? (en Pa)`,
+   return{prompt:`Une force F = ${F} N s'exerce sur une surface S = ${S} m². Quelle est la pression exercée ? (en Pa)`,
      type:"number",answer:P,tol:0.01,
      explain:`P = F/S = ${F} / ${S} = <b>${Ps} Pa</b>.`};
  }},
@@ -2509,7 +2509,7 @@ const G_FORCES=[
  }},
  {lvl:"difficile",make(){
    const rho=1000,g=9.8,z=pick([2,3,4]),P=rho*g*z;
-   return{prompt:`Pression hydrostatique P = ρ·g·z. Avec ρ = 1000 kg/m³, g = 9,8 N/kg et une profondeur z = ${z} m, P = ? (en Pa)`,
+   return{prompt:`Dans l'eau (ρ = 1000 kg/m³, g = 9,8 N/kg), quelle est la pression hydrostatique à une profondeur z = ${z} m ? (en Pa)`,
      type:"number",answer:P,
      explain:`P = ρ·g·z = 1000 × 9,8 × ${z} = <b>${P} Pa</b>. La pression augmente linéairement avec la profondeur.`};
  }}
@@ -2520,21 +2520,21 @@ const G_ENERGIE=[
  {lvl:"facile",make(){
    const m=pick([1,2,3,4]),v=pick([2,3,4,5]),E=Math.round(m*v*v/2*100)/100;
    const Es=String(E).replace(".",",");
-   return{prompt:`Quelle est l'énergie cinétique Ec = ½·m·v² d'un objet de ${m} kg à v = ${v} m/s ? (en J)`,
+   return{prompt:`Quelle est l'énergie cinétique d'un objet de ${m} kg qui se déplace à v = ${v} m/s ? (en J)`,
      type:"number",answer:E,tol:0.01,
      viz:{kind:"bars",ek:E,ep:0,em:E},
      explain:`Ec = ½ × ${m} × ${v}² = ½ × ${m} × ${v*v} = <b>${Es} J</b>.`};
  }},
  {lvl:"facile",make(){
    const m=pick([1,2,3,4,5]),h=pick([2,3,4,5,10]),E=m*10*h;
-   return{prompt:`Quelle est l'énergie de position Ep = m·g·h (g = 10 N/kg) d'un objet de ${m} kg à h = ${h} m ? (en J)`,
+   return{prompt:`Quelle est l'énergie de position d'un objet de ${m} kg situé à h = ${h} m du sol (g = 10 N/kg) ? (en J)`,
      type:"number",answer:E,
      viz:{kind:"bars",ek:0,ep:E,em:E},
      explain:`Ep = m·g·h = ${m} × 10 × ${h} = <b>${E} J</b>.`};
  }},
  {lvl:"moyen",make(){
    const F=pick([10,20,30]),d=pick([2,3,4,5]),W=F*d;
-   return{prompt:`Une force constante F = ${F} N déplace un objet de d = ${d} m dans sa direction. Quel est le travail W = F·d ? (en J)`,
+   return{prompt:`Une force constante F = ${F} N déplace un objet de d = ${d} m dans sa direction. Quel est le travail de cette force ? (en J)`,
      type:"number",answer:W,
      viz:{kind:"work"},
      explain:`W = F × d = ${F} × ${d} = <b>${W} J</b>.`};
@@ -2546,7 +2546,7 @@ const G_ENERGIE=[
  }},
  {lvl:"difficile",make(){
    const m=pick([1,2,3]),h=pick([4,5,8,10]),E=m*10*h;
-   return{prompt:`Un objet de ${m} kg tombe de h = ${h} m (sans frottement). Quelle vitesse v = √(2·g·h) (g = 10) atteint-il en bas ? (en m/s)`,
+   return{prompt:`Un objet de ${m} kg tombe de h = ${h} m sans frottement (g = 10 m/s²). Quelle vitesse atteint-il en bas ? (en m/s)`,
      type:"number",answer:Math.round(Math.sqrt(2*10*h)*100)/100,tol:0.02,
      explain:`Conservation de l'énergie : Ep → Ec. ½·m·v² = m·g·h → v = √(2·g·h) = √(${2*10*h}) = <b>${String(Math.round(Math.sqrt(2*10*h)*100)/100).replace(".",",")} m/s</b>.`};
  }},
@@ -2561,20 +2561,20 @@ const G_ENERGIE=[
 const G_MOLES=[
  {lvl:"facile",make(){
    const M=pick([12,16,18,44,64]),n=pick([1,2,3]),m=n*M;
-   return{prompt:`Masse molaire M = ${M} g/mol. Pour n = ${n} mol, quelle masse m = n × M ? (en g)`,
+   return{prompt:`La masse molaire d'une espèce vaut ${M} g/mol. Quelle est la masse de ${n} mol de cette espèce ? (en g)`,
      type:"number",answer:m,
      explain:`m = n × M = ${n} × ${M} = <b>${m} g</b>.`};
  }},
  {lvl:"facile",make(){
    const n=pick([1,2,3,4]),Vm=24,V=n*Vm;
-   return{prompt:`Le volume molaire des gaz est Vm ≈ 24 L/mol. Quel volume V = n × Vm occupe n = ${n} mol de gaz ? (en L)`,
+   return{prompt:`Le volume molaire des gaz est Vm ≈ 24 L/mol. Quel volume occupent ${n} mol de gaz dans ces conditions ? (en L)`,
      type:"number",answer:V,
      explain:`V = n × Vm = ${n} × 24 = <b>${V} L</b>.`};
  }},
  {lvl:"moyen",make(){
    const n=pick([1,2,3]),V=pick([0.5,1,2]),C=n/V;
    const Cs=String(C).replace(".",",");
-   return{prompt:`n = ${n} mol dissous dans V = ${V} L. Quelle est la concentration molaire C = n/V ? (en mol/L)`,
+   return{prompt:`${n} mol d'une espèce sont dissous dans ${V} L de solution. Quelle est la concentration molaire ? (en mol/L)`,
      type:"number",answer:C,tol:0.01,
      viz:{kind:"soln",n:n,c:C},
      explain:`C = n/V = ${n} / ${V} = <b>${Cs} mol/L</b>.`};
@@ -2594,7 +2594,7 @@ const G_MOLES=[
  {lvl:"difficile",make(){
    const n=pick([1,2,3]),N=Math.round(n*6.02*10)/10;
    const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
-   return{prompt:`N = n × N<sub>a</sub>. Pour n = ${ns} mol, combien de particules N = … × 10²³ ?`,
+   return{prompt:`Le nombre d'Avogadro vaut N<sub>a</sub> ≈ 6,02 × 10²³ mol⁻¹. Pour n = ${ns} mol, combien de particules cela représente-t-il ? (en 10²³)`,
      type:"number",answer:N,tol:0.01,
      explain:`N = ${ns} × 6,02 = <b>${Ns}</b> (en 10²³).`};
  }}
@@ -2605,7 +2605,7 @@ const G_ONDES=[
  {lvl:"facile",make(){
    const c=pick([340,500,1000]),f=pick([100,200,340]),lam=Math.round(c/f*100)/100;
    const ls=String(lam).replace(".",",");
-   return{prompt:`Une onde se propage à c = ${c} m/s avec une fréquence f = ${f} Hz. Quelle est sa longueur d'onde λ = c/f ? (en m)`,
+   return{prompt:`Une onde se propage à c = ${c} m/s avec une fréquence f = ${f} Hz. Quelle est sa longueur d'onde ? (en m)`,
      type:"number",answer:lam,tol:0.01,
      viz:{kind:"onde",n:2},
      explain:`λ = c/f = ${c} / ${f} = <b>${ls} m</b>.`};
@@ -2613,14 +2613,14 @@ const G_ONDES=[
  {lvl:"facile",make(){
    const d=pick([340,680,1020]),c=340,t=Math.round(d/c*1000)/1000;
    const ts=String(t).replace(".",",");
-   return{prompt:`Un son parcourt d = ${d} m à c = 340 m/s. Quel est le délai Δt = d/c ? (en s)`,
+   return{prompt:`Un son parcourt d = ${d} m à c = 340 m/s. Quel est le délai de propagation ? (en s)`,
      type:"number",answer:t,tol:0.01,
      explain:`Δt = d/c = ${d} / 340 = <b>${ts} s</b>.`};
  }},
  {lvl:"moyen",make(){
    const f=pick([50,100,200,250]),T=Math.round(1/f*10000)/10000;
    const Ts=String(T).replace(".",",");
-   return{prompt:`Fréquence f = ${f} Hz. Quelle est la période T = 1/f ? (en s)`,
+   return{prompt:`Une onde a une fréquence f = ${f} Hz. Quelle est sa période ? (en s)`,
      type:"number",answer:T,tol:0.01,
      explain:`T = 1/f = <b>${Ts} s</b>.`};
  }},
@@ -2638,7 +2638,7 @@ const G_ONDES=[
  {lvl:"difficile",make(){
    const c=1500,d=pick([30,60,150]),t=Math.round(d/c*1000)/1000;
    const ts=String(t).replace(".",",");
-   return{prompt:`En échographie, les ultrasons voyagent à c ≈ 1500 m/s dans les tissus. Pour une profondeur d = ${d} cm, le temps aller-retour ≈ 2·d/c = ? (en s)`,
+   return{prompt:`En échographie, les ultrasons voyagent à c ≈ 1500 m/s dans les tissus. Pour une profondeur d = ${d} cm, quel est le temps aller-retour ? (en s)`,
      type:"number",answer:Math.round(2*(d/100)/c*1000)/1000,tol:0.01,
      explain:`d = ${d} cm = ${d/100} m. Aller-retour = 2 × ${d/100} / 1500 = <b>${String(Math.round(2*(d/100)/c*1000)/1000).replace(".",",")} s</b>.`};
  }}
@@ -2648,32 +2648,32 @@ const G_ONDES=[
 const G_ELEC=[
  {lvl:"facile",make(){
    const R=pick([2,4,5,10]),I=pick([1,2,3,4]),U=R*I;
-   return{prompt:`Loi d'Ohm : U = R × I. Avec R = ${R} Ω et I = ${I} A, U = ? (en V)`,
+   return{prompt:`Une résistance de R = ${R} Ω est traversée par un courant I = ${I} A. Quelle est la tension aux bornes ? (en V)`,
      type:"number",answer:U,
      viz:{kind:"circuit"},
      explain:`U = ${R} × ${I} = <b>${U} V</b>.`};
  }},
  {lvl:"facile",make(){
    const U=pick([4,6,9,12]),I=pick([1,2,3]),P=U*I;
-   return{prompt:`Puissance P = U × I. Avec U = ${U} V et I = ${I} A, P = ? (en W)`,
+   return{prompt:`Un appareil fonctionne sous U = ${U} V et consomme I = ${I} A. Quelle est la puissance consommée ? (en W)`,
      type:"number",answer:P,
      explain:`P = ${U} × ${I} = <b>${P} W</b>.`};
  }},
  {lvl:"moyen",make(){
    const P=pick([10,20,30,40]),t=pick([2,5,10]),E=P*t;
-   return{prompt:`Un appareil de P = ${P} W fonctionne pendant t = ${t} s. Quelle énergie E = P × t consomme-t-il ? (en J)`,
+   return{prompt:`Un appareil de P = ${P} W fonctionne pendant t = ${t} s. Quelle énergie consomme-t-il ? (en J)`,
      type:"number",answer:E,
      explain:`E = P × t = ${P} × ${t} = <b>${E} J</b>.`};
  }},
  {lvl:"moyen",make(){
    const Eut=pick([40,50,60]),Etot=Eut*2;
-   return qcm(`Le rendement d'un appareil vaut η = E(utile)/E(consommée). Si E(utile) = ${Eut} J et E(consommée) = ${Etot} J, η = ?`,
+   return qcm(`Un appareil consomme ${Etot} J d'énergie, dont ${Eut} J sont utilement utilisées. Quel est son rendement ?`,
         "50 %",["100 %","200 %","25 %"],
         `η = ${Eut} / ${Etot} = <b>0,50 = 50 %</b>. Un rendement est toujours ≤ 100 % (pertes par échauffement, frottements…).`)
  }},
  {lvl:"difficile",make(){
    const U=pick([6,12]),R=pick([2,4,6]),I=U/R,P=Math.round(U*I*100)/100;
-   return{prompt:`Une résistance R = ${R} Ω est sous U = ${U} V. Quelle puissance P = U²/R dissipe-t-elle ? (en W)`,
+   return{prompt:`Une résistance de R = ${R} Ω est branchée sous une tension U = ${U} V. Quelle puissance dissipe-t-elle ? (en W)`,
      type:"number",answer:Math.round(U*U/R*100)/100,tol:0.01,
      explain:`P = U²/R = ${U}²/${R} = ${U*U}/${R} = <b>${String(Math.round(U*U/R*100)/100).replace(".",",")} W</b>.`};
  }},
@@ -2704,7 +2704,7 @@ const G_P1_OXIDO=[
  }},
  {lvl:"moyen",make(){
    const x=pick([0.5,1,1.5]),n=2*x;
-   return{prompt:`Réaction : 2 A + 3 B → produit. L'avancement maximal vaut τ = ${x} mol. Quelle quantité de B est consommée (3·τ, en mol) ?`,
+   return{prompt:`Réaction : 2 A + 3 B → produit. L'avancement maximal vaut τ = ${x} mol. Quelle quantité de B est consommée ? (en mol)`,
      type:"number",answer:n,tol:0.01,
      viz:{kind:"stoich",a:2,b:3,c:1,nA:x*2,nB:x*3,limitant:""},
      explain:`n(B) consommé = 3 × τ = 3 × ${x} = <b>${n} mol</b>.`};
@@ -2717,7 +2717,7 @@ const G_P1_OXIDO=[
  {lvl:"difficile",make(){
    const c=pick([0.1,0.2,0.25]),V=pick([10,20,25]),n=Math.round(c*V*1000)/1000;
    const ns=String(n).replace(".",",");
-   return{prompt:`Au point d'équivalence, n(titrant) = C × V = ${c} mol/L × ${V} mL. Quelle quantité de matière a-t-on ajoutée (en mol) ?`,
+   return{prompt:`Au point d'équivalence, on a utilisé V = ${V} mL de titrant à C = ${c} mol/L. Quelle quantité de matière a-t-on ajoutée ? (en mol)`,
      type:"number",answer:n,tol:0.01,
      explain:`n = C × V = ${c} × ${V/1000} = <b>${ns} mol</b>. C'est la quantité de réactif limitant dosée.`};}}
 ];
@@ -2831,7 +2831,7 @@ const G_P1_ORGA=[
 const G_P1_SYNTH=[
  {lvl:"facile",make(){
    const theor=pick([10,20,40]),rend=pick([60,70,80]),obt=theor*rend/100;
-   return{prompt:`La quantité théorique de produit est ${theor} g. Le rendement vaut ${rend} %. Quelle masse obtenue m = rendement × théorique (en g) ?`,
+   return{prompt:`La quantité théorique de produit est ${theor} g et le rendement de la réaction vaut ${rend} %. Quelle masse de produit obtient-on ? (en g)`,
      type:"number",answer:obt,tol:0.01,
      explain:`m obtenue = ${rend} % × ${theor} = ${rend/100} × ${theor} = <b>${obt} g</b>.`};
  }},
@@ -2859,7 +2859,7 @@ const G_P1_SYNTH=[
  }},
  {lvl:"difficile",make(){
    const Eform=pick([400,500]),Eromp=pick([600,700]),dE=Eform-Eromp;
-   return{prompt:`Pour une réaction, ΣE(formées) = ${Eform} kJ/mol et ΣE(rompues) = ${Eromp} kJ/mol. ΔE = formées − rompues = ? (en kJ/mol)`,
+   return{prompt:`Pour une réaction, l'énergie des liaisons formées vaut ${Eform} kJ/mol, celle des liaisons rompues ${Eromp} kJ/mol. Quelle est la variation d'énergie ΔE ? (en kJ/mol)`,
      type:"number",answer:dE,
      explain:`ΔE = ${Eform} − ${Eromp} = <b>${dE} kJ/mol</b>. Négatif → réaction exothermique (dégagement d'énergie).`};
  }}
@@ -2875,7 +2875,7 @@ const G_P1_LUM=[
  {lvl:"facile",make(){
    const f=pick([10,20,25]),u=pick([2*f,3*f,4*f]),v=f*u/(u-f);
    const vs=String(Math.round(v*100)/100).replace(".",",");
-   return{prompt:`Lentille mince (f = ${f} cm), objet à u = ${u} cm. 1/f = 1/u + 1/v → v = ? (en cm)`,
+   return{prompt:`Une lentille mince de foyer image f = ${f} cm forme l'image d'un objet placé à u = ${u} cm. Où se forme l'image ? (en cm)`,
      type:"number",answer:Math.round(v*100)/100,tol:0.01,
      viz:{kind:"lentille",f:f,u:u},
      explain:`1/v = 1/${f} − 1/${u} → v = <b>${vs} cm</b>.`};
@@ -2883,7 +2883,7 @@ const G_P1_LUM=[
  {lvl:"moyen",make(){
    const h=pick([2,3]),v=pick([4,6,8]);
    const G=Math.round(v/h*100)/100;
-   return{prompt:`Grandissement G = image/objet. Si l'image mesure ${v} cm et l'objet ${h} cm, G = ?`,
+   return{prompt:`L'image mesure ${v} cm et l'objet ${h} cm. Quel est le grandissement G ?`,
      type:"number",answer:Math.round(v/h*100)/100,tol:0.01,
      explain:`G = ${v}/${h} = <b>${String(G).replace(".",",")}</b>. G > 1 → image agrandie ; G < 0 → image inversée.`};
  }},
@@ -2900,7 +2900,7 @@ const G_P1_LUM=[
  {lvl:"difficile",make(){
    const fp=pick([4,5,6,7,8]);
    const lam=Math.round(3e8/(fp*1e14)*1e9);
-   return{prompt:`La fréquence d'une radiation est f = ${fp} × 10¹⁴ Hz. Quelle est sa longueur d'onde λ = c/f ? (en nm)`,
+   return{prompt:`La fréquence d'une radiation est f = ${fp} × 10¹⁴ Hz. Quelle est sa longueur d'onde ? (en nm)`,
      type:"number",answer:lam,tol:0.05,
      explain:`λ = c/f = 3 × 10⁸ / (${fp} × 10¹⁴) = ${Math.round(3/fp*1000)/1000} × 10⁻⁷ m = <b>${lam} nm</b>.`};
  }}
