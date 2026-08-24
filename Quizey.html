@@ -1107,7 +1107,7 @@ let _s2flip=0; /* alternance PGCD / PPCM entre tirages consécutifs */
 const G_S2_NUM=[
  {lvl:"facile",make(){
    const a=Ri(2,7),b=Ri(0,4);
-   return{prompt:`Calcule 2${sup(a)} × 2${sup(b)} = 2ᶜ. Quel est c ?`,
+   return{prompt:`Calcule 2${sup(a)} × 2${sup(b)} = 2<sup>c</sup>. Quel est c ?`,
     type:"number",answer:a+b,
     explain:`Même base : on additionne les exposants — ${a} + ${b} = <b>${a+b}</b>.`};
  }},
@@ -1166,7 +1166,7 @@ const G_S2_VECT=[
    const u=[Ri(1,4),Ri(1,4)],k=Ri(2,6);
    return{prompt:`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${k*u[0]} ; ${k*u[1]}). Sachant que v⃗ = k · u⃗, calcule k.`,
     type:"number",answer:k,
-    explain:`v⃗ = k·u⃗ ⇒ k = vₓ / uₓ = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2ᵉ coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};
+    explain:`v⃗ = k·u⃗ ⇒ k = v<sub>x</sub> / u<sub>x</sub> = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2<sup>e</sup> coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};
  }},
  {lvl:"moyen",make(){
    const d=pick([[3,4,5],[5,12,13],[8,15,17],[9,12,15]]);
@@ -1210,6 +1210,83 @@ const G_S2_STAT=[
    return{prompt:`On sait que P(A) = ${F(a[0],a[1])} et P(B|A) = ${F(b[0],b[1])}. Calcule P(A ∩ B).`,
     type:"frac",answer:fa(n,d),
     explain:`Formule du produit : P(A ∩ B) = P(A) × P(B|A) = ${F(a[0],a[1])} × ${F(b[0],b[1])} = <b>${F(n,d)}</b>.`};
+ }}
+];
+
+/* ---------- SECONDE — Trigonométrie (nouveau — BO 2020 : sin/cos dans le triangle rectangle) ---------- */
+const G_S2_TRIG=[
+ {lvl:"facile",make(){
+   const T=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]);
+   const ab=T[0],ac=T[1],bc=T[2];
+   if(pick([true,false]))
+     return{prompt:`Le triangle ABC est rectangle en A, avec AB = ${ab} et AC = ${ac}. Calcule sin(B).`,
+      type:"frac",answer:fa(ac,bc),
+      explain:`Pour l'angle B : le côté opposé est AC, l'hypoténuse est BC = ${bc} (Pythagore).<br>sin(B) = opposé / hypoténuse = AC / BC = <b>${F(ac,bc)}</b>.`};
+   return{prompt:`Le triangle ABC est rectangle en A, avec AB = ${ab} et AC = ${ac}. Calcule cos(B).`,
+    type:"frac",answer:fa(ab,bc),
+    explain:`Pour l'angle B : le côté adjacent est AB, l'hypoténuse est BC = ${bc} (Pythagore).<br>cos(B) = adjacent / hypoténuse = AB / BC = <b>${F(ab,bc)}</b>.`};
+ }},
+ {lvl:"moyen",make(){
+   const T=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]);
+   const ab=T[0],ac=T[1],bc=T[2];
+   const k=pick([2,3,4,5]);
+   if(pick([true,false]))
+     return{prompt:`Le triangle ABC est rectangle en A. On sait que sin(B) = ${F(ac,bc)} et BC = ${bc*k}. Calcule AC.`,
+      type:"number",answer:ac*k,
+      explain:`sin(B) = opposé / hypoténuse = AC / BC.<br>Donc AC = sin(B) × BC = ${F(ac,bc)} × ${bc*k} = <b>${ac*k}</b>.`};
+   return{prompt:`Le triangle ABC est rectangle en A. On sait que cos(B) = ${F(ab,bc)} et BC = ${bc*k}. Calcule AB.`,
+    type:"number",answer:ab*k,
+    explain:`cos(B) = adjacent / hypoténuse = AB / BC.<br>Donc AB = cos(B) × BC = ${F(ab,bc)} × ${bc*k} = <b>${ab*k}</b>.`};
+ }},
+ {lvl:"difficile",make(){
+   const T=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]);
+   const ab=T[0],ac=T[1],bc=T[2];
+   const B=Math.round(Math.atan2(ac,ab)*180/Math.PI),C=90-B;
+   const useCos=pick([true,false]),num=useCos?ab:ac;
+   const opts=["≈ "+C+"°","≈ 45°","≈ 60°"].filter(x=>x!=="≈ "+B+"°");
+   return qcm(`Le triangle ABC est rectangle en A. On sait que ${useCos?"cos":"sin"}(B) = ${F(num,bc)}. Quelle est la mesure de l'angle B ?`,
+    "≈ "+B+"°",opts,
+    `${useCos?"cos":"sin"}(B) = ${F(num,bc)} ≈ ${((num/bc)*1000).toFixed(0)/1000} → B = ${useCos?"arccos":"arcsin"}(…) ≈ <b>${B}°</b> (calculette en mode degrés).<br>L'angle C vaut 90° − B = ${C}° : ne pas confondre les deux angles !`);
+ }}
+];
+
+/* ---------- SECONDE — Espace (nouveau — BO 2020 : solides, coupes, Thalès dans l'espace) ---------- */
+const G_S2_ESPACE=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"Une coupe d'un cube par un plan PARALLÈLE à l'une de ses faces donne une section de forme…",a:"un carré",ws:["un rectangle","un triangle","un hexagone"],tip:"le plan « recopie » la face : même forme, même taille"},
+    {p:"Combien d'arêtes a un cube ?",a:"12",ws:["6","8","20"],tip:"un cube a 8 sommets, 6 faces et 12 arêtes"},
+    {p:"Une droite PARALLÈLE à un plan a combien de point(s) commun(s) avec ce plan ?",a:"aucun",ws:["un seul","deux","une infinité"],tip:"parallèle = la droite ne touche jamais le plan : 0 point commun"},
+    {p:"Combien de faces a un cube ?",a:"6",ws:["4","8","12"],tip:"6 faces carrées, 8 sommets, 12 arêtes"},
+    {p:"Un cube a combien de sommets ?",a:"8",ws:["6","12","20"],tip:"8 sommets, 6 faces, 12 arêtes"},
+    {p:"Dans un cube, deux faces situées « en face l'une de l'autre » sont…",a:"parallèles",ws:["perpendiculaires","orthogonales","identiques"],tip:"les faces opposées d'un cube sont parallèles (elles ne se coupent jamais)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"Un cube a pour arête 4. Quelle est la longueur de la DIAGONALE D'UNE FACE ?",a:"4√2",ws:["4√3","8","4"],tip:"une face est un carré de côté 4 : diagonale = 4√2 (Pythagore : 4² + 4² = 32)"},
+    {p:"Un cube a pour arête 3. Quelle est la longueur de sa DIAGONALE (d'un sommet au sommet opposé) ?",a:"3√3",ws:["3√2","9","6"],tip:"diagonale du cube = arête × √3 (Pythagore appliqué deux fois)"},
+    {p:"Un cube a pour arête 5. Quelle est la longueur de la diagonale d'une face ?",a:"5√2",ws:["5√3","10","5"],tip:"diagonale d'un carré = côté × √2"},
+    {p:"Un cube a pour arête 6. Quelle est la longueur de sa diagonale ?",a:"6√3",ws:["6√2","12","6"],tip:"diagonale du cube = 6√3 (et non 6√2 : c'est la diagonale de la face qui vaut 6√2)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const cases=[
+    {c:12,k:"1/3",ans:4},
+    {c:10,k:"1/2",ans:5},
+    {c:16,k:"1/4",ans:4},
+    {c:12,k:"2/3",ans:8},
+    {c:16,k:"3/4",ans:12},
+    {c:15,k:"2/3",ans:10}
+   ];
+   const e=pick(cases);
+   return{prompt:`La pyramide SABCD a pour base un carré de côté ${e.c}. Un plan PARALLÈLE à la base (ABCD) coupe les arêtes latérales en A', B', C', D', avec SA' = ${e.k} × SA. Calcule le côté A'B' du carré de section.`,
+    type:"number",answer:e.ans,
+    explain:`Thalès dans l'espace : le plan parallèle à la base recoupe la pyramide en une « réduction » homothétique de centre S et de rapport k = ${e.k}.<br>Donc A'B' = k × AB = ${e.k} × ${e.c} = <b>${e.ans}</b>.`};
  }}
 ];
 
@@ -1278,23 +1355,23 @@ const G_SUITES=[
  {lvl:"facile",make(){
    const u0=Ri(-5,15),r=pick([-4,-3,-2,-1,1,2,3,4]),n=Ri(2,8);
    const sub=x=>"₀₁₂₃₄₅₆₇₈"[x];
-   return{prompt:`(uₙ) est arithmétique de premier terme u₀ = ${u0} et de raison r = ${r}. Calcule u${sub(n)}.`,
+   return{prompt:`(u<sub>n</sub>) est arithmétique de premier terme u₀ = ${u0} et de raison r = ${r}. Calcule u${sub(n)}.`,
     type:"number",answer:u0+n*r,
-    explain:`uₙ = u₀ + n · r = ${u0} + ${n} × (${r}) = <b>${u0+n*r}</b>.`};
+    explain:`u<sub>n</sub> = u₀ + n · r = ${u0} + ${n} × (${r}) = <b>${u0+n*r}</b>.`};
  }},
  {lvl:"moyen",make(){
    const u0=pick([1,2,3,-1,-2,-3]),q=pick([2,-2,3]),n=Ri(2,4);
    const sub=x=>"₀₁₂₃₄₅₆₇₈"[x];
    const an=u0*Math.pow(q,n);
-   return{prompt:`(uₙ) est géométrique de premier terme u₀ = ${u0} et de raison q = ${q}. Calcule u${sub(n)}.`,
+   return{prompt:`(u<sub>n</sub>) est géométrique de premier terme u₀ = ${u0} et de raison q = ${q}. Calcule u${sub(n)}.`,
     type:"number",answer:an,
-    explain:`uₙ = u₀ × q${sup(n)} = ${u0} × ${q}${sup(n)} = <b>${an}</b>.`};
+    explain:`u<sub>n</sub> = u₀ × q${sup(n)} = ${u0} × ${q}${sup(n)} = <b>${an}</b>.`};
  }},
  {lvl:"difficile",make(){
    const a=pick([2,3,-2]),b=pick([-4,-2,2,4]),u0=pick([-3,-2,-1,1,2,3]);
    const seq=[u0];for(let i=0;i<3;i++)seq.push(a*seq[i]+b);
    const bt=b<0?` − ${-b}`:` + ${b}`;
-   return{prompt:`(uₙ) est définie par u₀ = ${u0} et uₙ₊₁ = ${a}uₙ${bt}. Calcule u₃.`,
+   return{prompt:`(u<sub>n</sub>) est définie par u₀ = ${u0} et u<sub>n+1</sub> = ${a}u<sub>n</sub>${bt}. Calcule u₃.`,
     type:"number",answer:seq[3],
     explain:`u₁ = ${a} × ${u0}${bt} = ${seq[1]} ; u₂ = ${a} × ${seq[1]}${bt} = ${seq[2]} ; u₃ = ${a} × ${seq[2]}${bt} = <b>${seq[3]}</b>.`};
  }}
@@ -1366,7 +1443,7 @@ const G_DERIV=[
 const G_LOGEXP=[
  {lvl:"facile",make(){
    const a=Ri(-5,5),b=Ri(-5,5);
-   return{prompt:`Sachant que e${sup(a)} × e${sup(b)} = eᶜ, calcule c.`,
+   return{prompt:`Sachant que e${sup(a)} × e${sup(b)} = e<sup>c</sup>, calcule c.`,
     type:"number",answer:a+b,
     explain:`Propriété de l'exponentielle : e^a × e^b = e^(a+b).<br>Donc c = ${a} + ${b} = <b>${a+b}</b>.`};
  }},
@@ -1378,9 +1455,9 @@ const G_LOGEXP=[
  }},
  {lvl:"difficile",make(){
    const n=pick([1,2,3]);
-   return qcm(`Quelle est la limite de eˣ / x${sup(n)} quand x → +∞ ?`,
+   return qcm(`Quelle est la limite de e<sup>x</sup> / x${sup(n)} quand x → +∞ ?`,
     `+∞`,[`0`,`−∞`,`La limite n'existe pas`],
-    `Croissance comparée : l'exponentielle l'emporte sur toute puissance de x.<br>eˣ / x${sup(n)} → <b>+∞</b> (et réciproquement x${sup(n)} / eˣ → 0).`);
+    `Croissance comparée : l'exponentielle l'emporte sur toute puissance de x.<br>e<sup>x</sup> / x${sup(n)} → <b>+∞</b> (et réciproquement x${sup(n)} / e<sup>x</sup> → 0).`);
  }}
 ];
 
@@ -1509,7 +1586,7 @@ const G_T_DEN=[
    const n=Ri(4,9),k=pick([2,3]),an=Math.pow(n,k);
    return{prompt:`Combien de mots de ${k} lettres peut-on former avec un alphabet de ${n} lettres (répétition autorisée) ?`,
     type:"number",answer:an,
-    explain:`Principe multiplicatif : ${n} choix pour la 1ʳᵉ lettre, ${n} pour la 2ᵉ, etc.<br>Nombre de k-uplets = ${n}${sup(k)} = <b>${an}</b>.`};
+    explain:`Principe multiplicatif : ${n} choix pour la 1<sup>er</sup> lettre, ${n} pour la 2<sup>e</sup>, etc.<br>Nombre de k-uplets = ${n}${sup(k)} = <b>${an}</b>.`};
  }},
  {lvl:"moyen",make(){
    const n=Ri(3,7);
@@ -1595,7 +1672,7 @@ const G_T_EXP=[
    const a=Ri(-5,5);
    return{prompt:`Calcule ln(e${sup(a)}).`,
     type:"number",answer:a,
-    explain:`ln est la fonction réciproque de exp : ln(eˣ) = x pour tout réel x.<br>Donc ln(e${sup(a)}) = <b>${a}</b>.`};
+    explain:`ln est la fonction réciproque de exp : ln(e<sup>x</sup>) = x pour tout réel x.<br>Donc ln(e${sup(a)}) = <b>${a}</b>.`};
  }},
  {lvl:"moyen",make(){
    const a=Ri(2,12);
@@ -1654,9 +1731,9 @@ const G_T_DER=[
     explain:`Une primitive de x${sup(d.n)} est F(x) = x${sup(d.n+1)} / ${d.n+1}.<br>∫₀${sup(d.a)} x${sup(d.n)} dx = F(${d.a}) − F(0) = <b>${F(d.ans[0],d.ans[1])}</b>.`};
  }},
  {lvl:"difficile",make(){
-   return{prompt:`Calcule ∫₀¹ x · eˣ dx (intégration par parties).`,
+   return{prompt:`Calcule ∫₀¹ x · e<sup>x</sup> dx (intégration par parties).`,
     type:"number",answer:1,
-    explain:`Par parties : u = x, dv = eˣ dx → du = dx, v = eˣ.<br>∫₀¹ x·eˣ dx = [x·eˣ]₀¹ − ∫₀¹ eˣ dx = e − (e − 1) = <b>1</b>.`};
+    explain:`Par parties : u = x, dv = e<sup>x</sup> dx → du = dx, v = e<sup>x</sup>.<br>∫₀¹ x·e<sup>x</sup> dx = [x·e<sup>x</sup>]₀¹ − ∫₀¹ e<sup>x</sup> dx = e − (e − 1) = <b>1</b>.`};
  }}
 ];
 
@@ -1789,15 +1866,17 @@ const SUBJECTS_MATH={
   {id:"s2_nombres",name:"Nombres & algèbre",sym:"PGCD · Viète",gens:G_S2_NUM},
   {id:"s2_fonctions",name:"Fonctions & variations",sym:"f(x)",gens:G_S2_FONC},
   {id:"s2_vecteurs",name:"Vecteurs & droites",sym:"v = ku · pente",gens:G_S2_VECT},
-  {id:"s2_stats",name:"Stats & probabilités",sym:"P(A) · moyenne",gens:G_S2_STAT}
+  {id:"s2_stats",name:"Stats & probabilités",sym:"P(A) · moyenne",gens:G_S2_STAT},
+  {id:"s2_trig",name:"Trigonométrie",sym:"sin · cos",gens:G_S2_TRIG},
+  {id:"s2_espace",name:"Espace",sym:"cube · pyramide",gens:G_S2_ESPACE}
   ],
   premiere:[
   {id:"p1_log",name:"Logique & algorithmique",sym:"A ⇒ B · lst",gens:G_P1_LOG},
   {id:"var",name:"Fonctions & variations",sym:"↗ · y = ax + b",gens:G_VAR},
-  {id:"suites",name:"Suites",sym:"uₙ",gens:G_SUITES},
+  {id:"suites",name:"Suites",sym:"u<sub>n</sub>",gens:G_SUITES},
   {id:"equa2",name:"Équations & polynômes du 2nd degré",sym:"Δ = b²−4ac",gens:G_EQ2},
   {id:"deriv",name:"Dérivées",sym:"f′(x)",gens:G_DERIV},
-  {id:"logexp",name:"Exponentielle",sym:"eˣ",gens:G_LOGEXP},
+  {id:"logexp",name:"Exponentielle",sym:"e<sup>x</sup>",gens:G_LOGEXP},
   {id:"trig",name:"Trigonométrie",sym:"sin · cos",gens:G_TRIG},
   {id:"vect",name:"Vecteurs & produit scalaire",sym:"u·v",gens:G_VECT},
   {id:"proba",name:"Probabilités",sym:"P(B|A) · E(X)",gens:G_PROBA}
@@ -1807,9 +1886,9 @@ const SUBJECTS_MATH={
   {id:"t_den",name:"Combinatoire & dénombrement",sym:"C(n,k) · n!",gens:G_T_DEN},
   {id:"t_espace",name:"Espace & vecteurs 3D",sym:"u·v = 0",gens:G_T_ESP},
   {id:"t_suites",name:"Suites & convergence",sym:"lim qⁿ",gens:G_T_SUIT},
-  {id:"t_exp",name:"Exponentielle & logarithme",sym:"eˣ · ln",gens:G_T_EXP},
+  {id:"t_exp",name:"Exponentielle & logarithme",sym:"e<sup>x</sup> · ln",gens:G_T_EXP},
   {id:"t_trig",name:"Sinus & cosinus",sym:"(cos)′ = −sin",gens:G_T_TRIG},
-  {id:"t_derivee",name:"Dérivées, primitives & intégrales",sym:"∫₀¹ x·eˣ",gens:G_T_DER},
+  {id:"t_derivee",name:"Dérivées, primitives & intégrales",sym:"∫₀¹ x·e<sup>x</sup>",gens:G_T_DER},
   {id:"t_proba",name:"Probabilités (binomiale)",sym:"B(n;p)",gens:G_T_PROBA}
   ],
   /* POOL « expertes » MATHS UNIQUEMENT : les 3 thèmes du programme officiel
@@ -1886,7 +1965,7 @@ const G_S2_MOLES=[
  {lvl:"facile",make(){
    const n=pick([1,2,3,4,5]),N=Math.round(n*6.02*10)/10;
    const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
-   return{prompt:`Le nombre de particules vaut N = n × Nₐ avec Nₐ ≈ 6,02 × 10²³. Pour n = ${ns} mol, N = … × 10²³ ?`,
+   return{prompt:`Le nombre de particules vaut N = n × N<sub>a</sub> avec N<sub>a</sub> ≈ 6,02 × 10²³. Pour n = ${ns} mol, N = … × 10²³ ?`,
      type:"number",answer:N,tol:0.01,
      explain:`N = n × 6,02 = ${ns} × 6,02 = <b>${Ns}</b> (en 10²³ particules).`};
  }},
@@ -1988,7 +2067,7 @@ const G_S2_FORCE=[
      explain:`P = m × g = ${m} × 9,8 = <b>${Ps} N</b>.`};
  }},
  {lvl:"moyen",make(){
-   return qcm("La 3ᵉ loi de Newton (action-réaction) dit que si A exerce une force F sur B, alors…",
+   return qcm("La 3<sup>e</sup> loi de Newton (action-réaction) dit que si A exerce une force F sur B, alors…",
         "B exerce sur A une force égale et de signe opposé",["A ne subit aucune force","B exerce une force plus grande sur A","les deux forces s'annulent sur A"],
         `Par <b>action-réaction</b>, B exerce sur A une force de <b>même intensité</b>, même direction, <b>sens opposé</b>. Ces deux forces agissent sur des objets DIFFÉRENTS : elles ne s'annulent jamais.`)
  }},
@@ -2079,7 +2158,7 @@ const G_NEWTON=[
    const m=pick([2,4,5,10]),F=m*pick([2,3,4,5,6,8,10]);
    return{prompt:`Une force résultante de ${F} N s'exerce sur un objet de masse ${m} kg. Quelle est l'accélération a = F/m ? (en m/s²)`,
      type:"number",answer:F/m,
-     explain:`2ᵉ loi de Newton : a = F/m = ${F} / ${m} = <b>${F/m} m/s²</b>.`};
+     explain:`2<sup>e</sup> loi de Newton : a = F/m = ${F} / ${m} = <b>${F/m} m/s²</b>.`};
  }},
  {lvl:"facile",make(){
    const m=pick([2,3,5]),a=pick([2,4,5,8]);
@@ -2088,9 +2167,9 @@ const G_NEWTON=[
      explain:`F = m × a = ${m} × ${a} = <b>${m*a} N</b>.`};
  }},
  {lvl:"moyen",make(){
-   return qcm("Selon la 2ᵉ loi de Newton, si la force résultante sur un objet est NULLE, alors…",
+   return qcm("Selon la 2<sup>e</sup> loi de Newton, si la force résultante sur un objet est NULLE, alors…",
         "il est au repos ou en mouvement rectiligne uniforme",["il accélère","il tourne","sa masse devient nulle"],
-        `Force résultante nulle → accélération nulle : l'objet est <b>au repos ou en MRU</b> (1ʳᵉ loi de Newton, principe d'inertie).`)
+        `Force résultante nulle → accélération nulle : l'objet est <b>au repos ou en MRU</b> (1<sup>er</sup> loi de Newton, principe d'inertie).`)
  }},
  {lvl:"moyen",make(){
    const v0=pick([5,10,15]),a=pick([2,4,5]),t=pick([2,3,4]);
@@ -2515,7 +2594,7 @@ const G_MOLES=[
  {lvl:"difficile",make(){
    const n=pick([1,2,3]),N=Math.round(n*6.02*10)/10;
    const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
-   return{prompt:`N = n × Nₐ. Pour n = ${ns} mol, combien de particules N = … × 10²³ ?`,
+   return{prompt:`N = n × N<sub>a</sub>. Pour n = ${ns} mol, combien de particules N = … × 10²³ ?`,
      type:"number",answer:N,tol:0.01,
      explain:`N = ${ns} × 6,02 = <b>${Ns}</b> (en 10²³).`};
  }}
@@ -3320,6 +3399,83 @@ const G_TRAD=[
      `<b>${e.de}</b> — ${e.tip}.`);
  }}
 ];
+/* ---------- Allemand : passiv (wird/wurde + Partizip II) ---------- */
+const G_DE_PASSIV=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"Der Brief ___ von Maria geschrieben.",a:"wird",ws:["wurde","ist","werde"],tip:"Passiv Präsens : wird + Partizip II"},
+    {p:"Die Hausaufgaben ___ jeden Abend gemacht.",a:"werden",ws:["wurden","ist","sind"],tip:"sujet pluriel → werden + Partizip II (jeden Abend = présent)"},
+    {p:"Das Fenster ___ vom Lehrer geöffnet.",a:"wird",ws:["wurde","ist","werde"],tip:"wird + Partizip II = Passiv Präsens"},
+    {p:"Das Lied ___ von den Kindern gesungen.",a:"wird",ws:["wurde","ist","sind"],tip:"wird + Partizip II (sujet singulier)"},
+    {p:"Die Straße ___ heute repariert.",a:"wird",ws:["wurde","ist","wird worden"],tip:"heute (présent) → wird + Partizip II"},
+    {p:"Das Brot ___ in der Bäckerei gebacken.",a:"wird",ws:["wurde","ist","sind"],tip:"wird + Partizip II = Passiv Präsens"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"Das Haus ___ 1900 gebaut.",a:"wurde",ws:["wird","ist","wurden"],tip:"1900 (passé) → wurde + Partizip II"},
+    {p:"Die Straße ___ letztes Jahr saniert.",a:"wurde",ws:["wird","ist","werde"],tip:"letztes Jahr → wurde + Partizip II"},
+    {p:"Die Briefe ___ gestern geschrieben.",a:"wurden",ws:["wurde","ist","sind"],tip:"pluriel + passé → wurden + Partizip II"},
+    {p:"Der Film ___ 1998 gedreht.",a:"wurde",ws:["wird","ist","sind"],tip:"1998 → wurde + Partizip II"},
+    {p:"Die Brücke ___ im letzten Sommer repariert.",a:"wurde",ws:["wird","ist","wurden"],tip:"im letzten Sommer → wurde + Partizip II"},
+    {p:"Die Karten ___ schnell verkauft.",a:"wurden",ws:["wurde","ist","wird"],tip:"sujet pluriel + passé → wurden + Partizip II"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const pool=[
+    {p:"AKTIV : « Der Lehrer erklärt die Grammatik. » — PASSIV ?",a:"Die Grammatik wird vom Lehrer erklärt.",ws:["Die Grammatik wurde vom Lehrer erklärt.","Der Lehrer wird die Grammatik erklärt.","Die Grammatik wird erklärt vom Lehrer."],tip:"présent → wird + Partizip II ; le complément d'objet devient le sujet"},
+    {p:"AKTIV : « Maria hat das Zimmer sauber gemacht. » — PASSIV ?",a:"Das Zimmer wurde von Maria sauber gemacht.",ws:["Das Zimmer wird von Maria sauber gemacht.","Das Zimmer hat von Maria sauber gemacht.","Das Zimmer wurde von Maria sauber machen."],tip:"passé → wurde + Partizip II (on ne met plus « hat »)"},
+    {p:"AKTIV : « Die Kinder haben das Haus gebaut. » — PASSIV ?",a:"Das Haus wurde von den Kindern gebaut.",ws:["Das Haus wird von den Kindern gebaut.","Das Haus wurde von den Kindern bauen.","Das Haus bauen von den Kindern wurde."],tip:"passé + pluriel → wurde + Partizip II (« von + datif »)"},
+    {p:"AKTIV : « Man produziert den Kaffee in Brasilien. » — PASSIV ?",a:"Der Kaffee wird in Brasilien produziert.",ws:["Der Kaffee wurde in Brasilien produziert.","Der Kaffee wird in Brasilien produzieren.","Der Kaffee produziert in Brasilien wird."],tip:"« man » disparaît : passif sans « von » (présent → wird)"},
+    {p:"AKTIV : « Der Wind hat das Fenster geöffnet. » — PASSIV ?",a:"Das Fenster wurde vom Wind geöffnet.",ws:["Das Fenster wird vom Wind geöffnet.","Das Fenster wurde vom Wind öffnen.","Das Fenster öffnet vom Wind wurde."],tip:"passé → wurde + Partizip II"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }}
+];
+/* ---------- Allemand : Konjunktiv II (würde + Infinitiv, hätte/wäre) ---------- */
+const G_DE_KONJ=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"___ Sie mir bitte helfen?",a:"Würden",ws:["Können","Haben","Sind"],tip:"würde + Infinitiv = politesse (Konjunktiv II)"},
+    {p:"Entschuldigung, ___ Sie das bitte wiederholen?",a:"könnten",ws:["können","habt","wollen"],tip:"könnten = Konjunktiv II de « können » (très poli)"},
+    {p:"Guten Tag, ich ___ gern ein Ticket nach Berlin.",a:"hätte",ws:["habe","will","bin"],tip:"« Ich hätte gern … » = Konjunktiv II de « haben » (poli)"},
+    {p:"___ du mir bitte das Salz geben?",a:"Könntest",ws:["Kannst","Hast","Bist"],tip:"könntest = Konjunktiv II (tu), poli"},
+    {p:"« Können Sie mir helfen? » — encore plus poli avec le Konjunktiv II ?",a:"Könnten Sie mir helfen?",ws:["Können Sie mir zu helfen?","Helfen Sie mir können?","Sie können mir zu helfen?"],tip:"könnten + sujet + … + Infinitiv à la fin"},
+    {p:"Das wäre sehr nett, danke! — « wäre » est ici le Konjunktiv II de…",a:"sein",ws:["haben","werden","sind"],tip:"wäre = Konjunktiv II de « sein »"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"Wenn ich Zeit ___, würde ich mitkommen.",a:"hätte",ws:["habe","werde","will"],tip:"hätte = Konjunktiv II de « haben » (hypothèse au présent)"},
+    {p:"Ich ___ lieber zu Hause bleiben.",a:"würde",ws:["werde","will","bin"],tip:"würde + Infinitiv = « je préfèrerais rester »"},
+    {p:"Wenn es nicht so teuer ___, würde ich es kaufen.",a:"wäre",ws:["ist","wird","werde"],tip:"wäre = Konjunktiv II de « sein »"},
+    {p:"Wenn ich ein Flugzeug ___, würde ich um die Welt fliegen.",a:"hätte",ws:["habe","werde","will"],tip:"hätte = Konjunktiv II de « haben »"},
+    {p:"Was wäre, wenn wir morgen frei ___.?",a:"wären",ws:["sind","werden","haben"],tip:"wären = Konjunktiv II pluriel de « sein »"},
+    {p:"Wenn du mehr Glück ___, hättest du gewonnen.",a:"gehabt",ws:["hast","hättest","hast gehabt"],tip:"hättest + Partizip II (Konjunktiv II du passé)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const pool=[
+    {p:"Ich ___ dich gestern angerufen, aber ich hatte keine Zeit.",a:"hätte",ws:["habe","hat","würde"],tip:"hätte + Partizip II = Konjunktiv II du passé (hätte angerufen)"},
+    {p:"Wenn ich mehr gelernt ___, hätte ich die Prüfung bestanden.",a:"hätte",ws:["habe","hat","wurde"],tip:"hätte + gelernt (Partizip II) = passé du Konjunktiv II"},
+    {p:"Was ___, wenn es morgen schneite?",a:"würdest du machen",ws:["machst du","wirst du machen","tust du"],tip:"würdest du + Infinitiv à la fin (2e personne)"},
+    {p:"Er ___ gern ein Auto kaufen, aber es ist zu teuer.",a:"würde",ws:["wird","will","kann"],tip:"würde + Infinitiv (hypothèse : il ne peut pas s'en offrir un)"},
+    {p:"Ohne dich ___, ich das nie geschafft.",a:"hätte",ws:["habe","hat","würde"],tip:"hätte + Partizip II (sans « sans toi » = passé du Konjunktiv II)"},
+    {p:"Sie ___ sich mehr freuen, wenn sie die Nachricht hörten.",a:"würden",ws:["werden","wollen","können"],tip:"würden + Infinitiv (pluriel)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }}
+];
 /* ================= ANGLAIS A2/B1 (contenu seul — branché via SUBJECTS_EN) =================
    Toutes les questions sont des QCM via qcm(prompt, bonne, distracteurs, explain) →
    {prompt, type:"choice", options, correct, explain} — options mélangées, correct = index
@@ -3582,6 +3738,82 @@ const G_EN_TRAD=[
      `<b>${e.en}</b> — ${e.tip}.`);
  }}
 ];
+/* ---------- Anglais : passif (be + past participle) ---------- */
+const G_EN_PASSIF=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"English ___ in many countries.",a:"is spoken",ws:["speaks","is speak","spoken"],tip:"passif au présent : is/are + past participle"},
+    {p:"The homework ___ every day.",a:"is done",ws:["does","is do","do"],tip:"do → done : is + done"},
+    {p:"These apples ___ in France.",a:"are grown",ws:["grows","are grow","grown"],tip:"sujet pluriel → are + past participle"},
+    {p:"The bridge ___ over the river.",a:"is built",ws:["builds","is build","build"],tip:"passif au présent : is + built"},
+    {p:"Your room ___ by your mum.",a:"is cleaned",ws:["cleans","is clean","clean"],tip:"is + cleaned (past participle)"},
+    {p:"This song ___ by a famous band.",a:"is written",ws:["writes","is write","write"],tip:"write → written : is + written"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"The bridge ___ in 1998.",a:"was built",ws:["is built","was build","builded"],tip:"passif au passé : was/were + past participle"},
+    {p:"My bike ___ yesterday.",a:"was stolen",ws:["is stolen","was steal","stole"],tip:"yesterday → was + stolen"},
+    {p:"The window ___ by the kids last night.",a:"was broken",ws:["is broken","was break","broke"],tip:"was + broken (break → broken)"},
+    {p:"The letters ___ last night.",a:"were written",ws:["was written","were write","wrote"],tip:"pluriel + passé → were + written"},
+    {p:"The exam ___ by the teacher.",a:"was marked",ws:["is marked","was mark","marked"],tip:"was + marked"},
+    {p:"The house ___ two years ago.",a:"was sold",ws:["is sold","was sell","solded"],tip:"ago → passé : was + sold"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const pool=[
+    {p:"The new stadium ___ next year.",a:"will be built",ws:["will build","will be build","is built"],tip:"passif au futur : will be + past participle"},
+    {p:"The documents ___ before the meeting.",a:"must be printed",ws:["must print","must be print","must printed"],tip:"modal passif : modal + be + past participle"},
+    {p:"___ the homework done by the teacher yesterday?",a:"Was",ws:["Were","Did","Is"],tip:"question au passif au passé : Was + sujet + past participle ?"},
+    {p:"The car can ___ in the garage.",a:"be parked",ws:["park","be park","parks"],tip:"modal passif : can + be + parked"},
+    {p:"It ___ in 1889.",a:"was designed",ws:["is designed","was design","designed"],tip:"1889 → passé : was + designed"},
+    {p:"The room ___ every morning.",a:"has to be cleaned",ws:["has to clean","has to be clean","has cleaned"],tip:"passif avec have to : has to be + past participle"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }}
+];
+/* ---------- Anglais : conditionnels (0, 1er, 2e) ---------- */
+const G_EN_COND=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"If you ___ water to 100°C, it boils.",a:"heat",ws:["heated","will heat","would heat"],tip:"zéro conditionnel : présent + présent (fait général)"},
+    {p:"Plants die if they ___ no light.",a:"get",ws:["got","will get","would get"],tip:"zéro conditionnel : présent simple des deux côtés"},
+    {p:"If I ___ time, I help you with your homework.",a:"have",ws:["had","will have","would have"],tip:"zéro conditionnel : If + présent, présent"},
+    {p:"If the sun ___, the flowers close.",a:"sets",ws:["set","will set","would set"],tip:"zéro conditionnel : she/it → sets (+ s)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"If it ___ tomorrow, we will stay at home.",a:"rains",ws:["rained","will rain","would rain"],tip:"1er conditionnel : If + présent, will + base"},
+    {p:"If she ___ the bus, she will be late.",a:"misses",ws:["missed","will miss","would miss"],tip:"If + présent (misses), will + verbe"},
+    {p:"We will be happy if you ___ to the party.",a:"come",ws:["came","will come","would come"],tip:"1er conditionnel : partie « if » au présent simple"},
+    {p:"If he ___ you, he will call you back.",a:"sees",ws:["saw","will see","would see"],tip:"If + présent, will + base form"},
+    {p:"They will fail the exam if they ___ now.",a:"don't start",ws:["didn't start","won't start","wouldn't start"],tip:"négation au présent : don't + base"},
+    {p:"If the weather is nice, we ___ a picnic.",a:"will have",ws:["will had","would have","have will"],tip:"partie principale : will + forme de base"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const pool=[
+    {p:"If I ___ you, I would apologize.",a:"were",ws:["am","will be","would be"],tip:"2e conditionnel : If + passé, would + base (« If I were… »)"},
+    {p:"If he had more money, he ___ a bigger flat.",a:"would rent",ws:["rents","will rent","would rented"],tip:"2e conditionnel : would + base form"},
+    {p:"« If I were rich, I would buy a boat. » — on parle d'une…",a:"hypothèse présente (irréelle)",ws:["prévision probable","fait général","hypothèse dans le passé"],tip:"If + were, would + base = 2e conditionnel"},
+    {p:"If she ___ free, she would come to the party.",a:"were",ws:["is","will be","would be"],tip:"2e conditionnel : If + were, would + base"},
+    {p:"I would travel more if I ___ more free time.",a:"had",ws:["have","will have","would have"],tip:"2e conditionnel : If + passé simple (had), would + base"},
+    {p:"What would you do if you ___ a million euros?",a:"won",ws:["win","will win","would win"],tip:"2e conditionnel : If + passé simple (won), would + base"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }}
+];
 /* ---------- REGISTRE PC — refondue le 2026-08-23 sur les programmes officiels (BO) ----------
    Seconde 9 / Première 13 / Terminale 13 thèmes (35 au total, 1 thème ≈ 1 section
    du programme de l'année). Ids uniques sur les 4 matières : préfixes s2_ / t_,
@@ -3594,7 +3826,7 @@ const SUBJECTS_PC={
   seconde:[
   {id:"s2_corps",name:"Corps purs & mélanges",sym:"espèces",gens:G_S2_CORPS},
   {id:"s2_dilution",name:"Solutions & dilution",sym:"C = m/V",gens:G_S2_DILU},
-  {id:"s2_moles",name:"Quantité de matière",sym:"N = n·Nₐ",gens:G_S2_MOLES},
+  {id:"s2_moles",name:"Quantité de matière",sym:"N = n·N<sub>a</sub>",gens:G_S2_MOLES},
   {id:"s2_energie",name:"Énergie & transformations",sym:"E (J)",gens:G_S2_ENER},
   {id:"s2_mouv",name:"Mouvement & vitesse",sym:"v = d/t",gens:G_S2_MOUV},
   {id:"s2_forces",name:"Forces & poids",sym:"P = m·g",gens:G_S2_FORCE},
@@ -3642,6 +3874,8 @@ const SUBJECTS_DE=[
  {id:"date",name:"Nombres, dates, heures",sym:"uhr",gens:G_DATE},
  {id:"phrasen",name:"Phrases utiles",sym:"Hallo",gens:G_PHRASEN},
  {id:"trad",name:"Mini-traductions",sym:"→DE",gens:G_TRAD},
+ {id:"passiv",name:"Passiv",sym:"wird + Part. II",gens:G_DE_PASSIV},
+ {id:"konj",name:"Konjunktiv II",sym:"würde + Inf.",gens:G_DE_KONJ},
 ];
 /* ---------- REGISTRE EN (anglais A2/B1) — branché via setMatiere/activeSubjects ---------- */
 /* Ids préfixés en_ : DE occupe déjà « vocab » et « trad » — THEME_BY_ID, bySub,
@@ -3653,6 +3887,8 @@ const SUBJECTS_EN=[
  {id:"en_q",name:"Questions",sym:"wh?",gens:G_EN_Q},
  {id:"en_phrases",name:"Phrases utiles",sym:"Hi!",gens:G_EN_PHRASES},
  {id:"en_trad",name:"Mini-traductions",sym:"→EN",gens:G_EN_TRAD},
+ {id:"en_passif",name:"Passif",sym:"be + part. II",gens:G_EN_PASSIF},
+ {id:"en_cond",name:"Conditionnels",sym:"if / would",gens:G_EN_COND},
 ];
 /* ================= ANNÉE PAR MATIÈRE (spec D2) =================
    L'année est indépendante par matière : on choisit d'abord la matière
@@ -3967,9 +4203,14 @@ function vzForce(spec,phase){
   }
   return vzWrap(s,"Masse sur un support"+(phase==="c"?" avec les forces à l'échelle":""));
 }
-/* ---------- PC (energie) : bilans d'énergie — barres E꜀ / Eₚ / Eₘ, valeurs en correction ---------- */
+/* ---------- PC (energie) : bilans d'énergie — barres Ec / Ep / Em, valeurs en correction.
+   Indices en <tspan> (SVG) : il n'existe pas de « c » minuscule en indice dans Unicode —
+   l'ancien « E꜀ » utilisait U+A700 (lettre « corne de bélier »), ABSENT de toutes les
+   polices → rendu « ? »/boîte à l'écran (corrigé 2026-08-24). Eₚ/Eₘ (U+209A/U+2098)
+   existaient, mais le tspan uniformise l'indice et reste fiable sur toutes les plateformes. */
 function vzBars(spec,phase){
-  const vals=[["E꜀",spec.ek||0],["Eₚ",spec.ep||0],["Eₘ",spec.em||0]];
+  const sub=(c)=>`<tspan dy="3" font-size="8">${c}</tspan>`;
+  const vals=[[`E${sub("c")}`,spec.ek||0],[`E${sub("p")}`,spec.ep||0],[`E${sub("m")}`,spec.em||0]];
   const mx=Math.max(1,Math.max.apply(null,vals.map(v=>v[1])));
   const base=172,top=30,bw=54,gap=30;
   let s="";
@@ -4385,7 +4626,7 @@ const MAT_DATA={
    lede:"Pour réussir en maths, il faut pratiquer : chaque question comprise renforce la suivante."
  },
  pc:{
-   noteTop:"F = m·a — 2ᵉ loi de Newton",
+   noteTop:"F = m·a — 2<sup>e</sup> loi de Newton",
    lede:"Pour réussir en physique-chimie, il faut relier les formules aux situations, gagner en rigueur et pratiquer."
  },
  de:{

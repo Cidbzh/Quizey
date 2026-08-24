@@ -1042,7 +1042,7 @@ console.log("\n[24] Registres par année — structure, ids, volume (refonte 202
   const env=buildEnv();const ctx=runApp(env);
   const probe=vm.runInContext("({SUBJECTS_MATH,SUBJECTS_PC,SUBJECTS_DE,SUBJECTS_EN,THEME_BY_ID})",ctx);
   /* 2026-08-23 : refonte maths ET PC sur les programmes officiels (BO) — 1 thème ≈ 1
-     section officielle. Maths : Seconde 6 / Première 9 / Terminale 8 thèmes,
+     section officielle. Maths : Seconde 8 / Première 9 / Terminale 8 thèmes,
      + 3 expertes (complexes, arithmétique, graphes) en POOL activable par
      case à cocher en Terminale (8 → 11 thèmes, plus une 4ᵉ année).
      PC : Seconde 9 / Première 13 / Terminale 13 — la stœchiométrie est en
@@ -1083,7 +1083,7 @@ console.log("\n[24] Registres par année — structure, ids, volume (refonte 202
       for(const s of reg[y]) if(!T.includes(s.id))covers=false;
   for(const s of [...probe.SUBJECTS_DE,...probe.SUBJECTS_EN]) if(!T.includes(s.id))covers=false;
   ok("THEME_BY_ID couvre tous les thèmes de tous les registres (maths/PC×année + DE + EN)",covers);
-  ok("Seconde maths : 6 thèmes (contenu livré)",probe.SUBJECTS_MATH.seconde.length===6);
+  ok("Seconde maths : 8 thèmes (contenu livré — + trigonométrie & espace, BO 2020)",probe.SUBJECTS_MATH.seconde.length===8);
   ok("Seconde PC : 9 thèmes (contenu livré)",probe.SUBJECTS_PC.seconde.length===9);
   ok("Première maths : 9 thèmes (contenu livré)",probe.SUBJECTS_MATH.premiere.length===9);
   ok("Première PC : 13 thèmes (contenu livré)",probe.SUBJECTS_PC.premiere.length===13);
@@ -1381,7 +1381,7 @@ console.log("\n[31] Expertes — case à cocher de Terminale maths (programme of
     vm.runInContext("setMatiere('pc');setAnnee('terminale')",ctx);
     ok("pc/terminale : state.experte=true sans effet (13 thèmes)",vm.runInContext("activeSubjects().length",ctx)===13);
     vm.runInContext("setMatiere('maths');setAnnee('seconde')",ctx);
-    ok("maths/seconde : state.experte=true sans effet (6 thèmes)",vm.runInContext("activeSubjects().length",ctx)===6);
+    ok("maths/seconde : state.experte=true sans effet (8 thèmes)",vm.runInContext("activeSubjects().length",ctx)===8);
   }
   /* --- F2. pickQ : case cochée → tirages dans les 11 thèmes, niveaux réels --- */
   lsData.clear();

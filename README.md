@@ -37,6 +37,8 @@ Le bouton « Passer » n'est pas pénalisant : il vous permet de retrouver la qu
 
 Chaque matière a son propre niveau. Chaque bonne réponse vous fait gagner de l'expérience, et à chaque palier une petite animation vous félicite.
 
+![La montée de niveau — l'anneau se remplit, le niveau suivant apparaît](img/monte-niveau.png)
+
 ## Installation
 
 **Dans la console / terminal**
