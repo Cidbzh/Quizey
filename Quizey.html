@@ -359,6 +359,15 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .xopt input{accent-color:var(--accent);width:14px;height:14px;flex:none;margin:0;cursor:pointer}
 .xopt[hidden]{display:none}
 .xopt.off{visibility:hidden}
+/* (2026-08-24, Cid) : en maths, l'écart visible « niveaux → chapitres »
+   contenait la ligne expertes RÉSERVÉE (~26 px, .off) + 2 gaps de 8 px + la
+   marge de tête de 24 px ≈ 58 px, contre ~24 px en PC/DE/EN — jugé légèrement
+   trop grand. On le resserre de ~10 px (gaps 8→6 px, marge 24→16 px) en maths
+   SEULE (la ligne expertes n'existe que là) : la réservation reste exactement
+   égale à la hauteur visible → aucun changement de taille au changement
+   d'année, comme avant. */
+:root:not([data-mat]) .picks{gap:6px}
+:root:not([data-mat]) .lead-head{margin-bottom:16px}
 /* (2026-08-24, Cid) Checkbox « Maths expertes » EN MODE SOMBRE : fini le
    carré natif blanc (et l'état coché #60A5FA, quasi-blanc sur le fond nuit)
    — la case est dessinée, en bleu de marque #2563EB (lisible sur le bleu
@@ -4296,12 +4305,16 @@ function reviewReset(q){
   it.reps=0;it.due=Date.now()+REVIEW_LADDER[1];
 }
 /* Points faibles : top 5 cellules thème×niveau les moins précises,
-   calculées sur les 100 dernières réponses (history), min. 5 réponses. */
+   calculées sur les 10 DERNIÈRES réponses (fenêtre resserrée 2026-08-24, Cid :
+   le bilan des 100 dernières était trop « historique » — le panneau doit
+   refléter le moment présent), min. 3 réponses/cellule (fenêtre courte →
+   le minimum passe de 5 à 3). `history` garde ses 100 entrées ; seul le
+   calcul regarde les 10 dernières. */
 function weakPoints(){
   const agg={};
-  for(const h of stats.history){const k=h.s+":"+h.l;(agg[k]=agg[k]||{ans:0,good:0}).ans++;if(h.o)agg[k].good++;}
+  for(const h of (stats.history||[]).slice(-10)){const k=h.s+":"+h.l;(agg[k]=agg[k]||{ans:0,good:0}).ans++;if(h.o)agg[k].good++;}
   const out=[];
-  for(const k in agg){if(agg[k].ans>=5){const i=k.indexOf(":");out.push({s:k.slice(0,i),l:k.slice(i+1),ans:agg[k].ans,acc:agg[k].good/agg[k].ans});}}
+  for(const k in agg){if(agg[k].ans>=3){const i=k.indexOf(":");out.push({s:k.slice(0,i),l:k.slice(i+1),ans:agg[k].ans,acc:agg[k].good/agg[k].ans});}}
   out.sort((a,b)=>a.acc-b.acc||b.ans-a.ans);
   return out.slice(0,5);
 }
@@ -4568,7 +4581,7 @@ function renderHome(){
     if(weak.length){
       html+=`<section class="panel" aria-labelledby="hWeak" data-rv style="--d:1.42s">`+
         `<h2 id="hWeak">Tes points faibles</h2>`+
-        `<p class="muted" style="margin:0 0 6px">Les thèmes qui résistent le plus, sur tes 100 dernières réponses.</p>`+
+        `<p class="muted" style="margin:0 0 6px">Les thèmes qui résistent le plus, sur tes 10 dernières réponses.</p>`+
         weak.map(w=>{
           const nm=THEME_BY_ID[w.s];const pct=Math.round(100*w.acc);
           return `<div class="weakrow">`+
@@ -5035,16 +5048,16 @@ function levelUp(oldN,newN){
   const raf=typeof requestAnimationFrame==="function"?requestAnimationFrame:function(f){f();};
   raf(function(){raf(function(){host.classList.add("go");if(fg)fg.style.strokeDashoffset="0";});});
   /* Anneau plein → tick du niveau : le grand numéro passe de oldN à newN
-     (pop + halo via .up .lvlup-num) + gerbe d'étincelles. Le swap est calé APRÈS la fin du remplissage de l'anneau (CSS .ring-fg : 0,15 + 1,4 s = 1,55 s) — durées COUPLÉES : changer l'une ⇒ changer l'autre (ralenti 2026-08-24, Cid : le 1 s / 1150 ms était jugé trop rapide). SANS ce swap, la
+     (pop + halo via .up .lvlup-num) + gerbe d'étincelles. Le swap est calé APRÈS la fin du remplissage de l'anneau (CSS .ring-fg : 0,15 + 1,4 s = 1,55 s) — durées COUPLÉES : changer l'une ⇒ changer l'autre (ralenti 2026-08-24 : le 1 s / 1150 ms était jugé trop rapide, puis resserré le même jour : 150 ms de temps mort entre la fin du remplissage et l'apparition du niveau étaient trop longues — il en reste 50). SANS ce swap, la
      carte s'achevait sur le niveau quitté (le label « N → N+1 » était le seul
      indice du nouveau — corrigé 2026-08-23, sur demande Cid). */
   setTimeout(function(){
     if(host.classList)host.classList.add("up");
     const num=host.querySelector?host.querySelector(".lvlup-num"):null;
     if(num)num.textContent=newN;
-  },1700);
-  setTimeout(function(){if(host.classList)host.classList.add("bye");},3000);
-  setTimeout(function(){if(host.remove)host.remove();},3400);
+  },1600);
+  setTimeout(function(){if(host.classList)host.classList.add("bye");},2900);
+  setTimeout(function(){if(host.remove)host.remove();},3300);
 }
 
 /* ---------- Câblage ---------- */

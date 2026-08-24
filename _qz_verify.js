@@ -800,24 +800,34 @@ console.log("\n[21] Dédup QCM — même question mélangée = UNE seule entrée
 }
 
 /* ========================================================= */
-console.log("\n[22] Points faibles — ex æquo tranché par le nombre de réponses");
+console.log("\n[22] Points faibles — fenêtre des 10 dernières + ex æquo");
 {
-  /* 2026-08-22, évaluation qualitative : out.sort(...||b.ans-a.ans) comparait
-     un champ ABSENT des objets triés (undefined-undefined = NaN, le tri le
-     traite comme « égal ») → le tiebreaker était mort. Désormais les objets
-     portent ans et la cellule la plus entraînée gagne l'ex æquo. */
+  /* 2026-08-24, Cid : le panneau passe du bilan des 100 dernières réponses
+     aux 10 DERNIÈRES (le moment présent), minimum 3 réponses/cellule.
+     [22a] « cc » (5 réponses, 20 %) est la moins précise de TOUTES les 15 —
+     mais elle est sortie de la fenêtre → elle ne doit PAS apparaître.
+     « aa » porte EXACTEMENT 3 réponses (le nouveau minimum) → retenue.
+     [22b] (régression 2026-08-22) ex æquo : la cellule la plus entraînée
+     gagne — le tiebreaker doit rester actif (pas un comparateur NaN mort). */
   lsData.clear();
   const env=buildEnv();const ctx=runApp(env);
-  /* Deux cellules au même taux d'erreur (40 %) : « aa » facile (5 réponses,
-     2 bonnes) et « bb » moyen (10 réponses, 4 bonnes). */
   const hist=[];
-  for(let i=0;i<5;i++)hist.push({s:"aa",l:"facile",o:i<2?1:0});
-  for(let i=0;i<10;i++)hist.push({s:"bb",l:"moyen",o:i<4?1:0});
+  for(let i=0;i<5;i++)hist.push({s:"cc",l:"moyen",o:i<1?1:0});   /* 20 % — avant la fenêtre */
+  for(let i=0;i<3;i++)hist.push({s:"aa",l:"facile",o:i<1?1:0});   /* 33,3 % — pile 3 (min) */
+  for(let i=0;i<7;i++)hist.push({s:"bb",l:"moyen",o:i<3?1:0});    /* 42,9 % */
   vm.runInContext("stats.history="+JSON.stringify(hist),ctx);
-  const W=vm.runInContext("weakPoints()",ctx);
-  ok("2 cellules retenues (≥5 réponses), ex æquo 40 %",W.length===2);
-  ok("« bb » (10 réponses) devant « aa » (5 réponses) — tiebreaker actif",
-     W[0].s==="bb"&&W[1].s==="aa");
+  let W=vm.runInContext("weakPoints()",ctx);
+  ok("fenêtre 10 : « cc » (hors fenêtre) ABSENTE du panneau",W.every(x=>x.s!=="cc"));
+  ok("« aa » pile 3 réponses (minimum) retenue et devant « bb »",
+     W.length===2&&W[0].s==="aa"&&W[0].ans===3&&W[1].s==="bb");
+  /* [22b] ex æquo 50 % : « bb » (6 réponses) devant « aa » (4 réponses) */
+  const hist2=[];
+  for(let i=0;i<4;i++)hist2.push({s:"aa",l:"facile",o:i<2?1:0});
+  for(let i=0;i<6;i++)hist2.push({s:"bb",l:"moyen",o:i<3?1:0});
+  vm.runInContext("stats.history="+JSON.stringify(hist2),ctx);
+  W=vm.runInContext("weakPoints()",ctx);
+  ok("ex æquo 50 % : « bb » (6 réponses) devant « aa » (4 réponses)",
+     W.length===2&&W[0].s==="bb"&&W[1].s==="aa");
 }
 
 /* ========================================================= */
