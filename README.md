@@ -2,7 +2,7 @@
 
 **Plus tu quiz, plus tu sais.**
 
-_Élève en Terminale, j’avais à l’origine conçu cette application pour mes propres besoins. J’ai ensuite pensé qu’elle pourrait également servir à d’autres élèves soucieux de progresser._
+_"Élève en Terminale, j’avais à l’origine conçu cette application pour mes propres besoins. J’ai ensuite pensé qu’elle pourrait également servir à d’autres élèves soucieux de progresser."_
 
 Quizey, c'est la révision du lycée dans votre navigateur. Un seul fichier à ouvrir, pas de compte, pas d'installation, et rien de ce que vous faites ne quitte votre machine.
 
