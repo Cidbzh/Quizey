@@ -856,14 +856,14 @@ html[data-ui="m"] body:has(#play:not([hidden])) .topbar{display:none}
    reflow. Ordinateur : attribut data-ui absent → règle sans effet (topbar
    sticky comme avant).
    Disparition / réapparition PROGRESSIVES (2026-08-25, Cid) : glissement +
-   fondus doux (opacity → 0, ~0,55 s) dans les deux sens. La transition est
+   fondus doux (opacity → 0, ~0,9 s) dans les deux sens. La transition est
    déclarée SANS media-query : les vieux navigateurs qui ne connaissent pas
    prefers-reduced-motion ignoreraient un bloc @media entier et le
    masquage serait brutal ; les appareils qui demandent VRAIMENT le mouvement
    réduit sont couverts par la règle globale de l'app
    (prefers-reduced-motion:reduce → transitions coupées). */
 html[data-ui="m"] .topbar.topbar-off{transform:translateY(calc(-100% - 2px));opacity:0}
-html[data-ui="m"] .topbar{transition:transform .55s var(--ease),opacity .5s var(--ease)}
+html[data-ui="m"] .topbar{transition:transform .9s var(--ease),opacity .8s var(--ease)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
