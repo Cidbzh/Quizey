@@ -193,10 +193,17 @@ body{
 .grow{flex:1}
 .topbar .divider{width:1px;height:20px;background:var(--line);flex:none}
 @media (max-width:720px){.topbar .wrap{flex-wrap:wrap;row-gap:10px}}
+/* barIn en fill `backwards`, JAMAIS `both`/`forwards` (2026-08-25, Cid) :
+   avec `forwards`, le keyframe final `transform:none` continuerait à primer sur
+   TOUTES les règles normales — quelle que soit leur spécificité (les animations
+   priment sur le CSS normal) — et écraserait le transform `.topbar-off` : la
+   topbar qui glisse hors de vue au scroll (téléphone) resterait figée.
+   `backwards` garde le même fondu d'arrivée (état `from` pendant le délai) et,
+   l'animation finie, la barre revient à son état naturel = le keyframe `to`. */
 .topbar{
   position:sticky;top:0;z-index:10;
   background:var(--surface);border-bottom:1px solid var(--line);
-  animation:barIn .6s var(--ease) both;animation-delay:.05s;
+  animation:barIn .6s var(--ease) backwards;animation-delay:.05s;
 }
 .topbar{
   background:color-mix(in srgb,var(--surface) 85%,transparent);
