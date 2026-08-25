@@ -856,15 +856,18 @@ html[data-ui="m"] body:has(#play:not([hidden])) .topbar{display:none}
    scroll en fin de script (seuil 10 px). transform → glisse fluide, zéro
    reflow. Ordinateur : attribut data-ui absent → règle sans effet (topbar
    sticky comme avant).
-   Disparition / réapparition PROGRESSIVES (2026-08-25, Cid) : glissement +
-   fondus doux (opacity → 0, ~0,7 s) dans les deux sens. La transition est
-   déclarée SANS media-query : les vieux navigateurs qui ne connaissent pas
-   prefers-reduced-motion ignoreraient un bloc @media entier et le
-   masquage serait brutal ; les appareils qui demandent VRAIMENT le mouvement
-   réduit sont couverts par la règle globale de l'app
-   (prefers-reduced-motion:reduce → transitions coupées). */
-html[data-ui="m"] .topbar.topbar-off{transform:translateY(calc(-100% - 2px));opacity:0}
-html[data-ui="m"] .topbar{transition:transform .7s var(--ease),opacity .6s var(--ease)}
+   Disparition / réapparition PROGRESSIVES, ASYMÉTRIQUES (2026-08-25, Cid —
+   « accélérer la réapparition ») : glissement + fondu doux, disparition
+   (classe .topbar-off AJOUTÉE) ~0,7 s, réapparition (classe RETIRÉE) ~0,35 s.
+   Mécanique : le CSS lit la transition de l'ÉTAT D'ARRIVÉE de chaque
+   changement → la transition lente est déclarée DANS .topbar-off, la rapide
+   DANS .topbar. Les deux sont déclarées SANS media-query : les vieux
+   navigateurs qui ne connaissent pas prefers-reduced-motion ignoreraient un
+   bloc @media entier et le masquage serait brutal ; les appareils qui
+   demandent VRAIMENT le mouvement réduit sont couverts par la règle globale
+   de l'app (prefers-reduced-motion:reduce → transitions coupées). */
+html[data-ui="m"] .topbar.topbar-off{transform:translateY(calc(-100% - 2px));opacity:0;transition:transform .7s var(--ease),opacity .6s var(--ease)}
+html[data-ui="m"] .topbar{transition:transform .35s var(--ease),opacity .3s var(--ease)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
