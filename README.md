@@ -55,6 +55,15 @@ Téléchargez le fichier depuis la page [Releases](https://github.com/Cidbzh/Qui
 
 Une fois en votre possession, le fichier vous appartient : clé USB, médiathèque, labo du lycée (où que vous soyez, avec ou sans internet).
 
+**Sur téléphone / tablette**
+
+Quizey s'installe comme une application (PWA). Ouvrez le lien <https://cidbzh.github.io/Quizey/> depuis le navigateur de votre appareil, puis :
+
+- **iPhone / iPad (Safari)** : bouton **Partager** (la flèche dans un carré) → **Sur l'écran d'accueil** → **Ajouter**.
+- **Android (Chrome)** : menu **⋮** → **Installer l'application** (ou **Ajouter à l'écran d'accueil**).
+
+L'icône apparaît sur votre écran d'accueil et l'app s'ouvre plein écran, comme une vraie application. Vos réponses et votre niveau restent **sur votre appareil** : chaque élève part sur sa propre version vierge, personne d'autre ne voit ses stats.
+
 ## Licence
 
 MIT — voir le fichier `LICENSE`.

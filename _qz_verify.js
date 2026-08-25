@@ -50,9 +50,6 @@ function buildEnv(){
   const byId={};
   const chip=makeEl();chip._classes.add("chip");
   byId.tScore=makeEl();byId.tScore.closest=()=>chip;
-  /* Bannière « version téléphone » : [hidden] dans le HTML réel → la faire
-     correspondre ici, sinon les assertions « bannière cachée » casseraient. */
-  byId.uiBanner=makeEl({hidden:true});
   const document={
     documentElement:makeEl(),
     body:makeEl(),
@@ -60,7 +57,6 @@ function buildEnv(){
     querySelector(sel){const id=String(sel).replace(/^#/,"");if(byId[id])return byId[id];byId[id]=makeEl();return byId[id];},
     querySelectorAll(sel){
       if(sel===".theme-btn")return [tb.auto,tb.light,tb.dark];
-      if(sel===".ui-btn")return [makeEl({dataset:{uiPick:"d"}}),makeEl({dataset:{uiPick:"m"}})];
       if(sel===".seg-btn")return [makeEl({dataset:{lvl:"facile"}}),makeEl({dataset:{lvl:"moyen"}}),makeEl({dataset:{lvl:"difficile"}})];
       return [];
     },
@@ -563,7 +559,7 @@ console.log("\n[16] Suppression « Grandeurs cosmiques » — orphelines purgée
 }
 
 /* ========================================================= */
-console.log("\n[17] Version d'interface — détection, bascule, persistance (data-ui)");
+console.log("\n[17] Version d'interface — détection auto + persistance (data-ui), sans bascule manuelle");
 {
   const phone=(env)=>{env.sandbox.innerWidth=390;env.sandbox.matchMedia=q=>({matches:q.indexOf("coarse")>-1,media:q});env.sandbox.navigator={userAgent:"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"};};
   /* Appareil 1 — ORDINATEUR : souris fine, grand écran, UA desktop → « d ». */
@@ -574,7 +570,6 @@ console.log("\n[17] Version d'interface — détection, bascule, persistance (da
     ok("ordinateur → détecte « d » (version ordinateur)",vm.runInContext("detectUI()",ctx)==="d");
     ok("data-ui ABSENT de <html> (version ordinateur par défaut)",env.document.documentElement.getAttribute("data-ui")===null);
     ok("choix persisté sous qz_ui = \"d\"",lsData.get("qz_ui")==="\"d\"");
-    ok("bannière téléphone RESTÉE cachée",env.document.querySelector("#uiBanner").hidden===true);
   }
   /* Appareil 2 — TÉLÉPHONE : tactile + petit écran + UA mobile → « m ». */
   lsData.clear();
@@ -584,12 +579,6 @@ console.log("\n[17] Version d'interface — détection, bascule, persistance (da
     ok("téléphone → détecte « m » (version téléphone)",vm.runInContext("detectUI()",ctx)==="m");
     ok("data-ui=\"m\" posé sur <html>",env.document.documentElement.getAttribute("data-ui")==="m");
     ok("choix persisté sous qz_ui = \"m\"",lsData.get("qz_ui")==="\"m\"");
-    ok("bannière AFFICHÉE au 1er passage auto",env.document.querySelector("#uiBanner").hidden===false);
-    /* Depuis la bannière : « Version ordinateur » → bascule + fermeture. */
-    env.document.querySelector("#uiBannerSwitch").click();
-    ok("bannière → « Version ordinateur » : data-ui retiré",env.document.documentElement.getAttribute("data-ui")===null);
-    ok("bannière → « Version ordinateur » : qz_ui=\"d\" persisté",lsData.get("qz_ui")==="\"d\"");
-    ok("bannière → « Version ordinateur » : bannière fermée",env.document.querySelector("#uiBanner").hidden===true);
   }
   /* Appareil 3 — TABLETTE large : tactile MAIS ≥900 px + UA sans « Mobile » → « d ». */
   lsData.clear();
@@ -601,7 +590,7 @@ console.log("\n[17] Version d'interface — détection, bascule, persistance (da
     const ctx=runApp(env);
     ok("tablette large (1024 px, tactile, UA desktop) → reste « d »",vm.runInContext("detectUI()",ctx)==="d");
   }
-  /* Choix EXPLICITE : qz_ui présente → la détection ne décide plus ni ne rebannit. */
+  /* Choix EXPLICITE : qz_ui présente → la détection ne décide plus. */
   lsData.clear();
   lsData.set("qz_ui","\"m\"");
   {
@@ -609,7 +598,6 @@ console.log("\n[17] Version d'interface — détection, bascule, persistance (da
     env.sandbox.innerWidth=1440; /* grand écran, souris fine… */
     const ctx=runApp(env);
     ok("qz_ui=\"m\" sauvegardée → version téléphone RESTÉE (le choix gagne)",env.document.documentElement.getAttribute("data-ui")==="m");
-    ok("… mais la bannière NE se réaffiche PAS (choix explicite)",env.document.querySelector("#uiBanner").hidden===true);
   }
   /* STABILITÉ : basculer l'UI ne doit JAMAIS écrire dans les 4 stats. */
   lsData.clear();
