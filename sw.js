@@ -7,9 +7,10 @@
    à la prochaine activation, l'ancienne cache est supprimée automatiquement.
 
    Historique : quizey-v1 (premier cache) → quizey-v2 (2026-08-25 : boutons
-   topbar/compacité mobile + écart stats→Entraînement libre). */
+   topbar/compacité mobile + écart stats→Entraînement libre) → quizey-v3
+   (2026-08-25 : clavier du champ de réponse — fractions tapables sur mobile). */
 
-const CACHE = "quizey-v2";
+const CACHE = "quizey-v3";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
