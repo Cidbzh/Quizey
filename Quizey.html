@@ -920,6 +920,11 @@ html[data-ui="m"] .hero .revcta{flex-direction:column;align-items:flex-start;jus
 html[data-ui="m"] .hero .revcta .revsep{display:none}
 html[data-ui="m"] .hero .revcta .btn{width:100%}
 /* ---- Écran de question : agrandi pour le pouce ---- */
+/* 2026-08-25 (Cid) : dé-cluttering de la barre de question sur téléphone —
+   « ne laisser que le nombre de question et le niveau » : les puces chapitre,
+   classe ET difficulté sont masquées ; on garde « question N » et la puce
+   niveau XP « Niv. N » (+ sa barre). Desktop : les trois puces restent. */
+html[data-ui="m"] #chipSub,html[data-ui="m"] #chipYear,html[data-ui="m"] #chipLvl{display:none}
 html[data-ui="m"] .prompt{font-size:clamp(22px,4.6vw,26px)}
 html[data-ui="m"] .ans input{height:clamp(46px,12.5vw,56px);width:100%;font-size:clamp(16px,4.4vw,19px)}
 html[data-ui="m"] .ans .btn{height:clamp(46px,12.5vw,56px);padding:0 clamp(18px,5vw,24px);font-size:clamp(15.5px,4.2vw,17px)}
@@ -5020,11 +5025,13 @@ function renderQ(){
   }else{
     /* aria-label (2026-08-22) : le champ n'a pas de <label> visible — on le
        nomme quand même pour les lecteurs d'écran. */
-    /* 2026-08-25 (Cid) : inputmode CONDITIONNEL — frac → clavier COMPLET
-       (le pavé « decimal » d'iOS/Android n'a pas de touche « / » : impossible
-       de taper 3/4) ; number → pavé numérique (saisie rapide — checkAnswer
-       accepte « . » et « , »). Ne pas « unifier » en decimal. */
-    inner+=`<div class="ans"><input id="ansIn" type="text" inputmode="${q.type==="frac"?"text":"decimal"}" autocomplete="off" aria-label="Ta réponse" placeholder="${q.type==="frac"?"ex : 3/5 ou 0,6":"ta réponse"}">`+
+    /* 2026-08-25 (Cid) : inputmode TOUJOURS « text » — le clavier COMPLET
+       d'iOS/Android apparaît dans TOUTES les questions, JAMAIS le pavé
+       nombres-seuls (« decimal » n'a même pas de touche « / » : impossible de
+       taper 3/4, et Cid ne veut le pavé nombres seul dans AUCUN cas).
+       checkAnswer accepte « . » et « , » de toute façon. Ne pas remettre
+       « decimal ». */
+    inner+=`<div class="ans"><input id="ansIn" type="text" inputmode="text" autocomplete="off" aria-label="Ta réponse" placeholder="${q.type==="frac"?"ex : 3/5 ou 0,6":"ta réponse"}">`+
       `<button class="btn btn-primary" id="ansBtn">Valider</button>`+
       `<button class="btn btn-ghost" id="passBtn">Passer →</button>`+
       `<span class="hint">${q.type==="frac"?"Réponds en fraction (a/b) ou en décimal — les deux sont acceptés.":"Entier ou décimal, virgule acceptée."} · Échap = passer</span></div>`;

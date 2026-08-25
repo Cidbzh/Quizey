@@ -8,9 +8,12 @@
 
    Historique : quizey-v1 (premier cache) → quizey-v2 (2026-08-25 : boutons
    topbar/compacité mobile + écart stats→Entraînement libre) → quizey-v3
-   (2026-08-25 : clavier du champ de réponse — fractions tapables sur mobile). */
+   (2026-08-25 : clavier du champ de réponse — fractions tapables sur mobile)
+   → quizey-v4 (2026-08-25 : clavier TOUJOURS complet sur mobile — jamais le
+   pavé nombres-seuls ; barre de question épurée : puces chapitre / classe /
+   difficulté masquées, restent « question N » + « Niv. N »). */
 
-const CACHE = "quizey-v3";
+const CACHE = "quizey-v4";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
