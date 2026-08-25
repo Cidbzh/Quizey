@@ -5020,7 +5020,11 @@ function renderQ(){
   }else{
     /* aria-label (2026-08-22) : le champ n'a pas de <label> visible — on le
        nomme quand même pour les lecteurs d'écran. */
-    inner+=`<div class="ans"><input id="ansIn" type="text" inputmode="decimal" autocomplete="off" aria-label="Ta réponse" placeholder="${q.type==="frac"?"ex : 3/5 ou 0,6":"ta réponse"}">`+
+    /* 2026-08-25 (Cid) : inputmode CONDITIONNEL — frac → clavier COMPLET
+       (le pavé « decimal » d'iOS/Android n'a pas de touche « / » : impossible
+       de taper 3/4) ; number → pavé numérique (saisie rapide — checkAnswer
+       accepte « . » et « , »). Ne pas « unifier » en decimal. */
+    inner+=`<div class="ans"><input id="ansIn" type="text" inputmode="${q.type==="frac"?"text":"decimal"}" autocomplete="off" aria-label="Ta réponse" placeholder="${q.type==="frac"?"ex : 3/5 ou 0,6":"ta réponse"}">`+
       `<button class="btn btn-primary" id="ansBtn">Valider</button>`+
       `<button class="btn btn-ghost" id="passBtn">Passer →</button>`+
       `<span class="hint">${q.type==="frac"?"Réponds en fraction (a/b) ou en décimal — les deux sont acceptés.":"Entier ou décimal, virgule acceptée."} · Échap = passer</span></div>`;
