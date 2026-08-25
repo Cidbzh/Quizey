@@ -53,7 +53,11 @@
   --glow:rgba(37,99,235,.05);
   --shadow:0 5px 16px -10px rgba(30,50,90,.18);
   --radius:12px;
-  --ease:cubic-bezier(.16,1,.3,1);
+  --ease:cubic-bezier(.45,.05,.55,.95); /* 2026-08-25, Cid « beaucoup moins brutal » :
+    ease-in-out DOUX (démarrage et fin ralentis, rien de sec) au lieu de la courbe
+    « snap » précédente — les 32 transitions/animations de l'app passent par ici.
+    Les durées COUPLÉES JS/CSS (montée de niveau, 1,4 s + setTimeout ms) sont
+    inchangées : ce qui change est la courbe, pas la durée. */
   --f-display:"STIX Two Text",Georgia,"Times New Roman",serif;
   --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"Spline Sans Mono",ui-monospace,Consolas,monospace;
@@ -852,14 +856,14 @@ html[data-ui="m"] body:has(#play:not([hidden])) .topbar{display:none}
    reflow. Ordinateur : attribut data-ui absent → règle sans effet (topbar
    sticky comme avant).
    Disparition / réapparition PROGRESSIVES (2026-08-25, Cid) : glissement +
-   fondus doux (opacity → 0, ~0,4 s) dans les deux sens. La transition est
+   fondus doux (opacity → 0, ~0,55 s) dans les deux sens. La transition est
    déclarée SANS media-query : les vieux navigateurs qui ne connaissent pas
    prefers-reduced-motion ignoreraient un bloc @media entier et le
    masquage serait brutal ; les appareils qui demandent VRAIMENT le mouvement
    réduit sont couverts par la règle globale de l'app
    (prefers-reduced-motion:reduce → transitions coupées). */
 html[data-ui="m"] .topbar.topbar-off{transform:translateY(calc(-100% - 2px));opacity:0}
-html[data-ui="m"] .topbar{transition:transform .4s var(--ease),opacity .35s var(--ease)}
+html[data-ui="m"] .topbar{transition:transform .55s var(--ease),opacity .5s var(--ease)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
