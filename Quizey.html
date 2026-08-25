@@ -833,12 +833,12 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
    gagnent sans !important (même celles des @media ci-dessus).
    Moteur, stats, matières : INCHANGÉS — seul l'affichage change. */
 html[data-ui="m"] body{font-size:clamp(16px,4.8vw,19px)}
-/* ---- Topbar : basculeur matière en grille 2×2 (GROS boutons, « Physique-Chimie »
+/* ---- Topbar : basculeur matière en grille 2×2 (boutons RESERRÉS, « Physique-Chimie »
    tient sur UNE ligne grâce au min-width:0 — plus de débordement à 320 px) ---- */
-html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:10px}
+html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:8px}
 html[data-ui="m"] body:has(#home:not([hidden])) .topbar .wrap{padding-right:20px}
-html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(6px,2vw,10px)}
-html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(10px,3vw,14px) 10px;font-size:clamp(14px,3.8vw,16px)}
+html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(5px,1.6vw,8px)}
+html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(8px,2.2vw,10px) 9px;font-size:clamp(13px,3.3vw,14.5px)}
 /* Topbar : cibles tactiles ≥ 44 px (boutons de thème). */
 html[data-ui="m"] .theme-btn{padding:clamp(12px,3.4vw,16px) clamp(13px,3.8vw,18px);font-size:clamp(14px,3.8vw,15.5px)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
@@ -851,9 +851,12 @@ html[data-ui="m"] .slogan{font-size:clamp(18px,4.6vw,21px)}
 html[data-ui="m"] .lede{font-size:clamp(15.5px,4.4vw,17.5px)}
 /* Stats en grille 2×3 (5 stats) plutôt qu'en auto-fit. */
 html[data-ui="m"] .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-/* Tuiles de thèmes : 2 colonnes larges, plus hautes à toucher. */
-html[data-ui="m"] .subgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.8vw,16px)}
-html[data-ui="m"] .subcard{padding:clamp(13px,3.6vw,18px)}
+/* Tuiles de thèmes : 2 colonnes, RESERRÉES (moins de place) — on compresse
+   le padding de la tuile, son espacement interne, et les polices de nom/progression. */
+html[data-ui="m"] .subgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(7px,1.8vw,10px)}
+html[data-ui="m"] .subcard{padding:clamp(7px,2vw,9px);gap:3px}
+html[data-ui="m"] .subcard .nm{font-size:14px;line-height:1.2}
+html[data-ui="m"] .subcard .pc{font-size:11px}
 /* Panneau « Par thème » : la grille 4 colonnes (nom 1fr + colonnes fixes
    56/73,6/62,4 px + 3 gaps de 8 px) laisse MOINS que la largeur min-content
    du nom sur un téléphone : l'item de grille refuse de rétrécir (min-width
@@ -861,7 +864,7 @@ html[data-ui="m"] .subcard{padding:clamp(13px,3.6vw,18px)}
    mesuré 6→49 px à 320 px, 9 px à 360 px (sonde CDP 2026-08-22).
    Version mobile : colonnes fixes resserrées + gap plus fin, et c'est le NOM
    seul qui rétrécit (ellipsis), jamais un débordement. */
-html[data-ui="m"] .substathead,html[data-ui="m"] .substatrow{grid-template-columns:minmax(0,1fr) 3rem 4.4rem 3.4rem;gap:6px}
+html[data-ui="m"] .substathead,html[data-ui="m"] .substatrow{grid-template-columns:minmax(0,1fr) 3rem 4.4rem 3.4rem;gap:5px;padding:4px 2px}
 html[data-ui="m"] .substathead span,html[data-ui="m"] .substatrow b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Boutons : cibles ≥44 px, texte plus lisible — tailles FLUIDES (clamp min→max). */
 html[data-ui="m"] .btn{padding:clamp(13px,3.4vw,16px) clamp(20px,5.2vw,26px);font-size:clamp(16px,4.2vw,18px)}
