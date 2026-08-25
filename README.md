@@ -58,7 +58,7 @@ Téléchargez le fichier depuis la page [Releases](https://github.com/Cidbzh/Qui
 Ouvrez le lien <https://cidbzh.github.io/Quizey/> depuis votre navigateur, puis :
 
 - **Sur iPhone / iPad (Safari)** : Cliquez sur **Partager** → **Sur l'écran d'accueil** → **Ajouter**.
-- **Sur Android (Chrome)** : Cliquez sur menu **(⋮)** → **Installer l'application** ou **Ajouter à l'écran d'accueil**.
+- **Sur Android (Chrome)** : Cliquez sur **Menu (⋮)** → **Installer l'application** ou **Ajouter à l'écran d'accueil**.
 
 <table>
   <tr>
