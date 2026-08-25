@@ -838,12 +838,16 @@ html[data-ui="m"] body{font-size:clamp(16px,4.8vw,19px)}
 html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:8px}
 html[data-ui="m"] body:has(#home:not([hidden])) .topbar .wrap{padding-right:20px}
 html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(5px,1.6vw,8px)}
-html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(8px,2.2vw,10px) 9px;font-size:clamp(13px,3.3vw,14.5px)}
-/* Topbar : boutons de thème RESERRÉS (alignés sur la compacité des matières). */
-html[data-ui="m"] .theme-btn{padding:clamp(8px,2.2vw,10px) 9px;font-size:clamp(13px,3.3vw,14.5px)}
+html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(6px,1.9vw,8px) 8px;font-size:clamp(12px,3.1vw,13.5px)}
+/* Topbar : boutons de thème RESERRÉS d'un cran (alignés sur la compacité des matières). */
+html[data-ui="m"] .theme-btn{padding:clamp(6px,1.9vw,8px) 8px;font-size:clamp(12px,3.1vw,13.5px)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
+/* Écart stats → « Entraînement libre » = 16 px, identique à l'écart carte de
+   niveau → stats (le gap interne de .hero). Avant : les deux blocs étaient
+   collés (0 px) — .home-main n'avait aucune marge en flux bloc. */
+html[data-ui="m"] .home-main{margin-top:16px}
 html[data-ui="m"] .margewrap{position:static;display:grid;grid-template-columns:1fr;gap:clamp(14px,3.6vw,20px);align-items:start;margin-top:0}
 /* Hero un peu plus resserré pour une main de poche. */
 html[data-ui="m"] h1{font-size:clamp(34px,9vw,44px);margin-top:clamp(20px,5.5vw,32px)}
@@ -868,10 +872,13 @@ html[data-ui="m"] .subcard .pc{font-size:11px}
    seul qui rétrécit (ellipsis), jamais un débordement. */
 html[data-ui="m"] .substathead,html[data-ui="m"] .substatrow{grid-template-columns:minmax(0,1fr) 3rem 4.4rem 3.4rem;gap:5px;padding:4px 2px}
 html[data-ui="m"] .substathead span,html[data-ui="m"] .substatrow b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Boutons : cibles ≥44 px, texte plus lisible — tailles FLUIDES (clamp min→max). */
+/* Boutons : cibles tactiles confortables, texte plus lisible — tailles FLUIDES (clamp min→max). */
 html[data-ui="m"] .btn{padding:clamp(13px,3.4vw,16px) clamp(20px,5.2vw,26px);font-size:clamp(16px,4.2vw,18px)}
 html[data-ui="m"] .btn.small{padding:clamp(11px,3vw,15px) clamp(14px,3.8vw,18px);font-size:clamp(14px,3.8vw,15.5px)}
-html[data-ui="m"] .seg-btn{padding:clamp(12px,3.4vw,16px);font-size:clamp(14.5px,4vw,16.5px)}
+/* Boutons de NIVEAU (Facile/Moyen/Difficile/Auto) RESERRÉS d'un cran. Cette règle
+   générique .seg-btn ne s'applique plus qu'à eux : les MATIÈRES et le THÈME ont
+   leur règle plus haute (spécificité), et l'ANNÉE garde .picks .seg-year .seg-btn. */
+html[data-ui="m"] .seg-btn{padding:clamp(8px,2.4vw,11px) 10px;font-size:clamp(13px,3.6vw,15px)}
 /* Tête « Entraînement libre » : sur téléphone, les sélecteurs passent sous le
    titre (pleine largeur) et leurs boutons peuvent REPLIER sur 2 lignes si la
    largeur est trop petite — mieux vaut 2 lignes qu'un débordement. */
