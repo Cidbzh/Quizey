@@ -11,9 +11,11 @@
    (2026-08-25 : clavier du champ de réponse — fractions tapables sur mobile)
    → quizey-v4 (2026-08-25 : clavier TOUJOURS complet sur mobile — jamais le
    pavé nombres-seuls ; barre de question épurée : puces chapitre / classe /
-   difficulté masquées, restent « question N » + « Niv. N »). */
+   difficulté masquées, restent « question N » + « Niv. N »)
+   → quizey-v5 (2026-08-25 : grande densification — 80 nouvelles questions
+   dans les 79 thèmes existants, zéro nouveau chapitre, zéro nouvel id). */
 
-const CACHE = "quizey-v4";
+const CACHE = "quizey-v5";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

@@ -181,7 +181,8 @@ console.log("\n[7] Générateurs — forme des questions, visuels SVG, round-tri
   for(const sub of REGISTERS){
     for(let gi=0;gi<sub.gens.length;gi++){
       const g=sub.gens[gi];
-      const correctIdx=new Set(); /* indices de la bonne réponse observés sur les 25 tirages (QCM) */
+      const correctIdx=new Set(); /* indices de la bonne réponse observés (QCM) */
+      let choiceDraws=0; /* nb de tirages de type `choice` au niveau (un niveau mélangé n'en produit que peu sur 25) */
       for(let i=0;i<25;i++){
         let q;
         try{q=g.make();}
@@ -197,7 +198,7 @@ console.log("\n[7] Générateurs — forme des questions, visuels SVG, round-tri
                QCM ambigu), et l'index correct non constant sur les tirages —
                options mélangées via shuf(), un index constant signale un
                générateur non converti au helper qcm(). */
-            correctIdx.add(q.correct);
+            correctIdx.add(q.correct);choiceDraws++;
             if(!q.options.every(o=>typeof o==="string"&&o.trim()!=="")){qbad++;console.log("      QCM : option vide — "+sub.id+" "+g.lvl);}
             if(new Set(q.options).size!==q.options.length){qbad++;console.log("      QCM : options en double — "+sub.id+" "+g.lvl+" "+JSON.stringify(q.options));}}
         }else if(q.type==="frac"){
@@ -227,11 +228,14 @@ console.log("\n[7] Générateurs — forme des questions, visuels SVG, round-tri
         }
       }
       if(correctIdx.size>0){
-        /* Avec shuf() sur ≥2 options, un index constant sur 25 tirages a une
-           probabilité ~ (1/n)^24 (n = nb d'options) : c'est la signature
-           d'un générateur QCM figé, pas de la chance. */
+        /* Signature d'un générateur QCM FIGÉ (index correct constant, non converti
+           au helper qcm()/shuf) : on ne conclut que sur un échantillon suffisant
+           de tirages `choice` (≥ 8). Un niveau mélangé (number/frac + 1 QCM) n'a
+           qu'une poignée de `choice` sur 25 tirages — un échantillon de 1 ne peut
+           pas distinguer « figé » de « mélangé », d'où l'ancien faux positif.
+           Sur ≥ 8 tirages QCM, un index mélangé aurait déjà varié ((1/n)^7 ≈ 0). */
         qcmGens++;
-        if(correctIdx.size<2){qbad++;console.log("      QCM : index correct constant sur 25 tirages — "+sub.id+" "+g.lvl);}
+        if(choiceDraws>=8&&correctIdx.size<2){qbad++;console.log("      QCM : index correct constant sur "+choiceDraws+" tirages QCM — "+sub.id+" "+g.lvl);}
       }
     }
   }
