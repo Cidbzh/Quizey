@@ -54,7 +54,7 @@ puis ouvrez `Quizey/Quizey.html` (double-clic).
 
 Ouvrez le lien <https://cidbzh.github.io/Quizey/> depuis le navigateur de votre appareil, puis :
 
-- **iPhone / iPad (Safari)** : bouton **Partager** (la flèche dans un carré) → **Sur l'écran d'accueil** → **Ajouter**.
+- **iPhone / iPad (Safari)** : bouton **Partager** → **Sur l'écran d'accueil** → **Ajouter**.
 - **Android (Chrome)** : menu **(⋮)** → **Installer l'application** (ou **Ajouter à l'écran d'accueil**).
 
 L'icône apparaît sur votre écran d'accueil et l'app s'ouvre plein écran, comme une application.
