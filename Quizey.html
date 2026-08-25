@@ -292,7 +292,6 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
   font:italic 500 16.5px/1.4 var(--f-display);color:var(--muted);opacity:.95;
   transform:rotate(-2deg);transform-origin:100% 0;
 }
-.note{margin:12px 0 0;font-size:13px;color:var(--muted);padding-left:11px;border-left:2.5px solid var(--pen)}
 .panel{
   background:var(--surface);border:1px solid var(--line);
   border-radius:var(--radius);box-shadow:var(--shadow);
@@ -827,6 +826,11 @@ html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:cl
 html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
 /* Topbar : boutons de thème RESERRÉS fort (alignés sur la compacité des matières). */
 html[data-ui="m"] .theme-btn{padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
+/* Ligne du thème (Auto/Clair/Sombre) : CENTRÉE sur téléphone (2026-08-25, Cid).
+   Le séparateur vertical (1 px) perd son sens une fois les lignes empilées →
+   masqué sur mobile (il reste sur ordinateur, où il sépare matières | thème). */
+html[data-ui="m"] .topbar .divider{display:none}
+html[data-ui="m"] .topbar .row.wrap-row{justify-content:center}
 /* Pendant les questions : la topbar (marque + matières + thème + puces
    score/série/passées) ne sert que sur l'accueil — sur téléphone elle
    disparaît pour libérer toute la place à l'énoncé (2026-08-25, Cid).
@@ -844,7 +848,7 @@ html[data-ui="m"] .margewrap{position:static;display:grid;grid-template-columns:
 /* Hero un peu plus resserré pour une main de poche. */
 html[data-ui="m"] h1{font-size:clamp(34px,9vw,44px);margin-top:clamp(20px,5.5vw,32px)}
 html[data-ui="m"] .slogan{font-size:clamp(18px,4.6vw,21px)}
-html[data-ui="m"] .lede{font-size:clamp(15.5px,4.4vw,17.5px)}
+html[data-ui="m"] .lede{font-size:clamp(14px,3.9vw,16px)}
 /* Stats en grille 2×2 (4 stats) : « questions passées » masquée sur mobile pour
    gagner de la place (elle reste sur ordinateur, où l'auto-fit l'absorbe). */
 html[data-ui="m"] .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -968,7 +972,6 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
       <div class="row">
         <button class="btn btn-primary" id="btnFree">Commencer l'entraînement</button>
       </div>
-      <p class="note">Astuce : <b>Passer</b> (ou la touche Échap) met la question de côté — elle revient juste après la question suivante. Si tu la passes 2 fois, on t'aide avec la méthode.</p>
     </section>
 
     <div id="bySubSlot"></div>
