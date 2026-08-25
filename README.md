@@ -47,7 +47,7 @@ Chaque matière a son propre système de niveau. Chaque bonne réponse vous fait
 git clone https://github.com/Cidbzh/Quizey.git
 ```
 
-puis ouvrez `Quizey/Quizey.html` (double-clic).
+puis ouvrez `Quizey/Quizey.html`.
 
 **Depuis les releases**
 
