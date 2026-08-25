@@ -837,6 +837,18 @@ html[data-ui="m"] .topbar .row.wrap-row{justify-content:center}
    L'écran de question a déjà « ← Quitter » pour revenir.
    Vieil navigateur sans :has → règle ignorée → ancien comportement. */
 html[data-ui="m"] body:has(#play:not([hidden])) .topbar{display:none}
+/* Topbar qui ne reste pas « figée » au scroll (téléphone, 2026-08-25, Cid) :
+   elle ne demeure que TANT QU'ON EST EN HAUT de page — au moindre scroll vers
+   le bas elle glisse hors de vue (pour libérer l'écran), et revient dès que
+   l'on remonte tout en haut. La classe .topbar-off est posée par l'écouteur
+   scroll en fin de script (seuil 10 px). transform seul → glisse fluide,
+   zéro reflow. Ordinateur : attribut data-ui absent → règle sans effet
+   (topbar sticky comme avant). prefers-reduced-motion : pas de transition,
+   masquage/revenance immédiats. */
+html[data-ui="m"] .topbar.topbar-off{transform:translateY(calc(-100% - 2px))}
+@media (prefers-reduced-motion: no-preference){
+  html[data-ui="m"] .topbar{transition:transform .28s var(--ease)}
+}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
@@ -5445,6 +5457,27 @@ function setUI(u){
   const saved=store.get(UI_KEY,null);
   if(saved==="m"||saved==="d")setUI(saved);
   else setUI(detectUI());
+})();
+/* ---------- Topbar : ne reste pas « figée » au scroll (téléphone) ----------
+   2026-08-25, Cid : le gros bloc (matières + thème) ne demeure que tant
+   qu'on est EN HAUT de page — au scroll vers le bas il glisse hors de vue
+   (classe .topbar-off, glissé par le CSS html[data-ui="m"]), et il revient
+   dès que l'on remonte tout en haut. Seuil 10 px (l'élasticité iOS peut
+   donner un scrollY négatif → reste visible, normal). Ordinateur : pas
+   d'attribut data-ui → la fonction ne fait rien (topbar sticky inchangée).
+   Écran de question : la topbar y est déjà display:none (règle CSS) → pas
+   d'interaction. Écouteur passive : ne bloque jamais le scroll. */
+(function initTopbarScroll(){
+  try{
+    const bar=document.querySelector(".topbar");
+    if(!bar||typeof window==="undefined"||typeof window.addEventListener!=="function")return;
+    const sync=()=>{
+      if(!document.documentElement.hasAttribute("data-ui"))return;   /* ordinateur */
+      bar.classList.toggle("topbar-off",(window.scrollY||0)>10);
+    };
+    window.addEventListener("scroll",sync,{passive:true});
+    sync();
+  }catch(e){/* harnais de test ou ancêtre navigateur : la topbar reste comme avant */}
 })();
 /* ---------- Révélation en cascade (haut → bas) ----------
    La chorégraphie est 100 % CSS (bloc html.boot [data-rv]) : elle se joue
