@@ -839,8 +839,8 @@ html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:8px}
 html[data-ui="m"] body:has(#home:not([hidden])) .topbar .wrap{padding-right:20px}
 html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(5px,1.6vw,8px)}
 html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(8px,2.2vw,10px) 9px;font-size:clamp(13px,3.3vw,14.5px)}
-/* Topbar : cibles tactiles ≥ 44 px (boutons de thème). */
-html[data-ui="m"] .theme-btn{padding:clamp(12px,3.4vw,16px) clamp(13px,3.8vw,18px);font-size:clamp(14px,3.8vw,15.5px)}
+/* Topbar : boutons de thème RESERRÉS (alignés sur la compacité des matières). */
+html[data-ui="m"] .theme-btn{padding:clamp(8px,2.2vw,10px) 9px;font-size:clamp(13px,3.3vw,14.5px)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
@@ -849,8 +849,10 @@ html[data-ui="m"] .margewrap{position:static;display:grid;grid-template-columns:
 html[data-ui="m"] h1{font-size:clamp(34px,9vw,44px);margin-top:clamp(20px,5.5vw,32px)}
 html[data-ui="m"] .slogan{font-size:clamp(18px,4.6vw,21px)}
 html[data-ui="m"] .lede{font-size:clamp(15.5px,4.4vw,17.5px)}
-/* Stats en grille 2×3 (5 stats) plutôt qu'en auto-fit. */
+/* Stats en grille 2×2 (4 stats) : « questions passées » masquée sur mobile pour
+   gagner de la place (elle reste sur ordinateur, où l'auto-fit l'absorbe). */
 html[data-ui="m"] .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-ui="m"] .stat-skips{display:none}
 /* Tuiles de thèmes : 2 colonnes, RESERRÉES (moins de place) — on compresse
    le padding de la tuile, son espacement interne, et les polices de nom/progression. */
 html[data-ui="m"] .subgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(7px,1.8vw,10px)}
@@ -4724,7 +4726,7 @@ function renderHome(){
     `<div class="stat"><div class="v">${stats.good}</div><div class="k">réponses correctes</div></div>`+
     `<div class="stat"><div class="v">${acc}%</div><div class="k">précision globale</div></div>`+
     `<div class="stat"><div class="v">${stats.bestStreak}</div><div class="k">meilleure série</div></div>`+
-    `<div class="stat"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`;
+    `<div class="stat stat-skips"><div class="v">${stats.skips}</div><div class="k">questions passées</div></div>`;
   /* Multi-sélection : ligne compteur + « Tous » — masquée en mode mix (sélection vide). */
   const selBar=$("#selBar");
   if(selBar){
