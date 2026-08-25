@@ -835,12 +835,12 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
 html[data-ui="m"] body{font-size:clamp(16px,4.8vw,19px)}
 /* ---- Topbar : basculeur matière en grille 2×2 (boutons RESERRÉS, « Physique-Chimie »
    tient sur UNE ligne grâce au min-width:0 — plus de débordement à 320 px) ---- */
-html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:8px}
+html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:6px}
 html[data-ui="m"] body:has(#home:not([hidden])) .topbar .wrap{padding-right:20px}
-html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(5px,1.6vw,8px)}
-html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(6px,1.9vw,8px) 8px;font-size:clamp(12px,3.1vw,13.5px)}
-/* Topbar : boutons de thème RESERRÉS d'un cran (alignés sur la compacité des matières). */
-html[data-ui="m"] .theme-btn{padding:clamp(6px,1.9vw,8px) 8px;font-size:clamp(12px,3.1vw,13.5px)}
+html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(4px,1.2vw,6px)}
+html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
+/* Topbar : boutons de thème RESERRÉS fort (alignés sur la compacité des matières). */
+html[data-ui="m"] .theme-btn{padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
 /* ---- Accueil : TOUJOURS une colonne (même ≥1025 px : le mode est explicite) ---- */
 html[data-ui="m"] #home{display:block}
 html[data-ui="m"] #revSlot,html[data-ui="m"] #lvlSlot,html[data-ui="m"] .statgrid{width:100%}
@@ -875,10 +875,11 @@ html[data-ui="m"] .substathead span,html[data-ui="m"] .substatrow b{min-width:0;
 /* Boutons : cibles tactiles confortables, texte plus lisible — tailles FLUIDES (clamp min→max). */
 html[data-ui="m"] .btn{padding:clamp(13px,3.4vw,16px) clamp(20px,5.2vw,26px);font-size:clamp(16px,4.2vw,18px)}
 html[data-ui="m"] .btn.small{padding:clamp(11px,3vw,15px) clamp(14px,3.8vw,18px);font-size:clamp(14px,3.8vw,15.5px)}
-/* Boutons de NIVEAU (Facile/Moyen/Difficile/Auto) RESERRÉS d'un cran. Cette règle
-   générique .seg-btn ne s'applique plus qu'à eux : les MATIÈRES et le THÈME ont
-   leur règle plus haute (spécificité), et l'ANNÉE garde .picks .seg-year .seg-btn. */
-html[data-ui="m"] .seg-btn{padding:clamp(8px,2.4vw,11px) 10px;font-size:clamp(13px,3.6vw,15px)}
+/* Boutons de NIVEAU (Facile/Moyen/Difficile/Auto) = MÊMES DIMENSIONS que l'ANNÉE
+   (font-size:13px + padding:5px 10px, identiques à .picks .seg-year .seg-btn).
+   Cette règle générique .seg-btn ne s'applique plus qu'à eux : les MATIÈRES et le
+   THÈME ont leur règle plus haute (spécificité), et l'ANNÉE garde sa règle propre. */
+html[data-ui="m"] .seg-btn{padding:5px 10px;font-size:13px}
 /* Tête « Entraînement libre » : sur téléphone, les sélecteurs passent sous le
    titre (pleine largeur) et leurs boutons peuvent REPLIER sur 2 lignes si la
    largeur est trop petite — mieux vaut 2 lignes qu'un débordement. */

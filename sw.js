@@ -3,10 +3,13 @@
    version de cache incrémentationnable (les anciens sont purgés à l'activate),
    interception RESTREINTE aux GET de même origine. Zéro dépendance.
 
-   MAJ du cache : incrémenter la constante CACHE ci-dessous (ex. "quizey-v2") —
-   à la prochaine activation, l'ancienne cache est supprimée automatiquement. */
+   MAJ du cache : incrémenter la constante CACHE ci-dessous (ex. "quizey-v3") —
+   à la prochaine activation, l'ancienne cache est supprimée automatiquement.
 
-const CACHE = "quizey-v1";
+   Historique : quizey-v1 (premier cache) → quizey-v2 (2026-08-25 : boutons
+   topbar/compacité mobile + écart stats→Entraînement libre). */
+
+const CACHE = "quizey-v2";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
