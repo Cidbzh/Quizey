@@ -13,6 +13,16 @@
 <!-- Favicon : le « Q à la plume » (source : logo.svg). Data: URI pour garder
      l'app en fichier unique ; la plume change d'accent avec la matière (setFavicon). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cg%20fill='none'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='29'%20cy='28'%20r='19'%20stroke='%2316233D'%20stroke-width='7'/%3E%3Cpath%20d='M23%2033%20C31%2044,%2045%2047,%2055%2035'%20stroke='%232563EB'%20stroke-width='7'/%3E%3C/g%3E%3C/svg%3E">
+<!-- PWA (2026-08-25, spec docs/2026-08-25-pwa-design.md) : installable sur mobile +
+     hors ligne, QUAND l'app est servie en HTTPS (GitHub Pages /Quizey/). Chemins
+     RELATIFS — sous /Quizey/, un chemin absolu /sw.js serait broken. En file://
+     (usage local) ces fichiers sont absents → simplement ignorés, le favicon data:
+     URI ci-dessus reste. Aucune stat d'utilisateur n'entre dans ces fichiers. -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="theme-color" content="#16233D">
 <script>/* Thème + matière + VERSION D'INTERFACE appliqués AVANT le premier rendu (anti-flash).
    Lit les choix sauvegardés (clés qz_theme / qz_subject / qz_ui, anciennes clés cz_* en
    secours — la migration complète vit dans le gros script) et pose sur <html> les
@@ -5509,4 +5519,13 @@ function rearmBoot(fast){
 renderHome();
 rearmBoot();   /* première visite : chorégraphie complète, délais non compressés */
 </script>
+<!-- PWA (2026-08-25, spec docs/2026-08-25-pwa-design.md) — enregistrement du service
+     worker, EN FIN DE FICHIER (après le script de l'app) : en file:// la condition est
+     fausse → rien ne s'enregistre, l'app locale reste strictement identique. En HTTPS
+     (GitHub Pages) ou localhost (tests) → sw.js s'enregistre au chargement.
+     .catch() : aucune erreur remontée si sw.js est absent (ex. copie locale sans sw.js). -->
+<script>/* Enregistrement du service worker — HORS LIGNE + INSTALLABLE (2026-08-25).
+   Gardé : ne s'active qu'en HTTPS (GitHub Pages) ou localhost. En file:// (usage
+   local) la condition est fausse → il ne s'enregistre PAS, l'app locale est inchangée. */
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});}</script>
 

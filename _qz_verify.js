@@ -1533,6 +1533,45 @@ console.log("\n[32] Anti-répétition (shuffle-bag) — chaque question disponib
   }
 }
 
+/* ================= [33] PWA — installable + hors ligne (2026-08-25, spec docs/2026-08-25-pwa-design.md) ================= */
+{
+  const readSafe=(f)=>{try{return fs.readFileSync(path.join(__dirname,f),"utf8");}catch(e){return "";}};
+  const manifestRaw=readSafe("manifest.webmanifest");
+  const swRaw=readSafe("sw.js");
+  const indexRaw=readSafe("index.html");
+
+  // [PWA-1] manifeste : JSON valide, name + start_url + icons non vides
+  let man=null;
+  try{man=JSON.parse(manifestRaw);}catch(e){}
+  ok("[PWA-1] manifeste : JSON valide (name, start_url, icons non vide)",
+     !!man && typeof man.name==="string" && man.name.length>0 &&
+     typeof man.start_url==="string" && man.start_url.length>0 &&
+     Array.isArray(man.icons) && man.icons.length>0);
+
+  // [PWA-2] service worker : compile (syntaxe) sans erreur
+  let swOk=true;
+  try{ new vm.Script(swRaw); }catch(e){ swOk=false; }
+  ok("[PWA-2] service worker : syntaxe valide (compile)", swOk===true);
+
+  // [PWA-3] Quizey.html : lien manifeste + lien icon (PNG) + theme-color
+  ok("[PWA-3] Quizey.html : <link rel=manifest> + <link rel=icon> + theme-color",
+     /rel=["']manifest["']/.test(html) &&
+     /rel=["']icon["']\s+type=["']image\/png["']/.test(html) &&
+     /name=["']theme-color["']/.test(html));
+
+  // [PWA-4] enregistrement SW gardé : https:/localhost requis, file:// exclu
+  ok("[PWA-4] Quizey.html : enregistrement SW gardé (https:/localhost, file:// exclu)",
+     /["']serviceWorker["']\s+in\s+navigator/.test(html) &&
+     /location\.protocol===["']https:["']/.test(html) &&
+     /location\.hostname===["']localhost["']/.test(html) &&
+     /serviceWorker\.register\(/.test(html));
+
+  // [PWA-5] index.html : redirige vers Quizey.html (l'app, pas un autre fichier)
+  ok("[PWA-5] index.html : redirige vers Quizey.html",
+     /location\.replace\([\s\S]*Quizey\.html/.test(indexRaw) ||
+     /url=["'][^"']*Quizey\.html/.test(indexRaw));
+}
+
 console.log("=====================================");
 console.log(fail===0?("TOUS LES TESTS PASSENT ✔  ("+pass+")"):(fail+" ÉCHEC(S) — "+pass+" OK"));
 process.exit(fail===0?0:1);
