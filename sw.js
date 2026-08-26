@@ -33,9 +33,14 @@
    fausse — renvoie vers la section « Demander » de Brave
    (search.brave.com/ask) avec l'énoncé comme prompt ; flèches
    combinantes des vecteurs u⃗/v⃗/AB⃗ remplacées par la classe CSS
-   .vec (flèche au-dessus de la lettre, alignement préservé)). */
+   .vec (flèche au-dessus de la lettre, alignement préservé))
+   → quizey-v12 (2026-08-26 : vague de contenu — 16 nouvelles questions
+   sur 4 matières (PC : dilution/catalyseur/désintégration α/T½/activité
+   A=λN ; DE : passif + Konjunktiv II ; EN : passif + conditionnels +
+   verbes irréguliers) + NOUVEAU chapitre DE « Präpositionen »
+   (Wechselpräpositionen datif/accusatif, id « prep »)). */
 
-const CACHE = "quizey-v11";
+const CACHE = "quizey-v12";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

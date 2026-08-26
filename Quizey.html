@@ -1611,7 +1611,26 @@ const G_S2_STAT=[
     ()=>{const n1=Ri(8,15),n2=Ri(8,15),n3=Ri(8,15);
       return{prompt:`Avec ${n1} et ${n2} /20 aux deux premières évaluations, une élève a une moyenne de ${(n1+n2+n3)/3}. Quelle est sa troisième note ?`,
        type:"number",answer:n3,
-       explain:`La somme des 3 notes vaut 3 × ${(n1+n2+n3)/3} = ${3*(n1+n2+n3)/3}. Donc la 3ᵉ note = ${3*(n1+n2+n3)/3} − ${n1} − ${n2} = <b>${n3}</b>.`};}
+       explain:`La somme des 3 notes vaut 3 × ${(n1+n2+n3)/3} = ${3*(n1+n2+n3)/3}. Donc la 3ᵉ note = ${3*(n1+n2+n3)/3} − ${n1} − ${n2} = <b>${n3}</b>.`};},
+    // 5. Médiane (série de 5 valeurs triées)
+    ()=>{const a=Ri(3,8),b=Ri(a+2,a+4),c=Ri(b+2,b+4),d=Ri(c+2,c+4),e=Ri(d+2,d+4);
+      return{prompt:`Les temps (en s) de 5 élèves à la course, du plus rapide au plus lent : ${a}, ${b}, ${c}, ${d}, ${e}. Quel est le temps médian ?`,
+       type:"number",answer:c,
+       explain:`Médiane = valeur du MILIEU de la série triée. 5 valeurs → la 3ᵉ : ${a}, ${b}, <b>${c}</b>, ${d}, ${e}.<br>Temps médian = <b>${c}</b> s.`};},
+    // 6. QCM : médiane parmi les valeurs
+    ()=>{const a=Ri(3,8),b=Ri(a+2,a+4),c=Ri(b+2,b+4),d=Ri(c+2,c+4),e=Ri(d+2,d+4);
+      return qcmN(`Série triée : ${a}, ${b}, ${c}, ${d}, ${e}. Quelle est la médiane ?`,c,[a,d,b],
+       `Médiane = valeur du milieu de la série triée (5 valeurs → la 3ᵉ) : <b>${c}</b>.`);},
+    // 7. Étendue (max − min)
+    ()=>{const mn=Ri(2,6),range=Ri(4,12),mx=mn+range;
+      return{prompt:`Une série a pour valeur minimale ${mn} et pour valeur maximale ${mx}. Quelle est son étendue ?`,
+       type:"number",answer:range,
+       explain:`Étendue = valeur maximale − valeur minimale = ${mx} − ${mn} = <b>${range}</b>.`};},
+    // 8. QCM : rôle de Q1 et Q3 sur une boîte à moustaches
+    ()=>qcm(`Sur une boîte à moustaches, les deux bords de la BOÎTE sont :`,
+     `Q1 et Q3 (les deux quartiles)`,
+     [`Le minimum et le maximum`,`La médiane et le maximum`,`Le minimum et la médiane`],
+     `La boîte va de Q1 (25ᵉ percentile) à Q3 (75ᵉ percentile) : elle couvre 50 % des valeurs.<br>Les moustaches atteignent le min et le max, et la ligne intérieure marque la médiane.`)
    ];
    return pick(builds)();
  }},
@@ -1746,7 +1765,18 @@ const G_S2_TRIG=[
       const ab=T[0],ac=T[1],bc=T[2];
       return qcm(`Le triangle ABC est rectangle en A, AB = ${ab}, AC = ${ac}. Que vaut cos(B) ?`,
        pf(ab,bc),[pf(ac,bc),pf(bc,ab),pf(ac,ab)],
-       `cos(B) = adjacent/hypoténuse = AB/BC = <b>${F(ab,bc)}</b>.`);}
+       `cos(B) = adjacent/hypoténuse = AB/BC = <b>${F(ab,bc)}</b>.`);},
+    // 5. Identité fondamentale : sin² + cos² = 1
+    ()=>qcm(`Dans un triangle rectangle, on a TOUJOURS :`,
+     `sin²(B) + cos²(B) = 1`,
+     [`sin²(B) + cos²(B) = 2`,`sin²(B) − cos²(B) = 1`,`sin(B) × cos(B) = 1`],
+     `C'est l'identité fondamentale (Pythagore en sin/cos) : pour tout angle B, sin²(B) + cos²(B) = <b>1</b>.`),
+    // 6. Valeur de sin² + cos² dans un triangle donné
+    ()=>{const T=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]);
+      const ab=T[0],ac=T[1],bc=T[2];
+      return{prompt:`Le triangle ABC est rectangle en A, avec AB = ${ab}, AC = ${ac}, BC = ${bc}. Que vaut sin²(B) + cos²(B) ?`,
+       type:"number",answer:1,
+       explain:`sin²(B) + cos²(B) = (AC/BC)² + (AB/BC)² = (${ac}² + ${ab}²) / ${bc}² = ${bc}² / ${bc}² = <b>1</b>.<br>C'est l'identité sin² + cos² = 1.`};}
    ];
    return pick(builds)();
  }},
@@ -2326,7 +2356,23 @@ const G_DERIV=[
       const bonne=decr?"décroissante sur (0 ; +∞)":"croissante sur (0 ; +∞)";
       const ds=[decr?"croissante sur (0 ; +∞)":"décroissante sur (0 ; +∞)","constante sur (0 ; +∞)","non définie sur (0 ; +∞)"];
       return qcm(`f(x) = ${a===1?"":a} / x. Sur l'intervalle (0 ; +∞), f est :`,bonne,ds,
-       `f′(x) = −${a}/x². Comme ${a} ${a>0?">":"<"} 0, on a f′(x) ${a>0?"< 0":"> 0"} pour tout x > 0 : f est ${bonne.split(" sur")[0]} sur (0 ; +∞).`);}
+       `f′(x) = −${a}/x². Comme ${a} ${a>0?">":"<"} 0, on a f′(x) ${a>0?"< 0":"> 0"} pour tout x > 0 : f est ${bonne.split(" sur")[0]} sur (0 ; +∞).`);},
+    // 5. Règle du produit (x · eˣ) — QCM de forme
+    ()=>qcm(`Soit f(x) = x · e<sup>x</sup>. Quelle est la fonction dérivée ?`,
+     `f′(x) = (1 + x) · e<sup>x</sup>`,
+     [`f′(x) = x · e<sup>x</sup>`,`f′(x) = e<sup>x</sup>`,`f′(x) = (x + 1) / e<sup>x</sup>`],
+     `Règle du produit : (u·v)′ = u′·v + u·v′, avec u = x (u′ = 1) et v = e<sup>x</sup> (v′ = e<sup>x</sup>).<br>f′(x) = 1·e<sup>x</sup> + x·e<sup>x</sup> = <b>(1 + x)·e<sup>x</sup></b>.`),
+    // 6. Règle du quotient (x/(x + a)) — valeur numérique
+    ()=>{const a=pick([1,2,3]);
+      const num=a, den=(1+a)*(1+a);
+      return{prompt:`Soit f(x) = x / (x + ${a}). Calcule f′(1).`,
+       type:"frac",answer:fa(num,den),
+       explain:`Règle du quotient : (u/v)′ = (u′·v − u·v′)/v², avec u = x (u′ = 1) et v = x + ${a} (v′ = 1).<br>f′(x) = (1·(x+${a}) − x·1)/(x+${a})² = ${a}/(x+${a})².<br>f′(1) = ${a}/(${1+a})² = <b>${F(a,den)}</b>.`};},
+    // 7. Règle du quotient — QCM de forme
+    ()=>qcm(`Soit f(x) = x / (x + 1). Quelle est la fonction dérivée ?`,
+     `f′(x) = 1 / (x + 1)²`,
+     [`f′(x) = 1 / (x + 1)`,`f′(x) = (x + 1) / x`,`f′(x) = 1 / (x² + 1)`],
+     `Règle du quotient : (u/v)′ = (u′·v − u·v′)/v², avec u = x (u′ = 1) et v = x + 1 (v′ = 1).<br>f′(x) = (1·(x+1) − x·1)/(x+1)² = (x+1−x)/(x+1)² = <b>1/(x+1)²</b>.`)
    ];
    return pick(builds)();
  }}
@@ -2843,7 +2889,23 @@ const G_T_SUIT=[
       type:"number",answer:ans,
       explain:`On divise numérateur et dénominateur par n² : les termes n/n² et 1/n² tendent vers 0.<br>La limite est le rapport des coefficients de n² : ${a}/${b} = <b>${ans}</b>.`};
    };
-   const builds=[()=>mk(6,3),()=>mk(9,3),()=>mk(12,3)];
+   const builds=[()=>mk(6,3),()=>mk(9,3),()=>mk(12,3),
+    // 4. Raisonnement par récurrence — la méthode (BO T : « démontrer une propriété par récurrence »)
+    ()=>qcm(`Pour démontrer par récurrence une propriété P(n) vraie pour tout entier n ≥ n₀, il faut :`,
+     `vérifier P(n₀), puis montrer que P(k) ⇒ P(k+1)`,
+     [`vérifier P(0), P(1) et P(2) seulement`,`montrer que P(n+1) ⇒ P(n)`,`vérifier P(n) pour une valeur n au hasard`],
+     `Récurrence = <b>initialisation</b> (P(n₀) vraie) + <b>hérédité</b> (P(k) ⇒ P(k+1) pour tout k ≥ n₀).<br>Dès que les deux étapes sont faites, P(n) est vraie pour TOUS les n ≥ n₀.`),
+    // 5. Raisonnement par récurrence — l'étape d'hérédité
+    ()=>qcm(`Soit P(n) : « 2ⁿ > n ». L'étape d'HÉRÉDITÉ consiste à montrer que :`,
+     `si P(k) est vraie alors P(k+1) est vraie`,
+     [`si P(k+1) est vraie alors P(k) est vraie`,`2ⁿ est strictement croissante`,`P(1) est vraie`],
+     `L'hérédité montre le « pas » : si la propriété tient pour k, elle tient pour k+1 (on <b>part</b> de P(k) pour <b>prouver</b> P(k+1)).`),
+    // 6. Raisonnement par récurrence — l'étape d'initialisation
+    ()=>qcm(`Dans un raisonnement par récurrence, l'étape d'INITIALISATION consiste à :`,
+     `vérifier que la propriété est vraie pour la première valeur n₀`,
+     [`démontrer le pas d'hérédité P(k) ⇒ P(k+1)`,`vérifier la propriété quand n tend vers +∞`,`vérifier la propriété pour n = 1 et n = 2 seulement`],
+     `L'initialisation pose le « point de départ » : on vérifie P(n₀) (ici souvent n₀ = 0 ou n₀ = 1).<br>L'hérédité enchaîne ensuite, et les deux étapes réunies prouvent P(n) pour tout n ≥ n₀.`)
+   ];
    return pick(builds)();
  }}
 ];
@@ -2971,7 +3033,17 @@ const G_T_DER=[
       return qcm(`Quelle est une primitive de f(x) = ${a}x³ ?`,
        `F(x) = ${h}x⁴`,
        [`F(x) = ${a}x⁴`,`F(x) = ${h}x³`,`F(x) = ${a}x³`],
-       `Une primitive de x³ est x⁴/4, donc de ${a}x³ c'est ${a}/4 · x⁴ = ${h}x⁴.<br>Vérif : (${h}x⁴)′ = ${h} × 4x³ = ${a}x³. ✓`);}
+       `Une primitive de x³ est x⁴/4, donc de ${a}x³ c'est ${a}/4 · x⁴ = ${h}x⁴.<br>Vérif : (${h}x⁴)′ = ${h} × 4x³ = ${a}x³. ✓`);},
+    // 4. Primitive de eˣ
+    ()=>qcm(`Quelle est une primitive de f(x) = e<sup>x</sup> ?`,
+     `F(x) = e<sup>x</sup>`,
+     [`F(x) = x · e<sup>x</sup>`,`F(x) = e<sup>x</sup> / x`,`F(x) = ln(x)`],
+     `La dérivée de e<sup>x</sup> est elle-même : (e<sup>x</sup>)′ = e<sup>x</sup>.<br>Donc une primitive de e<sup>x</sup> est e<sup>x</sup> (la constante C est omise — toute primitive convient).`),
+    // 5. Primitive de 1/x
+    ()=>qcm(`Quelle est une primitive de f(x) = 1/x (sur ]0 ; +∞[) ?`,
+     `F(x) = ln(x)`,
+     [`F(x) = x`,`F(x) = −1 / x²`,`F(x) = ln(x) / x`],
+     `La dérivée de ln(x) est 1/x : (ln x)′ = 1/x.<br>Donc une primitive de 1/x est ln(x) (la constante C est omise — toute primitive convient).`)
    ];
    return pick(builds)();
  }},
@@ -3049,7 +3121,17 @@ const G_T_PROBA=[
     ()=>{const b=pick([{n:8,p:[3,4],e:6},{n:15,p:[2,5],e:6},{n:7,p:[3,7],e:3},{n:5,p:[2,5],e:2}]);
       return{prompt:`X suit la loi binomiale B(${b.n} ; ${F(b.p[0],b.p[1])}). Calcule l'espérance E(X).`,
        type:"number",answer:b.e,
-       explain:`Formule : E(X) = n × p = ${b.n} × ${F(b.p[0],b.p[1])} = <b>${b.e}</b>.`};}
+       explain:`Formule : E(X) = n × p = ${b.n} × ${F(b.p[0],b.p[1])} = <b>${b.e}</b>.`};},
+    // Linéarité de l'espérance (BO T : « E(X+Y) = E(X) + E(Y) »)
+    ()=>qcm(`X et Y sont deux variables aléatoires. Quelle est l'espérance de X + Y ?`,
+     `E(X + Y) = E(X) + E(Y)`,
+     [`E(X + Y) = E(X) × E(Y)`,`E(X + Y) = E(X) − E(Y)`,`E(X + Y) = E(X) / E(Y)`],
+     `<b>Linéarité de l'espérance</b> : E(X+Y) = E(X) + E(Y) — toujours vrai, même si X et Y ne sont pas indépendantes.`),
+    // E(aX) = a · E(X) (BO T : « E(aX) = aE(X) »)
+    ()=>{const e=Ri(3,9);
+      return{prompt:`Une variable aléatoire X a pour espérance E(X) = ${e}. Quelle est l'espérance de 2X ?`,
+       type:"number",answer:2*e,
+       explain:`Linéarité de l'espérance : E(aX) = a·E(X). Ici E(2X) = 2 × E(X) = 2 × ${e} = <b>${2*e}</b>.`};}
    ];
    return pick(builds)();
  }},
@@ -3066,7 +3148,17 @@ const G_T_PROBA=[
     ()=>{const b=pick([{n:7,p:[3,7],v:[12,7]},{n:6,p:[1,2],v:[3,2]},{n:15,p:[2,5],v:[18,5]}]),q=[b.p[1]-b.p[0],b.p[1]];
       return{prompt:`X suit la loi binomiale B(${b.n} ; ${F(b.p[0],b.p[1])}). Calcule la variance V(X).`,
        type:"frac",answer:fa(b.v[0],b.v[1]),
-       explain:`Formule : V(X) = n · p · (1 − p) = ${b.n} × ${F(b.p[0],b.p[1])} × ${F(q[0],q[1])} = <b>${F(b.v[0],b.v[1])}</b>.`};}
+       explain:`Formule : V(X) = n · p · (1 − p) = ${b.n} × ${F(b.p[0],b.p[1])} × ${F(q[0],q[1])} = <b>${F(b.v[0],b.v[1])}</b>.`};},
+    // Additivité de la variance — variables INDÉPENDANTES (BO T : « V(X+Y) = V(X) + V(Y) »)
+    ()=>{const vx=Ri(2,8),vy=Ri(2,8);
+      return{prompt:`X et Y sont deux variables aléatoires INDÉPENDANTES, de variances V(X) = ${vx} et V(Y) = ${vy}. Quelle est la variance de X + Y ?`,
+       type:"number",answer:vx+vy,
+       explain:`Si X et Y sont <b>indépendantes</b> : V(X+Y) = V(X) + V(Y) = ${vx} + ${vy} = <b>${vx+vy}</b>.<br>(Sans indépendance, cette additivité ne tient pas.)`};},
+    // Inégalité de Bienaymé-Tchebychev (BO T : « P(|X−μ| ≥ δ) ≤ V/δ² »)
+    ()=>qcm(`L'inégalité de Bienaymé-Tchebychev dit que, pour X d'espérance μ et de variance V, la probabilité P(|X − μ| ≥ δ) est au plus :`,
+     `V / δ²`,
+     [`V / δ`,`δ² / V`,`V × δ²`],
+     `<b>Bienaymé-Tchebychev</b> : P(|X−μ| ≥ δ) ≤ V / δ². Plus δ est grand (plus on s'éloigne de l'espérance), plus cette majoration est faible.`)
    ];
    return pick(builds)();
  }}
@@ -3361,7 +3453,12 @@ const G_S2_DILU=[
       return{prompt:`On dilue ${ms} g d'un sel dans de l'eau jusqu'à ${Vs} L. Quelle est la concentration massique obtenue ? (en g/L)`,
         type:"number",answer:C,tol:0.01,
         viz:{kind:"soln",n:m,c:C},
-        explain:`C = m/V = ${ms} / ${Vs} = <b>${Cs} g/L</b>.`};}
+        explain:`C = m/V = ${ms} / ${Vs} = <b>${Cs} g/L</b>.`};},
+    ()=>{const c1=pick([2,4,5,8]),f=pick([2,4,5]),c2=c1/f;
+      const fs=x=>String(x).replace(".",",");
+      return{prompt:`Une solution de concentration C₁ = ${fs(c1)} g/L est diluée d'un facteur ${f}. Quelle est la nouvelle concentration ? (en g/L)`,
+        type:"number",answer:c2,tol:0.01,
+        explain:`Diluer d'un facteur F revient à diviser la concentration par F : C₂ = C₁ / F = ${fs(c1)} / ${f} = <b>${fs(c2)} g/L</b>.`};}
    ];
    return pick(builds)();
  }},
@@ -4069,7 +4166,10 @@ const G_T_CINET=[
     ()=>{const k=pick([0.5,1,2]),A=pick([0.1,0.2,0.5]),v=Math.round(k*A*1000)/1000,fs=x=>String(x).replace(".",",");
       return{prompt:`Pour une réaction du 1ᵉʳ ordre, v = k·[A]. Avec k = ${fs(k)} s⁻¹ et [A] = ${fs(A)} mol/L, quelle est la vitesse ? (en mol·L⁻¹·s⁻¹)`,
         type:"number",answer:v,tol:0.02,
-        explain:`v = k·[A] = ${fs(k)} × ${fs(A)} = <b>${fs(v)} mol·L⁻¹·s⁻¹</b>.`}}
+        explain:`v = k·[A] = ${fs(k)} × ${fs(A)} = <b>${fs(v)} mol·L⁻¹·s⁻¹</b>.`};},
+    ()=>qcm("On ajoute un catalyseur à une réaction chimique : il…",
+      "augmente la vitesse sans figurer au bilan de la réaction",["est consommé par la réaction","diminue la vitesse de la réaction","modifie l'état final du mélange"],
+      `Le <b>catalyseur</b> accélère la réaction en abaissant l'énergie d'activation, mais il est <b>consommé puis régénéré</b> : il n'apparaît pas au bilan et ne change pas l'état final (ni le rendement).`)
    ];
    return pick(builds)();
  }},
@@ -4105,7 +4205,10 @@ const G_T_NUCLEAIRE=[
     ()=>{const iz=pick([[1,2],[2,4],[6,12],[8,16]]),Z=iz[0],A=iz[1],N=A-Z;
       return{prompt:`Un noyau compte A = ${A} nucléons au total, dont N = ${N} neutrons. Quel est son nombre atomique Z ?`,
         type:"number",answer:Z,
-        explain:`A = Z + N, donc Z = A − N = ${A} − ${N} = <b>${Z}</b> (nombre de protons).`}}
+        explain:`A = Z + N, donc Z = A − N = ${A} − ${N} = <b>${Z}</b> (nombre de protons).`};},
+    ()=>qcm("Une radioactivité de type α correspond à…",
+      "l'émission d'un noyau d'hélium (Z diminue de 2, A diminue de 4)",["l'émission d'un électron (Z augmente de 1)","l'émission d'un photon sans changement de noyau","la capture d'un neutron"],
+      `En <b>α</b>, le noyau émet un <b>noyau d'hélium</b> (2 protons, 2 neutrons) : Z → Z − 2 et A → A − 4. (Le β⁻ émet un électron, le γ un photon.)`)
    ];
    return pick(builds)();
  }},
@@ -4121,7 +4224,11 @@ const G_T_NUCLEAIRE=[
         explain:`Chaque demi-vie divise par 2 : après 2 demi-vies, n = n₀/2/2 = n₀/4 = ${n0}/4 = <b>${n} noyaux</b>.`};},
     ()=>qcm("La demi-vie d'un radionucléide est…",
       "le temps au bout duquel la moitié des noyaux s'est désintégrée",["le temps total de vie d'un noyau unique","le temps pour que tous les noyaux disparaissent","une durée qui dépend de la masse totale de l'échantillon"],
-      `La <b>demi-vie</b> T₁/₂ est une probabilité : au bout de ce temps, il reste n₀/2 noyaux actifs. Elle est propre à chaque nucléide, indépendante de la quantité prise.`)
+      `La <b>demi-vie</b> T₁/₂ est une probabilité : au bout de ce temps, il reste n₀/2 noyaux actifs. Elle est propre à chaque nucléide, indépendante de la quantité prise.`),
+    ()=>{const lam=pick([0.1,0.2,0.5,1]),t12=Math.round(0.693/lam*100)/100,fs=x=>String(x).replace(".",",");
+      return{prompt:`La constante radioactive d'un noyau vaut λ = ${fs(lam)} s⁻¹. Quelle est sa demi-vie ? (en s)`,
+        type:"number",answer:t12,tol:0.02,
+        explain:`T₁/₂ = ln(2) / λ = 0,693 / ${fs(lam)} = <b>${fs(t12)} s</b>. Plus λ est grand, plus la demi-vie est courte.`};}
    ];
    return pick(builds)();
  }},
@@ -4135,7 +4242,11 @@ const G_T_NUCLEAIRE=[
       `La <b>fusion</b> réunit des noyaux légers (ex. isotopes de l'hydrogène) en un noyau plus lourd — c'est la réaction qui fait briller le Soleil. L'inverse (scission du lourd) est la <b>fission</b>.`),
     ()=>qcm("Une radioactivité de type β⁻ correspond à…",
       "l'émission d'un électron par un neutron du noyau (Z augmente de 1)",["l'émission d'un noyau d'hélium","l'émission d'un photon gamma seulement","la capture d'un proton externe"],
-      `En <b>β⁻</b>, un neutron se transforme en proton : Z → Z + 1, A inchangé, et un électron + une antineutrino sont émis. (β⁺ et α sont d'autres modes.)`)
+      `En <b>β⁻</b>, un neutron se transforme en proton : Z → Z + 1, A inchangé, et un électron + une antineutrino sont émis. (β⁺ et α sont d'autres modes.)`),
+    ()=>{const lam=pick([2,3,5]),N=pick([2,3,4]),A=lam*N;
+      return{prompt:`Un échantillon contient N = ${N} noyaux radioactifs de constante λ = ${lam} s⁻¹. Quelle est son activité ? (en Bq)`,
+        type:"number",answer:A,
+        explain:`A = λ × N = ${lam} × ${N} = <b>${A} Bq</b> (1 Bq = 1 désintégration par seconde).`};}
    ];
    return pick(builds)();
  }}
@@ -6106,7 +6217,9 @@ const G_DE_PASSIV=[
     {p:"Die Briefe ___ gestern geschrieben.",a:"wurden",ws:["wurde","ist","sind"],tip:"pluriel + passé → wurden + Partizip II"},
     {p:"Der Film ___ 1998 gedreht.",a:"wurde",ws:["wird","ist","sind"],tip:"1998 → wurde + Partizip II"},
     {p:"Die Brücke ___ im letzten Sommer repariert.",a:"wurde",ws:["wird","ist","wurden"],tip:"im letzten Sommer → wurde + Partizip II"},
-    {p:"Die Karten ___ schnell verkauft.",a:"wurden",ws:["wurde","ist","wird"],tip:"sujet pluriel + passé → wurden + Partizip II"}
+    {p:"Die Karten ___ schnell verkauft.",a:"wurden",ws:["wurde","ist","wird"],tip:"sujet pluriel + passé → wurden + Partizip II"},
+    {p:"Das Frühstück ___ in der Mensa gekocht.",a:"wird",ws:["wurde","ist","kocht"],tip:"présent → wird + Partizip II"},
+    {p:"Die Pläne ___ von den Architekten gezeichnet.",a:"werden",ws:["wird","ist","zeichnete"],tip:"sujet pluriel + présent → werden + Partizip II"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -6193,6 +6306,36 @@ const G_DE_PASSIV=[
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
  }}
 ];
+/* ---------- Allemand : Präpositionen (Wechselpräpositionen — datif/accusatif) ---------- */
+const G_DE_PREP=[
+ {lvl:"facile",make(){
+   const pool=[
+    {p:"Ich sitze ___ Tisch.",a:"am",ws:["an den","auf den","im"],tip:"position → « am » = an dem (datif)"},
+    {p:"Das Buch liegt ___ Tisch.",a:"auf dem",ws:["auf den","auf der","in den"],tip:"position (liegen) → datif : auf dem"},
+    {p:"Ich stelle die Tasse ___ Tisch.",a:"auf den",ws:["auf dem","auf der","an dem"],tip:"mouvement (stellen) → accusatif : auf den"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"moyen",make(){
+   const pool=[
+    {p:"Das Bild hängt ___ Wand.",a:"an der",ws:["an die","auf die","in der"],tip:"position (être accroché) → datif : an der"},
+    {p:"Ich hänge das Bild ___ Wand.",a:"an die",ws:["an der","an dem","in die"],tip:"mouvement (accrocher) → accusatif : an die"},
+    {p:"Die Kinder spielen ___ Park.",a:"im",ws:["in den","in der","am"],tip:"position (jouer dans) → datif : im Park"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }},
+ {lvl:"difficile",make(){
+   const pool=[
+    {p:"Der Hund springt ___ Garten.",a:"in den",ws:["in dem","im","an den"],tip:"mouvement (sauter dans) → accusatif : in den"},
+    {p:"Das Kind spielt ___ Garten.",a:"im",ws:["in den","in der","am"],tip:"position (jouer dans) → datif : im"},
+    {p:"Wir gehen ___ Wochenende in die Berge.",a:"am",ws:["an das","auf das","im"],tip:"« am Wochenende » = an dem (expression de temps)"}
+   ];
+   const e=pick(pool);
+   return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
+ }}
+];
 /* ---------- Allemand : Konjunktiv II (würde + Infinitiv, hätte/wäre) ---------- */
 const G_DE_KONJ=[
  {lvl:"facile",make(){
@@ -6214,7 +6357,9 @@ const G_DE_KONJ=[
     {p:"Wenn es nicht so teuer ___, würde ich es kaufen.",a:"wäre",ws:["ist","wird","werde"],tip:"wäre = Konjunktiv II de « sein »"},
     {p:"Wenn ich ein Flugzeug ___, würde ich um die Welt fliegen.",a:"hätte",ws:["habe","werde","will"],tip:"hätte = Konjunktiv II de « haben »"},
     {p:"Was wäre, wenn wir morgen frei ___.?",a:"wären",ws:["sind","werden","haben"],tip:"wären = Konjunktiv II pluriel de « sein »"},
-    {p:"Wenn du mehr Glück ___, hättest du gewonnen.",a:"gehabt",ws:["hast","hättest","hast gehabt"],tip:"hättest + Partizip II (Konjunktiv II du passé)"}
+    {p:"Wenn du mehr Glück ___, hättest du gewonnen.",a:"gehabt",ws:["hast","hättest","hast gehabt"],tip:"hättest + Partizip II (Konjunktiv II du passé)"},
+    {p:"Wenn ich reich ___, würde ich eine Insel kaufen.",a:"wäre",ws:["bin","werde","habe"],tip:"wäre = Konjunktiv II de « sein » (hypothèse)"},
+    {p:"Er ___ gern einen Hund haben, aber seine Frau ist dagegen.",a:"würde",ws:["will","kann","wird"],tip:"würde + Infinitiv = il aimerait"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -6529,7 +6674,9 @@ const G_EN_VERBES=[
      {p:"We ___ a lot of ice cream at the party.",a:"ate",ws:["eated","eaten","eating"],tip:"eat → ate (irrégulier)"},
      {p:"He ___ his keys this morning.",a:"lost",ws:["losted","lose","losing"],tip:"lose → lost (irrégulier)"},
      {p:"They ___ a great match on TV.",a:"saw",ws:["seed","seen","seeing"],tip:"see → saw (irrégulier)"},
-     {p:"I ___ a new phone last week.",a:"bought",ws:["buyed","buying","buyed to"],tip:"buy → bought (double g)"}
+     {p:"I ___ a new phone last week.",a:"bought",ws:["buyed","buying","buyed to"],tip:"buy → bought (double g)"},
+     {p:"We ___ in the lake last summer.",a:"swam",ws:["swimed","swimming","swims"],tip:"swim → swam (irrégulier)"},
+     {p:"He ___ to work yesterday.",a:"drove",ws:["droved","driving","drives"],tip:"drive → drove (irrégulier)"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -7097,7 +7244,9 @@ const G_EN_PASSIF=[
     {p:"The window ___ by the kids last night.",a:"was broken",ws:["is broken","was break","broke"],tip:"was + broken (break → broken)"},
     {p:"The letters ___ last night.",a:"were written",ws:["was written","were write","wrote"],tip:"pluriel + passé → were + written"},
     {p:"The exam ___ by the teacher.",a:"was marked",ws:["is marked","was mark","marked"],tip:"was + marked"},
-    {p:"The house ___ two years ago.",a:"was sold",ws:["is sold","was sell","solded"],tip:"ago → passé : was + sold"}
+    {p:"The house ___ two years ago.",a:"was sold",ws:["is sold","was sell","solded"],tip:"ago → passé : was + sold"},
+    {p:"The windows ___ every morning.",a:"are cleaned",ws:["cleans","are clean","clean"],tip:"sujet pluriel + présent → are + cleaned"},
+    {p:"These roads ___ in the 1960s.",a:"were built",ws:["was built","were build","builted"],tip:"pluriel + passé → were + built"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -7170,7 +7319,9 @@ const G_EN_COND=[
     {p:"If you ___ water to 100°C, it boils.",a:"heat",ws:["heated","will heat","would heat"],tip:"zéro conditionnel : présent + présent (fait général)"},
     {p:"Plants die if they ___ no light.",a:"get",ws:["got","will get","would get"],tip:"zéro conditionnel : présent simple des deux côtés"},
     {p:"If I ___ time, I help you with your homework.",a:"have",ws:["had","will have","would have"],tip:"zéro conditionnel : If + présent, présent"},
-    {p:"If the sun ___, the flowers close.",a:"sets",ws:["set","will set","would set"],tip:"zéro conditionnel : she/it → sets (+ s)"}
+    {p:"If the sun ___, the flowers close.",a:"sets",ws:["set","will set","would set"],tip:"zéro conditionnel : she/it → sets (+ s)"},
+    {p:"If you ___ sugar to tea, it becomes sweet.",a:"add",ws:["added","will add","would add"],tip:"zéro conditionnel : présent + présent (fait général)"},
+    {p:"Water ___ at 0°C in winter.",a:"freezes",ws:["freeze","will freeze","would freeze"],tip:"zéro conditionnel : it → freezes (+ s)"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -7335,6 +7486,7 @@ const SUBJECTS_DE=[
  {id:"trad",name:"Mini-traductions",sym:"→DE",gens:G_TRAD},
  {id:"passiv",name:"Passiv",sym:"wird + Part. II",gens:G_DE_PASSIV},
  {id:"konj",name:"Konjunktiv II",sym:"würde + Inf.",gens:G_DE_KONJ},
+ {id:"prep",name:"Präpositionen",sym:"an + Dat./Akk.",gens:G_DE_PREP},
 ];
 /* ---------- REGISTRE EN (anglais A2/B1) — branché via setMatiere/activeSubjects ---------- */
 /* Ids préfixés en_ : DE occupe déjà « vocab » et « trad » — THEME_BY_ID, bySub,
