@@ -22,9 +22,12 @@
    réduite sur téléphone)
    → quizey-v8 (2026-08-26 : panneau « À réviser » sans échéance —
    « Tout est à jour ✓ » seul, plus de « N question(s) en cours
-   d'acquisition… »). */
+   d'acquisition… ») → quizey-v9 (2026-08-26 : revue intégrale du
+   contenu des 79 thèmes — 7 questions corrigées (PC : écho, pH acide
+   fort, Avogadro ×2 ; DE : gap « würde » ; EN : prétérit passif,
+   doublon conditionnels) + 2 tips DE précisés). */
 
-const CACHE = "quizey-v8";
+const CACHE = "quizey-v9";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

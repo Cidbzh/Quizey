@@ -3381,7 +3381,7 @@ const G_S2_DILU=[
 const G_S2_MOLES=[
  {lvl:"facile",make(){
    const builds=[
-    ()=>{const n=pick([1,2,3,4,5]),N=Math.round(n*6.02*10)/10;
+    ()=>{const n=pick([1,2,3,4,5]),N=Math.round(n*6.02*100)/100;
       const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
       return{prompt:`Le nombre d'Avogadro vaut N<sub>a</sub> ≈ 6,02 × 10²³ particules par mole. Pour n = ${ns} mol d'une espèce, combien de particules contient-elle ? (en 10²³)`,
         type:"number",answer:N,tol:0.01,
@@ -3907,10 +3907,11 @@ const G_NEWTON=[
 const G_T_ACIDEBASE=[
  {lvl:"facile",make(){
    const builds=[
-    ()=>{const c=pick([1,2,5,10]),pH=14+Math.log10(1/c);
-      return{prompt:`Solution d'acide fort à C = ${c} mol/L (25 °C). Quel est le pH ?`,
-        type:"number",answer:Math.round((14+Math.log10(1/c))*100)/100,tol:0.01,
-        explain:`[H₃O⁺] = C = ${c}. pH = −log₁₀(${c}) = <b>${String(14+Math.log10(1/c)).replace(".",",").slice(0,4)}</b>.`};},
+    ()=>{const c=pick([0.1,0.2,0.5,1]),pH=-Math.log10(c);
+      const fs=x=>String(Math.round(x*100)/100).replace(".",",");
+      return{prompt:`Solution d'acide fort à C = ${fs(c)} mol/L (25 °C). Quel est le pH ?`,
+        type:"number",answer:Math.round(pH*100)/100,tol:0.01,
+        explain:`[H₃O⁺] = C = ${fs(c)}. pH = −log₁₀(${fs(c)}) = <b>${fs(pH)}</b>.`};},
     ()=>{const c=pick([0.1,0.5,1,2]),pH=14+Math.log10(c);
       const fs=x=>String(Math.round(x*100)/100).replace(".",",");
       return{prompt:`Solution de base forte (NaOH) à C = ${fs(c)} mol/L (25 °C). Quel est le pH ?`,
@@ -4730,7 +4731,7 @@ const G_MOLES=[
       return{prompt:`Dilution : on prélève V₁ = ${V1} L d'une solution à C₁ = ${c1} mol/L et on porte le volume à V₂ = ${V2} L. Quelle est C₂ (en mol/L) ?`,
         type:"number",answer:Math.round(c2*100)/100,tol:0.01,
         explain:`À quantité de matière constante : C₁·V₁ = C₂·V₂ → C₂ = ${c1} × ${V1} / ${V2} = <b>${c2s} mol/L</b>.`};},
-    ()=>{const n=pick([1,2,3]),N=Math.round(n*6.02*10)/10;
+    ()=>{const n=pick([1,2,3]),N=Math.round(n*6.02*100)/100;
       const ns=String(n).replace(".",","),Ns=String(N).replace(".",",");
       return{prompt:`Le nombre d'Avogadro vaut N<sub>a</sub> ≈ 6,02 × 10²³ mol⁻¹. Pour n = ${ns} mol, combien de particules cela représente-t-il ? (en 10²³)`,
         type:"number",answer:N,tol:0.01,
@@ -4792,11 +4793,11 @@ const G_ONDES=[
       return qcm(`Deux ondes ont les fréquences ${f1} Hz et ${f2} Hz, dans le même milieu. La plus rapide est…`,
         "aucune : même célérité (dépend du milieu)",["celle à "+f1+" Hz","celle à "+f2+" Hz","la question manque de données"],
         `Dans un même milieu, la <b>célérité est la même</b> pour toutes les ondes du même type. La fréquence ne change que la longueur d'onde (λ = c/f).`);},
-    ()=>{const c=1500,d=pick([30,60,150]),t=Math.round(d/c*1000)/1000;
+    ()=>{const c=1500,d=pick([30,60,150]),t=d/75;
       const ts=String(t).replace(".",",");
-      return{prompt:`En échographie, les ultrasons voyagent à c ≈ 1500 m/s dans les tissus. Pour une profondeur d = ${d} cm, quel est le temps aller-retour ? (en s)`,
-        type:"number",answer:Math.round(2*(d/100)/c*1000)/1000,tol:0.01,
-        explain:`d = ${d} cm = ${d/100} m. Aller-retour = 2 × ${d/100} / 1500 = <b>${ts} s</b>.`};},
+      return{prompt:`En échographie, les ultrasons voyagent à c ≈ 1500 m/s dans les tissus. Pour une profondeur d = ${d} cm, quel est le temps aller-retour ? (en ms)`,
+        type:"number",answer:t,tol:0.01,
+        explain:`d = ${d} cm = ${d/100} m. Aller-retour = 2 × ${d/100} / 1500 = ${2*(d/100)/1500} s = <b>${ts} ms</b>.`};},
     ()=>qcm("Dans un même milieu, si on augmente la fréquence d'une onde, alors…",
       "sa longueur d'onde diminue",["sa célérité augmente","son amplitude augmente","sa période augmente"],
       `Dans un même milieu, la célérité c est fixe. Comme λ = c/f, augmenter f <b>diminue</b> la longueur d'onde (et aussi la période T = 1/f). L'amplitude est indépendante de la fréquence.`)
@@ -5464,7 +5465,7 @@ const G_ART=[
    const pool=[
      {n:"Zeitung",fr:"le journal",a:"die",tip:"les noms en « -ung » sont féminins"},
      {n:"Lampe",fr:"la lampe",a:"die",tip:"féminin"},
-     {n:"Arbeit",fr:"le travail",a:"die",tip:"les noms en « -ung » sont féminins"},
+     {n:"Arbeit",fr:"le travail",a:"die",tip:"féminin à retenir (pas de « -ung » ici)"},
      {n:"Sprache",fr:"la langue",a:"die",tip:"féminin"},
      {n:"Wohnung",fr:"le logement",a:"die",tip:"les noms en « -ung » sont féminins"},
      {n:"Brille",fr:"les lunettes",a:"die",tip:"féminin"},
@@ -5774,7 +5775,7 @@ const G_DATE=[
      {de:"viertel vor acht",fr:"7h45",f:"heure",tip:"« viertel vor acht » = 7 h 45 (le quart avant huit heures)"},
      {de:"um halb sieben",fr:"6h30",f:"heure",tip:"« halb sieben » = 6 h 30"},
      {de:"am 3. Oktober",fr:"le 3 octobre",f:"date",tip:"la fête de l'unité allemande : am 3. Oktober"},
-     {de:"am 6. Dezember",fr:"le 6 décembre",f:"date",tip:"le réveillon de Noël : am 6. Dezember"},
+     {de:"am 6. Dezember",fr:"le 6 décembre",f:"date",tip:"Saint-Nicolas : am 6. Dezember"},
      {de:"am 24. Dezember",fr:"le 24 décembre",f:"date",tip:"la veille de Noël : am 24. Dezember"},
      {de:"am 1. April",fr:"le 1er avril",f:"date",tip:"poisson d'avril : am 1. April"}
    ];
@@ -6239,7 +6240,7 @@ const G_DE_KONJ=[
     {p:"Wenn ich reich ___, würde ich viel reisen.",a:"wäre",ws:["ist","werde","bin"],tip:"« wäre » = Konjunktiv II de « sein »"},
     {p:"Ich ___ gern einen Hund, aber ich habe keinen Platz dafür.",a:"hätte",ws:["habe","will","möchte"],tip:"« hätte » = j'aimerais (avoir) — Konjunktiv II"},
     {p:"Was ___, wenn du frei wärst?",a:"würdest du tun",ws:["tust du","wirst du tun","machst du"],tip:"« würdest du + Infinitiv » = que ferais-tu ?"},
-    {p:"Wenn es morgen ___, würden wir zu Hause bleiben.",a:"würde",ws:["regnet","ist","sollte"],tip:"« würde » après « wenn » (conditionnel) : es würde regnen"},
+    {p:"Wenn es morgen regnen ___, würden wir zu Hause bleiben.",a:"würde",ws:["wird","sollte","muss"],tip:"« würde » + infinitif : « Wenn es morgen regnen würde » = « si demain il pleuvait »"},
     {p:"___ du mitkommen, wenn wir am Samstag fahren?",a:"Könntest",ws:["Kannst","Wirst","Hast"],tip:"« könntest » = pourrais-tu ? (poli)"},
     {p:"Ohne Musik ___, ich den Abend nicht genießen.",a:"könnte",ws:["kann","habe","werde"],tip:"« könnte » = je ne pourrais pas (hypothèse)"}
    ];
@@ -7111,7 +7112,7 @@ const G_EN_PASSIF=[
     {p:"The form ___ by the end of the day.",a:"should be signed",ws:["should sign","should be sign","should signed"],tip:"modal passif : should be + signed"},
     {p:"___ the tickets sold last night?",a:"Were",ws:["Was","Did","Are"],tip:"pluriel + passé → Were + sujet + participe ?"},
     {p:"The package ___ by tomorrow morning.",a:"must be delivered",ws:["must deliver","must be deliver","must delivered"],tip:"modal passif : must be + delivered"},
-    {p:"The phones ___ last month.",a:"have been sold",ws:["have sold","have been sell","have solded"],tip:"présent parfait passif : have/has been + participe"},
+    {p:"The phones ___ last month.",a:"were sold",ws:["have been sold","were sell","solded"],tip:"« last month » = temps fini → prétérit passif : were + participe (sold)"},
     {p:"The garden ___ every weekend.",a:"should be watered",ws:["should water","should be water","should watered"],tip:"modal passif : should be + watered"}
    ];
    const e=pick(pool);
@@ -7197,7 +7198,7 @@ const G_EN_COND=[
     {p:"If the weather ___ bad, we will stay inside.",a:"turns",ws:["turned","will turn","would turn"],tip:"If + présent (turns), will + base"},
     {p:"If he ___ his keys, he will lock himself out.",a:"forgets",ws:["forgot","will forget","would forget"],tip:"If + présent (forgets), will + base"},
     {p:"If you ___ your homework now, you will have time to play.",a:"finish",ws:["finished","will finish","would finish"],tip:"If + présent (finish), will + base"},
-    {p:"We will be happy if you ___ to the party.",a:"come",ws:["came","will come","would come"],tip:"1er conditionnel : partie « if » au présent simple"}
+    {p:"If you ___ the window, the room will be brighter.",a:"open",ws:["opened","will open","would open"],tip:"1er conditionnel : If + présent (open), will + base"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
