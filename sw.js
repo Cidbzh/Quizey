@@ -13,9 +13,11 @@
    pavé nombres-seuls ; barre de question épurée : puces chapitre / classe /
    difficulté masquées, restent « question N » + « Niv. N »)
    → quizey-v5 (2026-08-25 : grande densification — 80 nouvelles questions
-   dans les 79 thèmes existants, zéro nouveau chapitre, zéro nouvel id). */
+   dans les 79 thèmes existants, zéro nouveau chapitre, zéro nouvel id)
+   → quizey-v6 (2026-08-26 : correction banque « probabilités totales »
+   G_PROBA moyen — bonne réponse 5/8 au lieu de 3/4, méthode rééquilibrée). */
 
-const CACHE = "quizey-v5";
+const CACHE = "quizey-v6";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
