@@ -13,6 +13,7 @@ Quizey, c'est réviser le lycée dans votre navigateur. Un seul fichier à ouvri
 - **Programmes officiels** — Les maths et la physique-chimie suivent les programmes officiels de chaque année. Les langues couvrent A2, A2+ et B1.
 - **Révision par répétition espacée** — Une méthode éprouvée : les questions que vous ratez reviennent, tandis que celles que vous maîtrisez sont espacées par l’algorithme.
 - **Corrigés pédagogiques** — Chaque réponse est expliquée par la méthode, avec un dessin quand c'est possible.
+- **Explication en un clic** — Quand une question vous échappe, vous pouvez cliquer sur « Explication » et Quizey vous redirigera vers Brave pour une explication détaillée.
 - **Vos points faibles** — Quizey repère où vous réussissez le moins et vous propose de vous y entraîner.
 
 ## Contenu
