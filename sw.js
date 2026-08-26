@@ -25,9 +25,12 @@
    d'acquisition… ») → quizey-v9 (2026-08-26 : revue intégrale du
    contenu des 79 thèmes — 7 questions corrigées (PC : écho, pH acide
    fort, Avogadro ×2 ; DE : gap « würde » ; EN : prétérit passif,
-   doublon conditionnels) + 2 tips DE précisés). */
+   doublon conditionnels) + 2 tips DE précisés) → quizey-v10
+   (2026-08-26 : version mobile — « À réviser » sans liste des chapitres
+   sur téléphone ; « Points faibles » remonté AVANT « Par thème »
+   (ordre du DOM, desktop inchangé : rangée 3 / colonne 1 de la grille)). */
 
-const CACHE = "quizey-v9";
+const CACHE = "quizey-v10";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

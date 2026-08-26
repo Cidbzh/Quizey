@@ -586,6 +586,20 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .hero .revcta .btn{padding:13px 22px;font-size:17px;flex:none}
 .home-main{grid-area:main;min-width:0}
 .marge{grid-area:marge;min-width:0}
+/* 2026-08-26 (Cid, mobile) : #bySubSlot (« Par thème ») est désormais ENFANT
+   DIRECT de #home, placé APRÈS la marge dans le DOM — sur téléphone (#home en
+   display:block) l'ordre du DOM décide : « Entraînement libre » → « Points
+   faibles » → « Par thème ». Desktop = GRILLE : on le place rangée 3, colonne
+   1 (sous « Entraînement libre », comme avant). Écart standard 16 px = le
+   row-gap, MAIS la marge-bottom 16 px du panneau « Entraînement libre »
+   déborde de .home-main (margin collapse) → 32 px ; le margin-top négatif
+   rétablit les 16 px. Hors effet en mode téléphone (data-ui="m" garde #home
+   en display:block) — la négative y collerait « Par thème » au bloc
+   « Points faibles ». */
+#bySubSlot{grid-column:1;grid-row:3}
+@media (min-width:1025px){
+  html:not([data-ui="m"]) #bySubSlot{margin-top:-16px}
+}
 .margewrap{position:sticky;top:88px;display:grid;gap:24px}
 /* Remontée (2026-08-22, sur demande) : « Tes points faibles » s'aligne sur le
    HAUT de la carte « Niveau » de la rangée du hero — margin-top NÉGATIF =
@@ -923,6 +937,10 @@ html[data-ui="m"] .xopt input{width:15px;height:15px}
 html[data-ui="m"] .hero .revcta{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:clamp(10px,2.8vw,16px)}
 html[data-ui="m"] .hero .revcta .revsep{display:none}
 html[data-ui="m"] .hero .revcta .btn{width:100%}
+/* 2026-08-26 (Cid) : PAS la liste des chapitres sur téléphone — la carte
+   garde [titre] [N dues] [≈ N min] [+X à venir] [bouton pleine largeur].
+   Les séparateurs plume sont déjà masqués dans ce scope → aucun trait orphelin. */
+html[data-ui="m"] .hero .revcta .revchaps{display:none}
 /* ---- Écran de question : agrandi pour le pouce ---- */
 /* 2026-08-25 (Cid) : dé-cluttering de la barre de question sur téléphone —
    « ne laisser que le nombre de question et le niveau » : les puces chapitre,
@@ -1014,8 +1032,6 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
       </div>
     </section>
 
-    <div id="bySubSlot"></div>
-
     </div>
 
     <aside class="marge">
@@ -1024,6 +1040,11 @@ html[data-ui="m"] button,html[data-ui="m"] input{touch-action:manipulation}
         <div id="statsExtra"></div>
       </div>
     </aside>
+    <!-- 2026-08-26 (Cid, mobile) : ENFANT DIRECT de #home, APRÈS la marge —
+         l'ordre du DOM = l'ordre sur téléphone : « Entraînement libre » →
+         « Points faibles » → « Par thème ». Desktop : la grille le place sous
+         la colonne principale (règle #bySubSlot du <style>, rangée 3 / col 1). -->
+    <div id="bySubSlot"></div>
   </section>
 
   <section id="play" hidden>
