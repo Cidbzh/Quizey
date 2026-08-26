@@ -15,9 +15,13 @@
    → quizey-v5 (2026-08-25 : grande densification — 80 nouvelles questions
    dans les 79 thèmes existants, zéro nouveau chapitre, zéro nouvel id)
    → quizey-v6 (2026-08-26 : correction banque « probabilités totales »
-   G_PROBA moyen — bonne réponse 5/8 au lieu de 3/4, méthode rééquilibrée). */
+   G_PROBA moyen — bonne réponse 5/8 au lieu de 3/4, méthode rééquilibrée)
+   → quizey-v7 (2026-08-26 : topbar qui réapparaît plus tôt au scroll
+   (seuil 10 → 60 px) ; carte de fin de révision « Tout est à jour »
+   (bonus XP toujours crédité, plus affiché) ; case « Maths expertes »
+   réduite sur téléphone). */
 
-const CACHE = "quizey-v6";
+const CACHE = "quizey-v7";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

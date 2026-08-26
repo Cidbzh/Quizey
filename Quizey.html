@@ -850,10 +850,11 @@ html[data-ui="m"] .topbar .row.wrap-row{justify-content:center}
    Vieil navigateur sans :has → règle ignorée → ancien comportement. */
 html[data-ui="m"] body:has(#play:not([hidden])) .topbar{display:none}
 /* Topbar qui ne reste pas « figée » au scroll (téléphone, 2026-08-25, Cid) :
-   elle ne demeure que TANT QU'ON EST EN HAUT de page — au moindre scroll vers
-   le bas elle glisse hors de vue (pour libérer l'écran), et revient dès que
-   l'on remonte tout en haut. La classe .topbar-off est posée par l'écouteur
-   scroll en fin de script (seuil 10 px). transform → glisse fluide, zéro
+   elle ne demeure qu'EN HAUT de page — au scroll vers le bas elle glisse
+   hors de vue (pour libérer l'écran), et revient EN COURS DE REMONTÉE, pas
+   seulement tout en haut (2026-08-26, Cid : « réapparaisse plus tôt » —
+   seuil 60 px). La classe .topbar-off est posée par l'écouteur scroll en
+   fin de script (seuil 60 px). transform → glisse fluide, zéro
    reflow. Ordinateur : attribut data-ui absent → règle sans effet (topbar
    sticky comme avant).
    Disparition / réapparition PROGRESSIVES, ASYMÉTRIQUES (2026-08-25, Cid —
@@ -913,8 +914,11 @@ html[data-ui="m"] .seg-btn{padding:5px 10px;font-size:13px}
 html[data-ui="m"] .lead-head{flex-direction:column;align-items:stretch}
 html[data-ui="m"] .picks{align-items:stretch}
 html[data-ui="m"] .picks .seg{width:100%;justify-content:center;flex-wrap:wrap;row-gap:3px}
-html[data-ui="m"] .xopt{padding:clamp(12px,3.4vw,16px);font-size:clamp(14.5px,4vw,16px)}
-html[data-ui="m"] .xopt input{width:18px;height:18px}
+/* Case « Maths expertes » : RÉDUITE sur téléphone (2026-08-26, Cid :
+   « réduire la taille du bouton ») — repasse près du gabarit desktop
+   (13 px / padding 5×10) au lieu de l'agrandissement mobile précédent. */
+html[data-ui="m"] .xopt{padding:8px 12px;font-size:13.5px}
+html[data-ui="m"] .xopt input{width:15px;height:15px}
 /* « À réviser » : cellules empilées, séparateurs plume masqués, bouton pleine largeur. */
 html[data-ui="m"] .hero .revcta{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:clamp(10px,2.8vw,16px)}
 html[data-ui="m"] .hero .revcta .revsep{display:none}
@@ -8655,12 +8659,11 @@ function startReview(){
 }
 function endReview(){
   state.mode="done";
-  const acc=state.n?Math.round(100*state.good/state.n):0;
-  const bonus=gainXp(REVIEW_BONUS);   /* (2026-08-24, Cid) bonus de fin de révision — valeur réelle après coefficient matière */
+  /* (2026-08-24, Cid) bonus de fin de révision — TOUJOURS crédité ;
+     2026-08-26, Cid : la carte ne l'affiche plus — « simplement dire : Tout est à jour » */
+  gainXp(REVIEW_BONUS);
   qbox.innerHTML=`<div class="qcard result">
-    <p class="qeyebrow">Révision terminée</p>
-    <h3>Tout est repris !</h3>
-    <p class="muted">${state.n} question(s) repassée(s) · ${state.good} juste(s) · ${acc}% de précision${state.skips?` · ${state.skips} passée(s)`:""} · <b>bonus révision : +${bonus} XP</b></p>
+    <h3>Tout est à jour</h3>
     <div class="nextrow" style="justify-content:center;margin-top:22px;gap:10px">
       <button type="button" class="btn btn-primary" id="home3">Retour à l'accueil</button>
     </div></div>`;
@@ -8871,10 +8874,11 @@ function setUI(u){
 })();
 /* ---------- Topbar : ne reste pas « figée » au scroll (téléphone) ----------
    2026-08-25, Cid : le gros bloc (matières + thème) ne demeure que tant
-   qu'on est EN HAUT de page — au scroll vers le bas il glisse hors de vue
+   qu'EN HAUT de page — au scroll vers le bas il glisse hors de vue
    (classe .topbar-off, glissé par le CSS html[data-ui="m"]), et il revient
-   dès que l'on remonte tout en haut. Seuil 10 px (l'élasticité iOS peut
-   donner un scrollY négatif → reste visible, normal). Ordinateur : pas
+   EN COURS DE REMONTÉE, pas seulement tout en haut (2026-08-26, Cid :
+   « réapparaisse plus tôt »). Seuil 60 px (l'élasticité iOS peut donner
+   un scrollY négatif → reste visible, normal). Ordinateur : pas
    d'attribut data-ui → la fonction ne fait rien (topbar sticky inchangée).
    Écran de question : la topbar y est déjà display:none (règle CSS) → pas
    d'interaction. Écouteur passive : ne bloque jamais le scroll. */
@@ -8884,7 +8888,7 @@ function setUI(u){
     if(!bar||typeof window==="undefined"||typeof window.addEventListener!=="function")return;
     const sync=()=>{
       if(!document.documentElement.hasAttribute("data-ui"))return;   /* ordinateur */
-      bar.classList.toggle("topbar-off",(window.scrollY||0)>10);
+      bar.classList.toggle("topbar-off",(window.scrollY||0)>60);
     };
     window.addEventListener("scroll",sync,{passive:true});
     sync();

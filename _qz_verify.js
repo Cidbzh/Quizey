@@ -961,8 +961,10 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     ok("montée de niveau → confetti() appelé (en plus de la carte)",env.sandbox.__confetti>=1);
   }
   /* --- BONUS DE FIN DE RÉVISION (2026-08-24, Cid) : endReview crédite
-     REVIEW_BONUS × coefficient matière en une seule fois, affiché sur la
-     carte de fin ; le 🎯 a été retiré de cette carte le même jour. --- */
+     REVIEW_BONUS × coefficient matière en une seule fois — TOUJOURS crédité
+     (vérifié via getXP). Carte de fin : 2026-08-26 (Cid) « simplement dire
+     : Tout est à jour » — la carte se limite à cette phrase + le bouton
+     (le bonus n'est plus affiché) ; le 🎯 avait été retiré le 2026-08-24. --- */
   lsData.clear();
   {
     const env=buildEnv();const ctx=runApp(env);
@@ -972,7 +974,7 @@ console.log("\n[26] Raccordement XP — UNE XP PAR MATIÈRE (qz_xp / _pc / _de /
     vm.runInContext("afterAnswer(true,state.q,'')",ctx); /* +15 (moyen × 1.5) → 15 */
     vm.runInContext("endReview()",ctx);                   /* +45 (bonus 30 × 1.5) → 60 */
     ok("fin de révision → bonus REVIEW_BONUS × 1.5 (maths) = +45 XP",vm.runInContext("getXP()",ctx)===b+15+45);
-    ok("carte de fin : « bonus révision : +45 XP »",env.document.querySelector("#qbox").innerHTML.includes("bonus révision : +45 XP"));
+    ok("carte de fin : « Tout est à jour » (2026-08-26, Cid)",env.document.querySelector("#qbox").innerHTML.includes("Tout est à jour"));
     ok("carte de fin : plus de 🎯 (retiré 2026-08-24)",!env.document.querySelector("#qbox").innerHTML.includes("🎯"));
   }
   /* --- CARTE HERO : « Niveau N » + barre aria-hidden + « x / y XP » + pas de fuite maths→DE --- */
