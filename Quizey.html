@@ -295,7 +295,7 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
    la ligne a de la place, les mots respirent. Guillemets en STIX Two Text à 1,5×
    le corps du texte (« trop petits ») : glyphes standards (U+201C/U+201D),
    présents dans la serif → rendu cohérent sur tous les postes. */
-.lede{margin:0;color:var(--muted);font-size:17.5px;word-spacing:.12em}
+.lede{margin:0;color:var(--muted);font-size:17.5px;line-height:1.35;word-spacing:.12em}
 .lede::before{content:"“\00a0";font-family:var(--f-display);font-size:1.5em}
 .lede::after{content:"\00a0”";font-family:var(--f-display);font-size:1.5em}
 /* Formule « gribouillée en marge », comme un prof qui laisse une trace au coin de la page */
@@ -6799,7 +6799,7 @@ const G_EN_ART=[
      {p:"Is there ___ bread at home?",a:"any",ws:["some","a","no article"],tip:"question → any (bread = non dénombrable)"},
      {p:"She bought ___ new shoes.",a:"some",ws:["any","a","an"],tip:"phrase affirmative → some (pluriel)"},
      {p:"I don't have ___ water with me.",a:"any",ws:["some","a","no article"],tip:"négation → any (water = non dénombrable)"},
-     {p:"There's ___ cake on the table.",a:"some",ws:["any","a","an"],tip:"phrase affirmative → some"}
+     {p:"There's ___ cake on the table.",a:"a",ws:["any","an","no article"],tip:"gâteau (dénombrable singulier) → a"}
    ];
    const e=pick(pool);
    return qcm(e.p,e.a,e.ws,`<b>${e.a}</b> — ${e.tip}.`);
@@ -7495,7 +7495,7 @@ const SUBJECTS_EN=[
  {id:"en_vocab",name:"Vocabulaire",sym:"w?",gens:G_EN_VOCAB},
  {id:"en_verbes",name:"Verbes & temps",sym:"-s",gens:G_EN_VERBES},
  {id:"en_art",name:"Articles & quantifieurs",sym:"a/an",gens:G_EN_ART},
- {id:"en_q",name:"Questions",sym:"wh?",gens:G_EN_Q},
+ {id:"en_q",name:"Interrogations",sym:"wh?",gens:G_EN_Q},
  {id:"en_phrases",name:"Phrases utiles",sym:"Hi!",gens:G_EN_PHRASES},
  {id:"en_trad",name:"Mini-traductions",sym:"→EN",gens:G_EN_TRAD},
  {id:"en_passif",name:"Passif",sym:"be + part. II",gens:G_EN_PASSIF},
@@ -8790,11 +8790,11 @@ function afterAnswer(ok,q,extra){
   if(ok){const chip=$("#tScore").closest(".chip");if(chip){chip.classList.remove("pulse");void chip.offsetWidth;chip.classList.add("pulse");}}
   /* Bouton « Chercher cette question sur Brave » (2026-08-26, Cid) : UNIQUEMENT
      en cas d'erreur — ouvre la section « Demander » de Brave (search.brave.com/ask)
-     avec un prompt structuré (2026-08-26, Cid) : « Expliquer étape par étape en
-     détails l'énoncé suivant en vous appuyant sur le cours : <énoncé> ».
+     avec un prompt structuré : « Expliquer en détail l'énoncé suivant :
+     <énoncé> ».
      Réutilise .btn/.btn-ghost + .nextrow → IDENTIQUES aux autres boutons
      (dont le clamp mobile), alignement à droite, zéro CSS ajouté. */
-  const brave=!ok?`<div class="nextrow"><a class="btn btn-brave" href="https://search.brave.com/ask?q=${encodeURIComponent("Expliquer étape par étape en détails l'énoncé suivant en vous appuyant sur le cours : "+promptText(q))}&lang=fr-fr" target="_blank" rel="noopener noreferrer">Explication ↗</a></div>`:"";
+  const brave=!ok?`<div class="nextrow"><a class="btn btn-brave" href="https://search.brave.com/ask?q=${encodeURIComponent("Expliquer en détail l'énoncé suivant : "+promptText(q))}&lang=fr-fr" target="_blank" rel="noopener noreferrer">Explication ↗</a></div>`:"";
   $("#fb").innerHTML=`<p class="fb ${ok?"ok":"ko"}">${ok?"✓ Bien joué, +"+pts+" pts !":"✗ Raté. "+extra}</p>`+
     `<div class="explain ${ok?"good":"bad"}"><h4>Méthode</h4>${vizAns(q)}${q.explain}</div>`+brave;
   hidePass();

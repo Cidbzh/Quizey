@@ -42,9 +42,15 @@
    (2026-08-26 : montée de niveau — plus d'halo « fluo » (drop-shadow)
    sur le nouveau numéro en fin d'animation ; bouton « Explication » —
    prompt Brave structuré « Expliquer étape par étape en détails l'énoncé
-   suivant en vous appuyant sur le cours : <énoncé> »). */
+   suivant en vous appuyant sur le cours : <énoncé> »)
+   → quizey-v14 (2026-08-26 : prompt « Explication » simplifié en
+   « Expliquer en détail l'énoncé suivant : <énoncé> » ; thème EN
+   « Questions » → « Interrogations » ; lede hero resserrée
+   (line-height 1.6 → 1.35) ; question EN « There's ___ cake » —
+   réponse « some » → « a » (gâteau dénombrable singulier,
+   distracteurs nettoyés)). */
 
-const CACHE = "quizey-v13";
+const CACHE = "quizey-v14";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
