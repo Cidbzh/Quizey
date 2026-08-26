@@ -38,9 +38,13 @@
    sur 4 matières (PC : dilution/catalyseur/désintégration α/T½/activité
    A=λN ; DE : passif + Konjunktiv II ; EN : passif + conditionnels +
    verbes irréguliers) + NOUVEAU chapitre DE « Präpositionen »
-   (Wechselpräpositionen datif/accusatif, id « prep »)). */
+   (Wechselpräpositionen datif/accusatif, id « prep »)) → quizey-v13
+   (2026-08-26 : montée de niveau — plus d'halo « fluo » (drop-shadow)
+   sur le nouveau numéro en fin d'animation ; bouton « Explication » —
+   prompt Brave structuré « Expliquer étape par étape en détails l'énoncé
+   suivant en vous appuyant sur le cours : <énoncé> »). */
 
-const CACHE = "quizey-v12";
+const CACHE = "quizey-v13";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */
