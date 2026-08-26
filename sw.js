@@ -28,9 +28,14 @@
    doublon conditionnels) + 2 tips DE précisés) → quizey-v10
    (2026-08-26 : version mobile — « À réviser » sans liste des chapitres
    sur téléphone ; « Points faibles » remonté AVANT « Par thème »
-   (ordre du DOM, desktop inchangé : rangée 3 / colonne 1 de la grille)). */
+   (ordre du DOM, desktop inchangé : rangée 3 / colonne 1 de la grille))
+   → quizey-v11 (2026-08-26 : bouton « Explication ↗ » sur réponse
+   fausse — renvoie vers la section « Demander » de Brave
+   (search.brave.com/ask) avec l'énoncé comme prompt ; flèches
+   combinantes des vecteurs u⃗/v⃗/AB⃗ remplacées par la classe CSS
+   .vec (flèche au-dessus de la lettre, alignement préservé)). */
 
-const CACHE = "quizey-v10";
+const CACHE = "quizey-v11";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

@@ -463,6 +463,12 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px -12px var(--accent),inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(0,0,0,.14)}
 .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
 .btn-ghost:hover{transform:translateY(-1px);border-color:var(--accent);color:var(--accent)}
+/* Bouton « Chercher cette question sur Brave » (2026-08-26, Cid) — vrai bouton
+   SOLIDE accent (pleine couleur + ombre + lift au survol), dans la même famille
+   que .btn-primary, en couleur de la MATIÈRE (bleu/violet/vert/rouge via
+   --accent). Mobile : hérite du clamp .btn (mêmes dimensions que les autres). */
+.btn-brave{background:var(--accent);color:var(--accent-ink);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.14)}
+.btn-brave:hover{transform:translateY(-1px);box-shadow:0 12px 26px -12px var(--accent),inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(0,0,0,.14)}
 .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
 /* Stats = 2e bloc de la rangée du hero (ordre 2026-08-22 : Niveau → Stats →
    À réviser) : le gap 16 px de .hero tient le rythme avec les deux cartes,
@@ -666,6 +672,11 @@ html.boot .slogan .soft{opacity:0;animation:saiIn .5s var(--ease) both;animation
 }
 .frac>span{padding:0 .2em}
 .frac>span:first-child{border-bottom:.12em solid currentColor;padding-bottom:.08em}
+/* Vecteur — flèche au-dessus de la lettre (notation lycée standard).
+   Remplace la flèche combinante U+20D7 (mal affichée dans certains navigateurs).
+   Utilisée dans les énoncés, les choix de QCM et les méthodes (tous contextes HTML). */
+.vec{position:relative;display:inline-block}
+.vec::after{content:"→";position:absolute;top:-.62em;left:50%;transform:translateX(-50%);font-size:.78em;line-height:1}
 .ans{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .ans .btn{height:40px;padding:0 18px;border-radius:12px;display:inline-flex;align-items:center}
 .ans input{
@@ -1475,27 +1486,27 @@ const G_S2_VECT=[
    const builds=[
     // 1. Coefficient de colinéarité
     ()=>{const u=[Ri(1,4),Ri(1,4)],k=Ri(2,6);
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${k*u[0]} ; ${k*u[1]}). Sachant que v⃗ = k · u⃗, calcule k.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${k*u[0]} ; ${k*u[1]}). Sachant que <span class='vec'>v</span> = k · <span class='vec'>u</span>, calcule k.`,
        type:"number",answer:k,
-       explain:`v⃗ = k·u⃗ ⇒ k = v<sub>x</sub> / u<sub>x</sub> = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2<sup>e</sup> coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};},
+       explain:`<span class='vec'>v</span> = k·<span class='vec'>u</span> ⇒ k = v<sub>x</sub> / u<sub>x</sub> = ${k*u[0]} / ${u[0]} = <b>${k}</b>.<br>Vérif sur la 2<sup>e</sup> coordonnée : ${k*u[1]} / ${u[1]} = ${k}. ✓`};},
     // 2. QCM : coordonnées d'un multiple
     ()=>{const u=[Ri(1,4),Ri(1,4)],k=Ri(2,5);
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]}). Quelles sont les coordonnées de ${k}·u⃗ ?`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}). Quelles sont les coordonnées de ${k}·<span class='vec'>u</span> ?`,
        `(${k*u[0]} ; ${k*u[1]})`,
        [`(${k*u[0]} ; ${u[1]})`,`(${u[0]} ; ${k*u[1]})`,`(${u[0]} ; ${u[1]})`],
        `On multiplie chaque composante par ${k} : ${k} × (${u[0]} ; ${u[1]}) = <b>(${k*u[0]} ; ${k*u[1]})</b>.`);},
     // 3. QCM : identifier un vecteur colinéaire
     ()=>{const u=[Ri(1,4),Ri(1,4)];
       const bonne=`(${2*u[0]} ; ${2*u[1]})`;
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]}). Lequel de ces vecteurs est colinéaire à u⃗ ?`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}). Lequel de ces vecteurs est colinéaire à <span class='vec'>u</span> ?`,
        bonne,
        [`(${u[0]+1} ; ${u[1]})`,`(${u[0]} ; ${u[1]+1})`,`(${2*u[0]+1} ; ${2*u[1]})`],
-       `Un multiple de u⃗ est colinéaire : 2·u⃗ = <b>(${2*u[0]} ; ${2*u[1]})</b>. (Les autres ont un rapport de composantes différent.)`);},
+       `Un multiple de <span class='vec'>u</span> est colinéaire : 2·<span class='vec'>u</span> = <b>(${2*u[0]} ; ${2*u[1]})</b>. (Les autres ont un rapport de composantes différent.)`);},
     // 4. Composante d'un multiple
     ()=>{const u=[Ri(1,4),Ri(1,4)],k=Ri(2,6);
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]}). Quelle est la composante x du vecteur ${k}·u⃗ ?`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}). Quelle est la composante x du vecteur ${k}·<span class='vec'>u</span> ?`,
        type:"number",answer:k*u[0],
-       explain:`Composante x de ${k}·u⃗ = ${k} × ${u[0]} = <b>${k*u[0]}</b>.`};}
+       explain:`Composante x de ${k}·<span class='vec'>u</span> = ${k} × ${u[0]} = <b>${k*u[0]}</b>.`};}
    ];
    return pick(builds)();
  }},
@@ -1560,7 +1571,7 @@ const G_S2_VECT=[
       return qcm(`A(${A[0]} ; ${A[1]}) et B(${B[0]} ; ${B[1]}). Lequel est un vecteur directeur de (AB) ?`,
        `(${dx} ; ${dy})`,
        [`(${dx} ; ${dy+1})`,`(${dx+1} ; ${dy})`,`(1 ; 1)`],
-       `Un vecteur directeur est AB⃗ = (Δx ; Δy) = <b>(${dx} ; ${dy})</b> (ou un multiple).`);},
+       `Un vecteur directeur est <span class='vec'>AB</span> = (Δx ; Δy) = <b>(${dx} ; ${dy})</b> (ou un multiple).`);},
     // 4. Pente × écart d'abscisse
     ()=>{const d=pick([[1,2],[3,2],[1,4],[2,2],[3,1],[2,1],[4,2],[6,4]]);
       const m=pick([1,-1]);
@@ -2409,26 +2420,26 @@ const G_VECT=[
     // 1. Produit scalaire
     ()=>{const u=[Ri(-5,5)||2,Ri(-5,5)||1],v=[Ri(-5,5)||1,Ri(-5,5)||3];
       const p=u[0]*v[0]+u[1]*v[1];
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${v[0]} ; ${v[1]}). Calcule le produit scalaire u⃗·v⃗.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]}). Calcule le produit scalaire <span class='vec'>u</span>·<span class='vec'>v</span>.`,
        type:"number",answer:p,
-       explain:`u⃗·v⃗ = ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} = <b>${p}</b>.`};},
+       explain:`<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = ${u[0]*v[0]} ${u[1]*v[1]<0?"− "+(-u[1]*v[1]):"+ "+u[1]*v[1]} = <b>${p}</b>.`};},
     // 2. Norme au carré
     ()=>{const u=[Ri(-5,5)||2,Ri(-5,5)||1];
       const n2=u[0]*u[0]+u[1]*u[1];
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]}). Calcule ||u⃗||² (la norme au carré de u⃗).`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}). Calcule ||<span class='vec'>u</span>||² (la norme au carré de <span class='vec'>u</span>).`,
        type:"number",answer:n2,
-       explain:`||u⃗||² = u⃗·u⃗ = ${u[0]}² + ${u[1]}² = ${u[0]*u[0]} + ${u[1]*u[1]} = <b>${n2}</b>.`};},
+       explain:`||<span class='vec'>u</span>||² = <span class='vec'>u</span>·<span class='vec'>u</span> = ${u[0]}² + ${u[1]}² = ${u[0]*u[0]} + ${u[1]*u[1]} = <b>${n2}</b>.`};},
     // 3. Produit scalaire (un composant nul)
     ()=>{const u=[Ri(1,5),0],v=[Ri(1,5),Ri(-5,5)||3];
       const p=u[0]*v[0];
-      return{prompt:`u⃗ = (${u[0]} ; 0) et v⃗ = (${v[0]} ; ${v[1]}). Calcule u⃗·v⃗.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; 0) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]}). Calcule <span class='vec'>u</span>·<span class='vec'>v</span>.`,
        type:"number",answer:p,
-       explain:`u⃗·v⃗ = ${u[0]} × ${v[0]} + 0 × ${v[1]} = ${u[0]*v[0]} + 0 = <b>${p}</b>. (le terme nul ne compte pas.)`};},
+       explain:`<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]} × ${v[0]} + 0 × ${v[1]} = ${u[0]*v[0]} + 0 = <b>${p}</b>. (le terme nul ne compte pas.)`};},
     // 4. Critère d'orthogonalité
     ()=>qcm(`Deux vecteurs du plan sont orthogonaux si et seulement si :`,
       `leur produit scalaire est nul`,
       [`leurs normes sont égales`,`leur produit scalaire vaut 1`,`la somme de leurs composantes est nulle`],
-      `u⃗ ⊥ v⃗ ⟺ u⃗·v⃗ = 0.<br>C'est le critère d'orthogonalité par le produit scalaire.`)
+      `<span class='vec'>u</span> ⊥ <span class='vec'>v</span> ⟺ <span class='vec'>u</span>·<span class='vec'>v</span> = 0.<br>C'est le critère d'orthogonalité par le produit scalaire.`)
    ];
    return pick(builds)();
  }},
@@ -2439,29 +2450,29 @@ const G_VECT=[
       const v=[u[1],-u[0]];
       const bad=shuf([[1,1],[2,3],[1,-1],[3,1]].filter(w=>u[0]*w[0]+u[1]*w[1]!==0)).slice(0,2);
       const d1=bad[0],d2=bad[1];
-      return qcm(`Quel couple de vecteurs du plan est orthogonal (u⃗ ⊥ v⃗) ?`,
-       `u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${v[0]} ; ${v[1]})`,
-       [`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${d1[0]} ; ${d1[1]})`,`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${d2[0]} ; ${d2[1]})`],
-       `Deux vecteurs sont orthogonaux si et seulement si u⃗·v⃗ = 0 : ici ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = <b>0</b>.`);},
+      return qcm(`Quel couple de vecteurs du plan est orthogonal (<span class='vec'>u</span> ⊥ <span class='vec'>v</span>) ?`,
+       `<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]})`,
+       [`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${d1[0]} ; ${d1[1]})`,`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${d2[0]} ; ${d2[1]})`],
+       `Deux vecteurs sont orthogonaux si et seulement si <span class='vec'>u</span>·<span class='vec'>v</span> = 0 : ici ${u[0]} × ${v[0]} + ${u[1]} × ${v[1]} = <b>0</b>.`);},
     // 2. Cosinus de l'angle entre deux vecteurs
-    ()=>qcm(`u⃗ = (1 ; 0) et v⃗ = (1 ; 1). L'angle θ entre u⃗ et v⃗ vérifie :`,
+    ()=>qcm(`<span class='vec'>u</span> = (1 ; 0) et <span class='vec'>v</span> = (1 ; 1). L'angle θ entre <span class='vec'>u</span> et <span class='vec'>v</span> vérifie :`,
       `cos θ = 1/√2`,
       [`cos θ = 0`,`cos θ = 1`,`cos θ = 1/2`],
-      `cos θ = u⃗·v⃗ / (||u⃗||·||v⃗||) = (1×1 + 0×1) / (1 × √2) = 1/√2.<br>Donc θ = 45°.`),
+      `cos θ = <span class='vec'>u</span>·<span class='vec'>v</span> / (||<span class='vec'>u</span>||·||<span class='vec'>v</span>||) = (1×1 + 0×1) / (1 × √2) = 1/√2.<br>Donc θ = 45°.`),
     // 3. Valeur du produit scalaire
     ()=>{const u=[Ri(1,5),Ri(1,3)],v=[Ri(1,3),Ri(1,5)];
       const p=u[0]*v[0]+u[1]*v[1];
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]}) et v⃗ = (${v[0]} ; ${v[1]}). Que vaut u⃗·v⃗ ?`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]}). Que vaut <span class='vec'>u</span>·<span class='vec'>v</span> ?`,
        String(p),[String(p+1),String(p-1),String(p+2)],
-       `u⃗·v⃗ = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} = ${u[0]*v[0]} + ${u[1]*v[1]} = <b>${p}</b>.`);},
+       `<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} = ${u[0]*v[0]} + ${u[1]*v[1]} = <b>${p}</b>.`);},
     // 4. Retrouver un vecteur orthogonal
     ()=>{const u=pick([[2,1],[3,2],[1,3]]);
       const v=[u[1],-u[0]];
       const w1=[u[0]+1,u[1]],w2=[u[0],u[1]+1];
-      return qcm(`Quel vecteur est ORTHOGONAL à u⃗ = (${u[0]} ; ${u[1]}) ?`,
+      return qcm(`Quel vecteur est ORTHOGONAL à <span class='vec'>u</span> = (${u[0]} ; ${u[1]}) ?`,
        `(${v[0]} ; ${v[1]})`,
        [`(${w1[0]} ; ${w1[1]})`,`(${w2[0]} ; ${w2[1]})`,`(${u[0]} ; ${u[1]})`],
-       `On vérifie u⃗·v⃗ = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} = ${u[0]*v[0]} + ${u[1]*v[1]} = <b>0</b> : orthogonaux.`);}
+       `On vérifie <span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} = ${u[0]*v[0]} + ${u[1]*v[1]} = <b>0</b> : orthogonaux.`);}
    ];
    return pick(builds)();
  }},
@@ -2722,22 +2733,22 @@ const G_T_ESP=[
    const builds=[
     ()=>{const u=[Ri(1,4),Ri(1,4),Ri(1,3)],k=Ri(2,4);
       const v=[k*u[0],k*u[1],k*u[2]];
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
        `colinéaires`,
        [`orthogonaux`,`ni colinéaires ni orthogonaux`,`égaux`],
-       `Les trois composantes de v⃗ sont égales à ${k} fois celles de u⃗ : v⃗ = ${k}·u⃗, donc <b>colinéaires</b>.`);},
+       `Les trois composantes de <span class='vec'>v</span> sont égales à ${k} fois celles de <span class='vec'>u</span> : <span class='vec'>v</span> = ${k}·<span class='vec'>u</span>, donc <b>colinéaires</b>.`);},
     ()=>{const u=[Ri(1,4),Ri(1,4),Ri(1,3)];
       const v=[u[1],-u[0],0];
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
        `orthogonaux`,
        [`colinéaires`,`ni colinéaires ni orthogonaux`,`égaux`],
-       `u⃗·v⃗ = ${u[0]}·${v[0]} + ${u[1]}·${v[1]} + ${u[2]}·${v[2]} = ${u[0]*u[1]} − ${u[1]*u[0]} + 0 = 0 : produit scalaire nul, donc <b>orthogonaux</b>.`);},
+       `<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}·${v[0]} + ${u[1]}·${v[1]} + ${u[2]}·${v[2]} = ${u[0]*u[1]} − ${u[1]*u[0]} + 0 = 0 : produit scalaire nul, donc <b>orthogonaux</b>.`);},
     ()=>{const u=[Ri(1,4),Ri(1,4),Ri(1,3)],k=-Ri(2,3);
       const v=[k*u[0],k*u[1],k*u[2]];
-      return qcm(`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
+      return qcm(`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Ces deux vecteurs sont :`,
        `colinéaires`,
        [`orthogonaux`,`ni colinéaires ni orthogonaux`,`égaux`],
-       `v⃗ = ${k}·u⃗ (scalaire négatif : mêmes droites, sens opposés), donc <b>colinéaires</b>.`);}
+       `<span class='vec'>v</span> = ${k}·<span class='vec'>u</span> (scalaire négatif : mêmes droites, sens opposés), donc <b>colinéaires</b>.`);}
    ];
    return pick(builds)();
  }},
@@ -2747,19 +2758,19 @@ const G_T_ESP=[
       const ortho=pick([1,0]);
       const v=ortho?[u[1],-u[0],0]:[Ri(1,4),Ri(1,4),Ri(1,4)];
       const p=u[0]*v[0]+u[1]*v[1]+u[2]*v[2];
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u⃗·v⃗.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule <span class='vec'>u</span>·<span class='vec'>v</span>.`,
        type:"number",answer:p,
-       explain:`u⃗·v⃗ = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = <b>${p}</b>.${ortho?"<br>Produit scalaire nul : u⃗ et v⃗ sont orthogonaux.":""}`};},
+       explain:`<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = <b>${p}</b>.${ortho?"<br>Produit scalaire nul : <span class='vec'>u</span> et <span class='vec'>v</span> sont orthogonaux.":""}`};},
     ()=>{const u=[Ri(1,6),Ri(1,6),Ri(1,5)],v=[Ri(1,5),Ri(1,5),Ri(1,4)];
       const p=u[0]*v[0]+u[1]*v[1]+u[2]*v[2];
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u⃗·v⃗.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule <span class='vec'>u</span>·<span class='vec'>v</span>.`,
        type:"number",answer:p,
-       explain:`u⃗·v⃗ = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = ${u[0]*v[0]} + ${u[1]*v[1]} + ${u[2]*v[2]} = <b>${p}</b>.`};},
+       explain:`<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = ${u[0]*v[0]} + ${u[1]*v[1]} + ${u[2]*v[2]} = <b>${p}</b>.`};},
     ()=>{const u=[Ri(2,5),Ri(2,5),Ri(1,4)];
       const v=[u[1],-u[0],0];
-      return{prompt:`u⃗ = (${u[0]} ; ${u[1]} ; ${u[2]}) et v⃗ = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule u⃗·v⃗.`,
+      return{prompt:`<span class='vec'>u</span> = (${u[0]} ; ${u[1]} ; ${u[2]}) et <span class='vec'>v</span> = (${v[0]} ; ${v[1]} ; ${v[2]}). Calcule <span class='vec'>u</span>·<span class='vec'>v</span>.`,
        type:"number",answer:0,
-       explain:`u⃗·v⃗ = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = ${u[0]*u[1]} − ${u[1]*u[0]} + 0 = <b>0</b> : les deux vecteurs sont orthogonaux.`};}
+       explain:`<span class='vec'>u</span>·<span class='vec'>v</span> = ${u[0]}×${v[0]} + ${u[1]}×${v[1]} + ${u[2]}×${v[2]} = ${u[0]*u[1]} − ${u[1]*u[0]} + 0 = <b>0</b> : les deux vecteurs sont orthogonaux.`};}
    ];
    return pick(builds)();
  }},
@@ -8584,6 +8595,22 @@ const PTS_LVL={facile:5,moyen:10,difficile:15,experte:20};
    matière dans gainXp (maths/PC → +45, DE/EN → +36). La carte de fin
    affiche la valeur réellement créditée. */
 const REVIEW_BONUS=30;
+/* Extrait le texte lisible de l'énoncé — q.prompt est du HTML (fractions
+   empilées, <b>…), on le rend en texte simple pour la requête de recherche :
+   fractions en « n/d », espaces compactés. Sert au bouton « Chercher cette
+   question sur Brave » (2026-08-26, Cid) : on n'envoie JAMAIS de balise dans
+   l'URL. Garde-fou : plante → "" (le bouton reste valide, requête vide). */
+function promptText(q){
+  try{
+    const t=document.createElement("div");
+    t.innerHTML=(q&&q.prompt)||"";
+    t.querySelectorAll(".frac").forEach(f=>{
+      const s=f.querySelectorAll("span");
+      if(s.length===2)f.replaceWith(document.createTextNode(s[0].textContent+"/"+s[1].textContent));
+    });
+    return (t.textContent||"").replace(/\s+/g," ").trim();
+  }catch(e){return "";}
+}
 function afterAnswer(ok,q,extra){
   let pts=0;
   if(ok){state.streak++;const base=PTS_LVL[state.curLvl]!==undefined?PTS_LVL[state.curLvl]:10;pts=base+(state.streak>=3?5:0);state.score+=pts;state.good++;stats.good++;gainXp(pts);}
@@ -8609,8 +8636,13 @@ function afterAnswer(ok,q,extra){
   $("#tStreak").textContent=state.streak;
   /* Feedback : le chip « score » pulse quand la réponse est juste. */
   if(ok){const chip=$("#tScore").closest(".chip");if(chip){chip.classList.remove("pulse");void chip.offsetWidth;chip.classList.add("pulse");}}
+  /* Bouton « Chercher cette question sur Brave » (2026-08-26, Cid) : UNIQUEMENT
+     en cas d'erreur — ouvre l'énoncé de la question dans un nouvel onglet de
+     recherche Brave. Réutilise .btn/.btn-ghost + .nextrow → IDENTIQUES aux
+     autres boutons (dont le clamp mobile), alignement à droite, zéro CSS ajouté. */
+  const brave=!ok?`<div class="nextrow"><a class="btn btn-brave" href="https://search.brave.com/ask?q=${encodeURIComponent(promptText(q))}&lang=fr-fr" target="_blank" rel="noopener noreferrer">Explication ↗</a></div>`:"";
   $("#fb").innerHTML=`<p class="fb ${ok?"ok":"ko"}">${ok?"✓ Bien joué, +"+pts+" pts !":"✗ Raté. "+extra}</p>`+
-    `<div class="explain ${ok?"good":"bad"}"><h4>Méthode</h4>${vizAns(q)}${q.explain}</div>`;
+    `<div class="explain ${ok?"good":"bad"}"><h4>Méthode</h4>${vizAns(q)}${q.explain}</div>`+brave;
   hidePass();
   offerNext();
 }
