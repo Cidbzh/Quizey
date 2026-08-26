@@ -19,9 +19,12 @@
    → quizey-v7 (2026-08-26 : topbar qui réapparaît plus tôt au scroll
    (seuil 10 → 60 px) ; carte de fin de révision « Tout est à jour »
    (bonus XP toujours crédité, plus affiché) ; case « Maths expertes »
-   réduite sur téléphone). */
+   réduite sur téléphone)
+   → quizey-v8 (2026-08-26 : panneau « À réviser » sans échéance —
+   « Tout est à jour ✓ » seul, plus de « N question(s) en cours
+   d'acquisition… »). */
 
-const CACHE = "quizey-v7";
+const CACHE = "quizey-v8";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

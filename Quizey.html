@@ -8203,12 +8203,14 @@ function renderHome(){
         `</section>`;
     }else if(total>0){
       /* Plus rien d'échu aujourd'hui mais la liste n'est pas vide : les items
-         sont en cours d'acquisition (programmés plus tard). On le signale,
-         sans appeler à l'action — le bouton n'aurait rien à proposer aujourd'hui. */
+         sont en cours d'acquisition (programmés plus tard). Depuis 2026-08-26
+         (Cid) : le panneau ne dit que « Tout est à jour ✓ » — le détail
+         (« N question(s) en cours d'acquisition, prochaine révision bientôt »)
+         est retiré ; pas de bouton (rien à proposer aujourd'hui). */
       revSlot.innerHTML=
         `<section class="panel revcta" aria-labelledby="hRev" data-rv style="--d:1.0s">`+
         `<h2 id="hRev">À réviser</h2>`+
-        `<p class="revtime">Tout est à jour ✓ — ${total} question${total>1?"s":""} en cours d'acquisition, prochaine révision bientôt.</p>`+
+        `<p class="revtime">Tout est à jour ✓</p>`+
         `</section>`;
     }else{
       revSlot.innerHTML="";
