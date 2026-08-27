@@ -52,9 +52,12 @@
    → quizey-v15 (2026-08-27 : topbar mobile — bloc thème
    (Auto/Clair/Sombre) sur la ligne de la marque, à droite, juste
    au-dessus des matières (2×2) — CSS display:contents + order,
-   DOM inchangé, dimensions de base conservées).) */
+   DOM inchangé, dimensions de base conservées)
+   → quizey-v16 (2026-08-27 : topbar mobile — écart ligne de marque →
+   ligne matières 6 → 12 px (« descendre légèrement le block choix de
+   matière », Cid).) */
 
-const CACHE = "quizey-v15";
+const CACHE = "quizey-v16";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

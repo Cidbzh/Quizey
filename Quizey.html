@@ -856,8 +856,10 @@ html.boot .subcard{animation:rvIn .7s var(--ease) both;animation-delay:calc((.95
    Moteur, stats, matières : INCHANGÉS — seul l'affichage change. */
 html[data-ui="m"] body{font-size:clamp(16px,4.8vw,19px)}
 /* ---- Topbar : basculeur matière en grille 2×2 (boutons RESERRÉS, « Physique-Chimie »
-   tient sur UNE ligne grâce au min-width:0 — plus de débordement à 320 px) ---- */
-html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:6px}
+   tient sur UNE ligne grâce au min-width:0 — plus de débordement à 320 px) ----
+   Écart ligne de marque → ligne matières : 6 → 12 px (2026-08-27, Cid —
+   « descendre légèrement le block choix de matière ») ---- */
+html[data-ui="m"] .topbar .wrap{flex-wrap:wrap;row-gap:12px}
 html[data-ui="m"] body:has(#home:not([hidden])) .topbar .wrap{padding-right:20px}
 html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:clamp(4px,1.2vw,6px)}
 html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
