@@ -48,9 +48,13 @@
    « Questions » → « Interrogations » ; lede hero resserrée
    (line-height 1.6 → 1.35) ; question EN « There's ___ cake » —
    réponse « some » → « a » (gâteau dénombrable singulier,
-   distracteurs nettoyés)). */
+   distracteurs nettoyés)
+   → quizey-v15 (2026-08-27 : topbar mobile — bloc thème
+   (Auto/Clair/Sombre) sur la ligne de la marque, à droite, juste
+   au-dessus des matières (2×2) — CSS display:contents + order,
+   DOM inchangé, dimensions de base conservées).) */
 
-const CACHE = "quizey-v14";
+const CACHE = "quizey-v15";
 
 /* L'app shell : tout ce qui fait tourner l'app hors ligne. Chemins RELATIFS
    (le site est servi sous /Quizey/). index.html = redirect → Quizey.html. */

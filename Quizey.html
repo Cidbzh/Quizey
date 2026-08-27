@@ -863,11 +863,30 @@ html[data-ui="m"] .topbar .seg{display:flex;width:100%;flex-wrap:wrap;row-gap:cl
 html[data-ui="m"] .topbar .seg .seg-btn{flex:1 1 42%;min-width:0;padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
 /* Topbar : boutons de thème RESERRÉS fort (alignés sur la compacité des matières). */
 html[data-ui="m"] .theme-btn{padding:clamp(4px,1.3vw,6px) 7px;font-size:clamp(11px,2.9vw,12.5px)}
-/* Ligne du thème (Auto/Clair/Sombre) : CENTRÉE sur téléphone (2026-08-25, Cid).
+/* Bloc thème (Auto/Clair/Sombre) : sur téléphone il est SUR LA LIGNE DE LA
+   MARQUE, à DROITE, juste au-dessus des matières (2026-08-27, Cid —
+   « config C » choisie après essai de 3 configurations dans le navigateur ;
+   dimensions de base conservées). Mécanique : le groupe .row.wrap-row passe
+   en display:contents → ses enfants (matières, thème, puces masquées)
+   deviennent des items directs de .wrap, et order les range :
+   marque (0) → thème (1) → matières (2, width:100 % ci-dessus → propre ligne).
+   .wrap est déjà space-between → marque à gauche, thème à droite.
    Le séparateur vertical (1 px) perd son sens une fois les lignes empilées →
-   masqué sur mobile (il reste sur ordinateur, où il sépare matières | thème). */
+   masqué sur mobile (il reste sur ordinateur, où il sépare matières | thème).
+   Vieil navigateur sans display:contents → règle ignorée → ancien
+   comportement (thème sur sa propre ligne). Ordinateur : attribut
+   data-ui="m" absent → aucun effet, DOM inchangé. */
 html[data-ui="m"] .topbar .divider{display:none}
-html[data-ui="m"] .topbar .row.wrap-row{justify-content:center}
+html[data-ui="m"] .topbar .row.wrap-row{display:contents}
+html[data-ui="m"] .topbar .brand{order:0}
+html[data-ui="m"] .topbar .theme-seg{order:1}
+html[data-ui="m"] .topbar .seg{order:2}
+/* Les puces #topStats (masquées hors mode question) : .chips{display:flex}
+   prime sur l'attribut hidden (feuille UA) → la boîte VIDE resterait item
+   flex et repousserait le thème de ~10 px sur la ligne 1. Ici display:none
+   quand hidden ; en mode question les puces sont remplies mais la topbar
+   entière est déjà display:none sur téléphone → aucun impact. */
+html[data-ui="m"] .topbar .chips[hidden]{display:none}
 /* Pendant les questions : la topbar (marque + matières + thème + puces
    score/série/passées) ne sert que sur l'accueil — sur téléphone elle
    disparaît pour libérer toute la place à l'énoncé (2026-08-25, Cid).
